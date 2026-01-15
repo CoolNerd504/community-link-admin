@@ -1,0 +1,118 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own profile data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null; // Allow reading other user profiles for provider listings
+    }
+    
+    // Provider services - providers can manage their own services
+    match /users/{userId}/services/{serviceId} {
+      allow read: if request.auth != null; // Anyone can read services
+      allow write: if request.auth != null && request.auth.uid == userId; // Only owner can modify
+    }
+    
+    // Instant booking requests - users can create, providers can respond
+    match /users/{userId}/services/{serviceId}/instantBookingRequests/{requestId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == userId || // Provider can read their own requests
+        resource.data.clientId == request.auth.uid // Client can read their own requests
+      );
+      allow create: if request.auth != null && request.auth.uid == resource.data.clientId;
+      allow update: if request.auth != null && request.auth.uid == userId; // Provider can respond
+    }
+    
+    // Categories - anyone can read, only admins can write
+    match /categories/{categoryId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin';
+    }
+    
+    // Pricing tiers - anyone can read, only admins can write
+    match /pricingTiers/{tierId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin';
+    }
+    
+    // Bundle pricing - anyone can read, only admins can write
+    match /bundlePricing/{bundleId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin';
+    }
+    
+    // Discount deals - anyone can read, only admins can write
+    match /discountDeals/{dealId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin';
+    }
+    
+    // Sessions - users can read their own sessions
+    match /sessions/{sessionId} {
+      allow read: if request.auth != null && (
+        resource.data.clientId == request.auth.uid || 
+        resource.data.providerId == request.auth.uid
+      );
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        resource.data.clientId == request.auth.uid || 
+        resource.data.providerId == request.auth.uid
+      );
+    }
+    
+    // Groups - anyone can read, group owners can write
+    match /groups/{groupId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        resource.data.ownerId == request.auth.uid;
+    }
+    
+    // Group members - members can read, group owners can manage
+    match /groups/{groupId}/members/{memberId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/groups/$(groupId)) &&
+        get(/databases/$(database)/documents/groups/$(groupId)).data.ownerId == request.auth.uid;
+    }
+    
+    // Disputes - users can read their own disputes
+    match /disputes/{disputeId} {
+      allow read: if request.auth != null && (
+        resource.data.clientId == request.auth.uid || 
+        resource.data.providerId == request.auth.uid ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin'
+      );
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        resource.data.clientId == request.auth.uid || 
+        resource.data.providerId == request.auth.uid ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin'
+      );
+    }
+    
+    // System settings - only admins can access
+    match /systemSettings/{settingId} {
+      allow read, write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin';
+    }
+    
+    // Analytics - users can read their own analytics
+    match /analytics/{analyticsId} {
+      allow read: if request.auth != null && (
+        resource.data.userId == request.auth.uid ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin'
+      );
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin';
+    }
+  }
+} 

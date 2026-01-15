@@ -1,0 +1,283 @@
+[debug] [2025-07-14T02:18:19.046Z] ----------------------------------------------------------------------
+[debug] [2025-07-14T02:18:19.047Z] Command:       /usr/local/bin/firebase /Users/saintux/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/bin/firebase init
+[debug] [2025-07-14T02:18:19.048Z] CLI Version:   13.22.1
+[debug] [2025-07-14T02:18:19.048Z] Platform:      darwin
+[debug] [2025-07-14T02:18:19.048Z] Node Version:  v18.5.0
+[debug] [2025-07-14T02:18:19.050Z] Time:          Mon Jul 14 2025 04:18:19 GMT+0200 (South Africa Standard Time)
+[debug] [2025-07-14T02:18:19.050Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-07-14T02:18:19.202Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-14T02:18:19.203Z] > authorizing via signed-in user (lombefrancis@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/saintux/Work/CommLink/community-app
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-07-14T02:18:55.084Z] Using project from CLI flag: community-link-62ada
+[debug] [2025-07-14T02:18:55.091Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:18:55.092Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:18:55.095Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/community-link-62ada [none]
+[debug] [2025-07-14T02:18:55.887Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/community-link-62ada 200
+[debug] [2025-07-14T02:18:55.889Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/community-link-62ada {"projectId":"community-link-62ada","projectNumber":"284894592006","displayName":"community-link","name":"projects/community-link-62ada","resources":{"hostingSite":"community-link-62ada","realtimeDatabaseInstance":"community-link-62ada-default-rtdb"},"state":"ACTIVE","etag":"1_b4f369fe-730e-42e5-8948-772ad8f6d42f"}
+[info] i  Using project community-link-62ada (community-link) 
+[info] 
+=== Dataconnect Setup
+[debug] [2025-07-14T02:18:55.914Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:18:55.914Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:18:55.915Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/community-link-62ada/billingInfo [none]
+[debug] [2025-07-14T02:18:57.348Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/community-link-62ada/billingInfo 200
+[debug] [2025-07-14T02:18:57.351Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/community-link-62ada/billingInfo {"name":"projects/community-link-62ada/billingInfo","projectId":"community-link-62ada","billingAccountName":"billingAccounts/011578-F9E982-76A2CD","billingEnabled":true}
+[info] i  dataconnect: ensuring required API firebasedataconnect.googleapis.com is enabled... 
+[debug] [2025-07-14T02:18:57.353Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:18:57.354Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:18:57.354Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-07-14T02:18:57.354Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:18:59.531Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-07-14T02:18:59.532Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com [omitted]
+[warn] ⚠  dataconnect: missing required API firebasedataconnect.googleapis.com. Enabling now... 
+[debug] [2025-07-14T02:18:59.533Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:18:59.534Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:18:59.534Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com:enable [none]
+[debug] [2025-07-14T02:18:59.534Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com:enable x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:19:01.873Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com:enable 200
+[debug] [2025-07-14T02:19:01.874Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com:enable [omitted]
+[debug] [2025-07-14T02:19:11.884Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:11.888Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:11.888Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-07-14T02:19:11.888Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:19:13.942Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-07-14T02:19:13.942Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firebasedataconnect.googleapis.com [omitted]
+[info] ✔  dataconnect: required API firebasedataconnect.googleapis.com is enabled 
+[info] i  dataconnect: ensuring required API sqladmin.googleapis.com is enabled... 
+[debug] [2025-07-14T02:19:13.957Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:13.958Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:13.958Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com [none]
+[debug] [2025-07-14T02:19:13.958Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:19:16.120Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com 200
+[debug] [2025-07-14T02:19:16.121Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com [omitted]
+[warn] ⚠  dataconnect: missing required API sqladmin.googleapis.com. Enabling now... 
+[debug] [2025-07-14T02:19:16.122Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:16.122Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:16.123Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com:enable [none]
+[debug] [2025-07-14T02:19:16.123Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com:enable x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:19:18.389Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com:enable 200
+[debug] [2025-07-14T02:19:18.389Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com:enable [omitted]
+[debug] [2025-07-14T02:19:28.392Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:28.392Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:28.394Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com [none]
+[debug] [2025-07-14T02:19:28.394Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:19:30.328Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com 200
+[debug] [2025-07-14T02:19:30.328Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/sqladmin.googleapis.com [omitted]
+[info] ✔  dataconnect: required API sqladmin.googleapis.com is enabled 
+[info] i  dataconnect: ensuring required API compute.googleapis.com is enabled... 
+[debug] [2025-07-14T02:19:30.335Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:30.335Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:30.336Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [none]
+[debug] [2025-07-14T02:19:30.336Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:19:32.820Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com 200
+[debug] [2025-07-14T02:19:32.820Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [omitted]
+[warn] ⚠  dataconnect: missing required API compute.googleapis.com. Enabling now... 
+[debug] [2025-07-14T02:19:32.822Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:32.822Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:32.822Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com:enable [none]
+[debug] [2025-07-14T02:19:32.822Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com:enable x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:19:35.166Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com:enable 200
+[debug] [2025-07-14T02:19:35.168Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com:enable [omitted]
+[debug] [2025-07-14T02:19:45.172Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:45.173Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:45.178Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [none]
+[debug] [2025-07-14T02:19:45.179Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:19:47.552Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com 200
+[debug] [2025-07-14T02:19:47.553Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [omitted]
+[info] i  dataconnect: waiting for API compute.googleapis.com to activate... 
+[debug] [2025-07-14T02:19:57.565Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:57.575Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:19:57.576Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [none]
+[debug] [2025-07-14T02:19:57.576Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:19:59.962Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com 200
+[debug] [2025-07-14T02:19:59.963Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [omitted]
+[info] i  dataconnect: waiting for API compute.googleapis.com to activate... 
+[debug] [2025-07-14T02:20:09.967Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:20:09.968Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:20:09.968Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [none]
+[debug] [2025-07-14T02:20:09.968Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:20:12.394Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com 200
+[debug] [2025-07-14T02:20:12.395Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [omitted]
+[info] i  dataconnect: waiting for API compute.googleapis.com to activate... 
+[debug] [2025-07-14T02:20:22.401Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:20:22.403Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:20:22.405Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [none]
+[debug] [2025-07-14T02:20:22.405Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:20:24.766Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com 200
+[debug] [2025-07-14T02:20:24.767Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [omitted]
+[info] i  dataconnect: waiting for API compute.googleapis.com to activate... 
+[debug] [2025-07-14T02:20:34.780Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:20:34.790Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:20:34.792Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [none]
+[debug] [2025-07-14T02:20:34.792Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:20:37.095Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com 200
+[debug] [2025-07-14T02:20:37.096Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/compute.googleapis.com [omitted]
+[info] ✔  dataconnect: required API compute.googleapis.com is enabled 
+[debug] [2025-07-14T02:20:37.111Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:20:37.111Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:20:37.112Z] >>> [apiv2][query] GET https://firebasedataconnect.googleapis.com/v1beta/projects/community-link-62ada/locations/-/services [none]
+[debug] [2025-07-14T02:20:39.459Z] <<< [apiv2][status] GET https://firebasedataconnect.googleapis.com/v1beta/projects/community-link-62ada/locations/-/services 200
+[debug] [2025-07-14T02:20:39.460Z] <<< [apiv2][body] GET https://firebasedataconnect.googleapis.com/v1beta/projects/community-link-62ada/locations/-/services {}
+[debug] [2025-07-14T02:21:05.296Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:21:05.296Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:21:05.297Z] >>> [apiv2][query] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances [none]
+[debug] [2025-07-14T02:21:07.766Z] <<< [apiv2][status] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances 200
+[debug] [2025-07-14T02:21:07.766Z] <<< [apiv2][body] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances {}
+[debug] [2025-07-14T02:21:23.844Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:21:23.846Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:21:23.846Z] >>> [apiv2][query] GET https://firebasedataconnect.googleapis.com/v1beta/projects/community-link-62ada/locations [none]
+[debug] [2025-07-14T02:21:25.732Z] <<< [apiv2][status] GET https://firebasedataconnect.googleapis.com/v1beta/projects/community-link-62ada/locations 200
+[debug] [2025-07-14T02:21:25.732Z] <<< [apiv2][body] GET https://firebasedataconnect.googleapis.com/v1beta/projects/community-link-62ada/locations {"locations":[{"name":"projects/community-link-62ada/locations/asia-east1","locationId":"asia-east1","displayName":"Taiwan"},{"name":"projects/community-link-62ada/locations/asia-east2","locationId":"asia-east2","displayName":"Hong Kong"},{"name":"projects/community-link-62ada/locations/asia-northeast1","locationId":"asia-northeast1","displayName":"Tokyo"},{"name":"projects/community-link-62ada/locations/asia-northeast2","locationId":"asia-northeast2","displayName":"Osaka"},{"name":"projects/community-link-62ada/locations/asia-northeast3","locationId":"asia-northeast3","displayName":"Seoul"},{"name":"projects/community-link-62ada/locations/asia-south1","locationId":"asia-south1","displayName":"Mumbai"},{"name":"projects/community-link-62ada/locations/asia-southeast1","locationId":"asia-southeast1","displayName":"Singapore"},{"name":"projects/community-link-62ada/locations/asia-southeast2","locationId":"asia-southeast2","displayName":"Jakarta"},{"name":"projects/community-link-62ada/locations/australia-southeast1","locationId":"australia-southeast1","displayName":"Sydney"},{"name":"projects/community-link-62ada/locations/australia-southeast2","locationId":"australia-southeast2","displayName":"Melbourne"},{"name":"projects/community-link-62ada/locations/europe-central2","locationId":"europe-central2","displayName":"Warsaw"},{"name":"projects/community-link-62ada/locations/europe-north1","locationId":"europe-north1","displayName":"Finland"},{"name":"projects/community-link-62ada/locations/europe-southwest1","locationId":"europe-southwest1","displayName":"Madrid"},{"name":"projects/community-link-62ada/locations/europe-west1","locationId":"europe-west1","displayName":"Belgium"},{"name":"projects/community-link-62ada/locations/europe-west2","locationId":"europe-west2","displayName":"London"},{"name":"projects/community-link-62ada/locations/europe-west3","locationId":"europe-west3","displayName":"Frankfurt"},{"name":"projects/community-link-62ada/locations/europe-west4","locationId":"europe-west4","displayName":"Netherlands"},{"name":"projects/community-link-62ada/locations/europe-west6","locationId":"europe-west6","displayName":"Zurich"},{"name":"projects/community-link-62ada/locations/europe-west8","locationId":"europe-west8","displayName":"Milan"},{"name":"projects/community-link-62ada/locations/europe-west9","locationId":"europe-west9","displayName":"Paris"},{"name":"projects/community-link-62ada/locations/me-west1","locationId":"me-west1","displayName":"Tel Aviv"},{"name":"projects/community-link-62ada/locations/northamerica-northeast1","locationId":"northamerica-northeast1","displayName":"Montréal"},{"name":"projects/community-link-62ada/locations/northamerica-northeast2","locationId":"northamerica-northeast2","displayName":"Toronto"},{"name":"projects/community-link-62ada/locations/southamerica-east1","locationId":"southamerica-east1","displayName":"São Paulo"},{"name":"projects/community-link-62ada/locations/southamerica-west1","locationId":"southamerica-west1","displayName":"Santiago"},{"name":"projects/community-link-62ada/locations/us-central1","locationId":"us-central1","displayName":"Iowa"},{"name":"projects/community-link-62ada/locations/us-east1","locationId":"us-east1","displayName":"South Carolina"},{"name":"projects/community-link-62ada/locations/us-east4","locationId":"us-east4","displayName":"Northern Virginia"},{"name":"projects/community-link-62ada/locations/us-south1","locationId":"us-south1","displayName":"Dallas"},{"name":"projects/community-link-62ada/locations/us-west1","locationId":"us-west1","displayName":"Oregon"},{"name":"projects/community-link-62ada/locations/us-west2","locationId":"us-west2","displayName":"Los Angeles"},{"name":"projects/community-link-62ada/locations/us-west3","locationId":"us-west3","displayName":"Salt Lake City"},{"name":"projects/community-link-62ada/locations/us-west4","locationId":"us-west4","displayName":"Las Vegas"}]}
+[debug] [2025-07-14T02:21:31.736Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:21:31.736Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:21:31.736Z] >>> [apiv2][query] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances/community-app-fdc/databases [none]
+[debug] [2025-07-14T02:21:32.557Z] <<< [apiv2][status] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances/community-app-fdc/databases 404
+[debug] [2025-07-14T02:21:32.557Z] <<< [apiv2][body] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances/community-app-fdc/databases {"error":{"code":404,"message":"Not Found","errors":[{"message":"Not Found","domain":"global","reason":"notFound"}]}}
+[debug] [2025-07-14T02:21:32.560Z] [dataconnect] Cannot list databases during init: FirebaseError: HTTP Error: 404, Not Found
+[info] ✔  Wrote dataconnect/dataconnect.yaml 
+[info] ✔  Wrote dataconnect/schema/schema.gql 
+[info] ✔  Wrote dataconnect/connector/connector.yaml 
+[info] ✔  Wrote dataconnect/connector/queries.gql 
+[info] ✔  Wrote dataconnect/connector/mutations.gql 
+[debug] [2025-07-14T02:22:01.285Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:01.285Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:01.285Z] >>> [apiv2][query] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances/community-app-fdc [none]
+[debug] [2025-07-14T02:22:02.087Z] <<< [apiv2][status] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances/community-app-fdc 404
+[debug] [2025-07-14T02:22:02.087Z] <<< [apiv2][body] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances/community-app-fdc {"error":{"code":404,"message":"The Cloud SQL instance does not exist.","errors":[{"message":"The Cloud SQL instance does not exist.","domain":"global","reason":"instanceDoesNotExist"}]}}
+[debug] [2025-07-14T02:22:02.088Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:02.088Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:02.088Z] >>> [apiv2][query] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances [none]
+[debug] [2025-07-14T02:22:03.409Z] <<< [apiv2][status] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances 200
+[debug] [2025-07-14T02:22:03.410Z] <<< [apiv2][body] GET https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances {}
+[debug] [2025-07-14T02:22:03.412Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:03.412Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:03.416Z] >>> [apiv2][query] GET https://monitoring.googleapis.com/v3/projects/community-link-62ada/timeSeries/ filter=metric.type%3D%22serviceruntime.googleapis.com%2Fquota%2Fallocation%2Fusage%22+AND+metric.label.quota_metric+%3D+%22sqladmin.googleapis.com%2Ffdc_lifetime_free_trial_per_project%22&interval.endTime=2025-07-14T02%3A22%3A03.411Z&interval.startTime=2025-07-07T02%3A22%3A03.411Z
+[debug] [2025-07-14T02:22:05.015Z] <<< [apiv2][status] GET https://monitoring.googleapis.com/v3/projects/community-link-62ada/timeSeries/ 200
+[debug] [2025-07-14T02:22:05.015Z] <<< [apiv2][body] GET https://monitoring.googleapis.com/v3/projects/community-link-62ada/timeSeries/ {"unit":"1"}
+[info] i  dataconnect: CloudSQL instance 'community-app-fdc' not found.Creating it now.
+This instance is provided under the terms of the Data Connect no-cost trial https://firebase.google.com/pricing
+Monitor the progress at https://console.cloud.google.com/sql/instances/community-app-fdc/overview?project=community-link-62ada 
+[debug] [2025-07-14T02:22:05.020Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:05.020Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:05.020Z] >>> [apiv2][query] POST https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances [none]
+[debug] [2025-07-14T02:22:05.020Z] >>> [apiv2][body] POST https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances {"name":"community-app-fdc","region":"asia-east1","databaseVersion":"POSTGRES_15","settings":{"tier":"db-f1-micro","edition":"ENTERPRISE","ipConfiguration":{"authorizedNetworks":[]},"enableGoogleMlIntegration":false,"databaseFlags":[{"name":"cloudsql.iam_authentication","value":"on"}],"storageAutoResize":false,"userLabels":{"firebase-data-connect":"ft"},"insightsConfig":{"queryInsightsEnabled":true,"queryPlansPerMinute":5,"queryStringLength":1024}}}
+[debug] [2025-07-14T02:22:12.231Z] <<< [apiv2][status] POST https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances 200
+[debug] [2025-07-14T02:22:12.232Z] <<< [apiv2][body] POST https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances {"kind":"sql#operation","targetLink":"https://sqladmin.googleapis.com/v1/projects/community-link-62ada/instances/community-app-fdc","status":"PENDING","user":"lombefrancis@gmail.com","insertTime":"2025-07-14T02:22:12.401Z","operationType":"CREATE","name":"3fd7a86a-4518-4b9f-b516-542a00000025","targetId":"community-app-fdc","selfLink":"https://sqladmin.googleapis.com/v1/projects/community-link-62ada/operations/3fd7a86a-4518-4b9f-b516-542a00000025","targetProject":"community-link-62ada"}
+[info] i  dataconnect: Cloud SQL instance creation started - it should be ready shortly. Database and users will be created on your next deploy. 
+[info] ✔  Detected WEB app in directory /Users/saintux/Work/CommLink/community-app 
+[info] i  Wrote new config to /Users/saintux/Work/CommLink/community-app/dataconnect/connector/connector.yaml 
+[info] I0714 04:22:29.720526   45174 codegen.go:82] [connector "default" javascriptSdk] Generating sources into "/Users/saintux/Work/CommLink/community-app/dataconnect-generated/js/default-connector"
+I0714 04:22:29.726306   45174 generate.go:40] Generated all sources. Writing them to disk...
+I0714 04:22:29.728111   45174 collector.go:107] connector "default" javascriptSdk wrote into "/Users/saintux/Work/CommLink/community-app/dataconnect-generated/js/default-connector"
+Generated sources: index.cjs.js [226B] package.json [623B] index.d.ts [264B] esm/index.esm.js [185B] esm/package.json [17B] 
+I0714 04:22:29.731650   45174 installsdk.go:76] Running command: /usr/local/bin/yarn add link:dataconnect-generated/js/default-connector
+E0714 04:22:30.925061   45174 installsdk.go:78] Failed to install package: exit status 1
+
+[info] i  Generated SDK code for default 
+[info] ✔  If you'd like to add more generated SDKs to your app your later, run firebase init dataconnect:sdk again 
+[info] 
+=== Firestore Setup
+[debug] [2025-07-14T02:22:30.931Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:30.931Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:30.932Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firestore.googleapis.com [none]
+[debug] [2025-07-14T02:22:30.932Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firestore.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:22:32.954Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firestore.googleapis.com 200
+[debug] [2025-07-14T02:22:32.954Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/firestore.googleapis.com [omitted]
+[debug] [2025-07-14T02:22:32.955Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:32.955Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:32.955Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/community-link-62ada/databases/(default) [none]
+[debug] [2025-07-14T02:22:34.828Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/community-link-62ada/databases/(default) 200
+[debug] [2025-07-14T02:22:34.829Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/community-link-62ada/databases/(default) {"name":"projects/community-link-62ada/databases/(default)","uid":"5dfb964e-018f-4e55-9f4b-ce2f6e053de4","createTime":"2025-07-06T12:13:08.416497Z","updateTime":"2025-07-06T12:13:08.416497Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2025-07-14T01:22:35.105870Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"etag":"IJ7Zvqmlu44DMIf2ooGkuo4D"}
+[debug] [2025-07-14T02:22:34.829Z] database_type: FIRESTORE_NATIVE
+[debug] [2025-07-14T02:22:34.829Z] database_type: FIRESTORE_NATIVE
+[debug] [2025-07-14T02:22:34.830Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-14T02:22:34.831Z] > authorizing via signed-in user (lombefrancis@gmail.com)
+[debug] [2025-07-14T02:22:34.831Z] [iam] checking project community-link-62ada for permissions ["firebase.projects.get"]
+[debug] [2025-07-14T02:22:34.832Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:34.832Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:22:34.832Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions [none]
+[debug] [2025-07-14T02:22:34.832Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:22:34.832Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-07-14T02:22:36.875Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions 200
+[debug] [2025-07-14T02:22:36.876Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions {"permissions":["firebase.projects.get"]}
+[info] 
+[info] Firestore Security Rules allow you to define how and when to allow
+[info] requests. You can keep these rules in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[info] 
+[info] Firestore indexes allow you to perform complex queries while
+[info] maintaining performance that scales with the size of the result
+[info] set. You can keep index definitions in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[info] 
+=== Functions Setup
+[debug] [2025-07-14T02:23:27.276Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-14T02:23:27.276Z] > authorizing via signed-in user (lombefrancis@gmail.com)
+[debug] [2025-07-14T02:23:27.277Z] [iam] checking project community-link-62ada for permissions ["firebase.projects.get"]
+[debug] [2025-07-14T02:23:27.279Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:27.279Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:27.279Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions [none]
+[debug] [2025-07-14T02:23:27.280Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:23:27.280Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-07-14T02:23:29.054Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions 200
+[debug] [2025-07-14T02:23:29.054Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/community-link-62ada:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-07-14T02:23:29.056Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:29.056Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:29.056Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:29.056Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:29.057Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com [none]
+[debug] [2025-07-14T02:23:29.061Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:23:29.064Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/runtimeconfig.googleapis.com [none]
+[debug] [2025-07-14T02:23:29.064Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/runtimeconfig.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:23:31.020Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/runtimeconfig.googleapis.com 200
+[debug] [2025-07-14T02:23:31.021Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2025-07-14T02:23:31.034Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com 200
+[debug] [2025-07-14T02:23:31.034Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com [omitted]
+[debug] [2025-07-14T02:23:31.035Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:31.035Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:31.035Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com:enable [none]
+[debug] [2025-07-14T02:23:31.035Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com:enable x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:23:33.297Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com:enable 200
+[debug] [2025-07-14T02:23:33.298Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com:enable [omitted]
+[debug] [2025-07-14T02:23:43.310Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:43.317Z] Checked if tokens are valid: true, expires at: 1752462862951
+[debug] [2025-07-14T02:23:43.318Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com [none]
+[debug] [2025-07-14T02:23:43.318Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/community-link-62ada
+[debug] [2025-07-14T02:23:45.306Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com 200
+[debug] [2025-07-14T02:23:45.306Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/community-link-62ada/services/cloudfunctions.googleapis.com [omitted]
+[info] 
+Detected existing codebase(s): default
+
+[info] Let's create a new codebase for your functions.
+[info] A directory corresponding to the codebase will be created in your project
+[info] with sample code pre-configured.
+
+[info] See https://firebase.google.com/docs/functions/organize-functions for
+[info] more information on organizing your functions using codebases.
+
+[info] Functions can be deployed with firebase deploy.
+
