@@ -51,24 +51,19 @@ This document details the exact API contracts, logical flows, and edge cases for
 
 ---
 
-### B. Login
-**Intent:** Authenticate and retrieve session token.
-**Pre-requisite:** You MUST fetch a CSRF token first.
-1. **Endpoint:** `GET /api/auth/csrf`
-2. **Response:** `{"csrfToken": "e580..."}`
-3. **Use:** Include this token in the Login POST body.
+### B. Login (Mobile - JWT Token)
+**Intent:** Authenticate and retrieve JWT token for mobile apps.
+**Endpoint:** `POST /api/mobile/auth/login`
 
-**Endpoint:** `POST /api/auth/callback/credentials`
+> [!NOTE]
+> **Mobile-Optimized**: This endpoint returns a JWT token in the response body, eliminating the need for cookie management in React Native apps.
 
 #### Scenario 1: Success
 **Request Payload:**
 ```json
 {
   "email": "sarah@example.com",
-  "password": "SecurePassword1!",
-  "otp": "123456", // If 2FA enabled
-  "csrfToken": "e580...", // REQUIRED from GET /api/auth/csrf
-  "redirect": false
+  "password": "SecurePassword1!"
 }
 ```
 **Response (200 OK):**
@@ -80,14 +75,54 @@ This document details the exact API contracts, logical flows, and edge cases for
     "email": "sarah@example.com",
     "role": "USER",
     "username": "s_connor",
-    "kycStatus": "PENDING"
+    "kycStatus": "PENDING",
+    "image": null
   },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "expires": "2026-02-14T10:00:00.000Z"
 }
 ```
 
+**Usage:**
+1. Store `token` in `AsyncStorage` or secure storage.
+2. Include in all subsequent requests: `Authorization: Bearer <token>`
+
 #### Scenario 2: Invalid Credentials
-**Response (401 Unauthorized):** `{"message": "Invalid email or password"}` (Note: NextAuth often returns 200 with `error` or 401 depending on config, but standard REST should is 401).
+**Response (401 Unauthorized):**
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+---
+
+### C. Login (Web - Cookie-Based)
+**Intent:** Authenticate via NextAuth for web browsers.
+**Pre-requisite:** Fetch CSRF token first.
+1. **Endpoint:** `GET /api/auth/csrf`
+2. **Response:** `{"csrfToken": "e580..."}`
+
+**Endpoint:** `POST /api/auth/callback/credentials`
+
+**Request Payload:**
+```json
+{
+  "email": "sarah@example.com",
+  "password": "SecurePassword1!",
+  "csrfToken": "e580...",
+  "redirect": false
+}
+```
+**Response (200 OK):**
+```json
+{
+  "user": { "id": "...", "name": "...", "role": "..." },
+  "expires": "2026-02-14T10:00:00.000Z"
+}
+```
+> [!IMPORTANT]
+> **Session Management**: Web authentication uses **HttpOnly Cookies** (`authjs.session-token`). The JSON response does NOT contain a token string.
 
 ---
 
