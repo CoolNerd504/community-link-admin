@@ -821,6 +821,40 @@ async function main() {
     })
     console.log('✅ Created 6 test disputes with various statuses')
 
+    // 9. SEED BOOKING REQUESTS
+    console.log('📅 Seeding booking requests...')
+    // Find service for Provider 1 (Dr. Emily)
+    const bookingService = await prisma.service.findFirst({
+        where: { providerId: provider1.id }
+    })
+
+    if (bookingService) {
+        // Pending booking for Alice (users[0])
+        await prisma.bookingRequest.create({
+            data: {
+                clientId: users[0].id,
+                serviceId: bookingService.id,
+                status: 'PENDING',
+                notes: 'Looking forward to this session! I have some questions about anxiety management.',
+                requestedTime: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2) // 2 days from now
+            }
+        })
+
+        // Accepted booking for Bob (users[1])
+        await prisma.bookingRequest.create({
+            data: {
+                clientId: users[1].id,
+                serviceId: bookingService.id,
+                status: 'ACCEPTED',
+                notes: 'Please bring your previous medical history.',
+                requestedTime: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3) // 3 days from now
+            }
+        })
+        console.log('✅ Created 2 sample booking requests')
+    } else {
+        console.log('⚠️ Could not find service for provider 1, skipping bookings')
+    }
+
     // --- Verification ---
     const adminEmail = 'sarah.admin@commlink.com'
     const verificationUser = await prisma.user.findUnique({ where: { email: adminEmail } })
