@@ -28,6 +28,12 @@ export async function GET(req: NextRequest) {
         })
 
         if (!wallet) {
+            // Verify user exists first to prevent FK constraint errors (e.g. stale tokens after seed)
+            const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
+            if (!dbUser) {
+                return NextResponse.json({ message: 'User account not found or stale token' }, { status: 401 })
+            }
+
             // Create wallet if it doesn't exist (should have been created on register but safety check)
             const newWallet = await prisma.wallet.create({
                 data: { userId: user.id }
