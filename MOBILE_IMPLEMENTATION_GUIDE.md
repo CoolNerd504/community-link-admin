@@ -299,9 +299,19 @@ This document details the exact API contracts, logical flows, and edge cases for
 
 ## 👤 6. Profile & KYC
 
-### A. Submit KYC Documents
-**Intent:** Provider uploads ID for verification.
+> [!IMPORTANT]
+> **KYC is Optional**: Providers can access all endpoints regardless of KYC status. KYC verification unlocks additional features (e.g., higher visibility, premium badges) but does NOT block core functionality.
+
+### A. Submit KYC Documents (Provider)
+**Intent:** Upload ID for verification to unlock premium features.
 **Endpoint:** `POST /api/kyc/submit`
+
+**Mobile UX Flow:**
+1. **After Login (One-Time)**: If `user.kycStatus === "PENDING"` and user hasn't dismissed the prompt:
+   - Show modal: "Complete your KYC to unlock all features"
+   - Options: "Complete Now" or "Skip for Now"
+   - Store dismissal in `AsyncStorage` to prevent re-showing
+2. **Profile Tab**: Always show "Complete KYC" button if status is not "APPROVED"
 
 #### Scenario 1: Submission
 **Request Payload:**
@@ -319,6 +329,12 @@ This document details the exact API contracts, logical flows, and edge cases for
   "kycSubmittedAt": "2026-01-16T10:30:00Z"
 }
 ```
+
+**KYC Status Values:**
+- `PENDING` - Not yet submitted (default for new providers)
+- `SUBMITTED` - Documents uploaded, awaiting admin review
+- `APPROVED` - Verified (unlocks premium features)
+- `REJECTED` - Verification failed (user can resubmit)
 
 ### B. Update Profile
 **Intent:** User updates bio/headline.
