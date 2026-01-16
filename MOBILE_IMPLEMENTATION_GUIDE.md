@@ -53,6 +53,11 @@ This document details the exact API contracts, logical flows, and edge cases for
 
 ### B. Login
 **Intent:** Authenticate and retrieve session token.
+**Pre-requisite:** You MUST fetch a CSRF token first.
+1. **Endpoint:** `GET /api/auth/csrf`
+2. **Response:** `{"csrfToken": "e580..."}`
+3. **Use:** Include this token in the Login POST body.
+
 **Endpoint:** `POST /api/auth/callback/credentials`
 
 #### Scenario 1: Success
@@ -61,6 +66,8 @@ This document details the exact API contracts, logical flows, and edge cases for
 {
   "email": "sarah@example.com",
   "password": "SecurePassword1!",
+  "otp": "123456", // If 2FA enabled
+  "csrfToken": "e580...", // REQUIRED from GET /api/auth/csrf
   "redirect": false
 }
 ```
