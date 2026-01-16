@@ -142,42 +142,184 @@ This document details the exact API contracts, logical flows, and edge cases for
 
 ---
 
-## 🔍 2. Discovery (Search Providers)
-**Intent:** Find service providers based on criteria.
+## 🔍 2. Discovery & Search
+
+### A. Get Categories
+**Intent:** Fetch all available service categories and subcategories.
+**Endpoint:** `GET /api/categories`
+
+**Response (200 OK):**
+```json
+{
+  "categories": [
+    {
+      "id": "cat-001",
+      "name": "Home Services",
+      "description": "Household maintenance and repairs",
+      "icon": "home",
+      "subcategories": [
+        {
+          "id": "subcat-001",
+          "name": "Plumbing",
+          "description": "Water and drainage systems",
+          "icon": "wrench"
+        },
+        {
+          "id": "subcat-002",
+          "name": "Electrical",
+          "description": "Electrical installations and repairs",
+          "icon": "zap"
+        }
+      ]
+    },
+    {
+      "id": "cat-002",
+      "name": "Professional Services",
+      "description": "Business and consulting services",
+      "icon": "briefcase",
+      "subcategories": []
+    }
+  ],
+  "count": 2
+}
+```
+
+**Mobile UX:**
+- Cache categories in `AsyncStorage` on app launch
+- Refresh daily or when user pulls to refresh
+- Use for filter dropdowns and category browsing
+
+---
+
+### B. Search Providers
+**Intent:** Find service providers based on search query and filters.
 **Endpoint:** `GET /api/providers/search`
 
-#### Scenario 1: Filtered Search
-**Request:** `GET /api/providers/search?q=Plumber&category=Maintenance&minPrice=100`
+**Query Parameters:**
+- `q` (string, optional): Search term (searches name and service titles)
+- `category` (string, optional): Filter by category name
+- `minPrice` (number, optional): Minimum price filter
+- `maxPrice` (number, optional): Maximum price filter
+
+#### Scenario 1: Search with Filters
+**Request:** 
+```
+GET /api/providers/search?q=plumber&category=Home Services&minPrice=100&maxPrice=500
+```
 
 **Response (200 OK):**
 ```json
 [
   {
     "id": "prov-001",
-    "name": "Mario Bros",
-    "image": "https://s3.bucket/mario.jpg",
+    "name": "Mario Bros Plumbing",
+    "email": "mario@plumbing.com",
+    "image": "https://storage.../mario.jpg",
+    "role": "PROVIDER",
+    "username": "mario_plumber",
+    "kycStatus": "APPROVED",
     "rating": 4.9,
     "reviewCount": 150,
     "profile": {
       "headline": "Expert Plumbing & Heating",
+      "bio": "20 years of experience...",
       "location": "Lusaka",
       "isVerified": true
     },
-    "services": [
+    "providerServices": [
       {
         "id": "svc-101",
-        "title": "Pipe Repair",
-        "price": 500,
+        "title": "Pipe Repair & Replacement",
+        "description": "Fix leaks, replace damaged pipes",
+        "price": 350,
         "duration": 60,
-        "category": "Maintenance"
+        "category": "Plumbing",
+        "isActive": true
+      },
+      {
+        "id": "svc-102",
+        "title": "Drain Cleaning",
+        "description": "Clear blocked drains",
+        "price": 200,
+        "duration": 45,
+        "category": "Plumbing",
+        "isActive": true
       }
     ]
   }
 ]
 ```
 
-#### Scenario 2: No Results
-**Response (200 OK):** `[]` (Empty Array) - *Mobile App should handle this by showing "No providers found" illustration.*
+#### Scenario 2: Browse All Providers
+**Request:** `GET /api/providers/search` (no parameters)
+
+**Response:** Returns all APPROVED providers with their services
+
+#### Scenario 3: No Results
+**Request:** `GET /api/providers/search?q=nonexistent`
+
+**Response (200 OK):** `[]` (Empty Array)
+
+**Mobile Implementation:**
+```javascript
+const searchProviders = async (query, filters) => {
+  const params = new URLSearchParams();
+  if (query) params.append('q', query);
+  if (filters.category) params.append('category', filters.category);
+  if (filters.minPrice) params.append('minPrice', filters.minPrice);
+  if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+  
+  const token = await AsyncStorage.getItem('@auth_token');
+  const response = await axios.get(
+    `/api/providers/search?${params.toString()}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  
+  return response.data;
+};
+```
+
+**Search Best Practices:**
+- Debounce search input (300-500ms) to reduce API calls
+- Show loading skeleton while searching
+- Cache recent searches in `AsyncStorage`
+- Display "No results" with suggestions to broaden search
+- Sort results by rating or relevance
+
+---
+
+### C. Get Provider Details
+**Intent:** View full provider profile and all services.
+**Endpoint:** `GET /api/providers/{providerId}`
+
+**Response (200 OK):**
+```json
+{
+  "id": "prov-001",
+  "name": "Mario Bros Plumbing",
+  "image": "...",
+  "kycStatus": "APPROVED",
+  "rating": 4.9,
+  "reviewCount": 150,
+  "profile": {
+    "headline": "Expert Plumbing & Heating",
+    "bio": "20 years of experience in residential and commercial plumbing...",
+    "location": "Lusaka",
+    "languages": ["English", "Bemba"],
+    "isVerified": true
+  },
+  "providerServices": [...],
+  "providerReviews": [
+    {
+      "id": "rev-001",
+      "rating": 5,
+      "comment": "Excellent service!",
+      "client": { "name": "Sarah C." },
+      "createdAt": "2026-01-15T..."
+    }
+  ]
+}
+```
 
 ---
 
