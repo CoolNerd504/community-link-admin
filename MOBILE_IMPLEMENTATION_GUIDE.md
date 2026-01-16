@@ -6,9 +6,12 @@ This document details the exact API contracts, logical flows, and edge cases for
 
 ## 🔐 1. Authentication & Onboarding
 
-### A. Register User
-**Intent:** Create a new account.
-**Endpoint:** `POST /api/auth/register`
+### A. Register User (Mobile - JWT Token)
+**Intent:** Create a new account and receive JWT token.
+**Endpoint:** `POST /api/mobile/auth/register`
+
+> [!NOTE]
+> **Mobile-Optimized**: Returns JWT token immediately upon successful registration, eliminating the need for a separate login call.
 
 #### Scenario 1: Successful Registration (Client)
 **Request Payload:**
@@ -26,10 +29,23 @@ This document details the exact API contracts, logical flows, and edge cases for
 **Response (201 Created):**
 ```json
 {
-  "message": "User created successfully",
-  "userId": "cm3uuid-string-123"
+  "user": {
+    "id": "cm3uuid-string-123",
+    "name": "Sarah Connor",
+    "email": "sarah@example.com",
+    "role": "USER",
+    "username": "s_connor",
+    "kycStatus": "PENDING",
+    "image": null
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expires": "2026-02-14T10:00:00.000Z"
 }
 ```
+
+**Usage:**
+1. Store `token` in `AsyncStorage` or secure storage.
+2. Include in all subsequent requests: `Authorization: Bearer <token>`
 
 #### Scenario 2: Validation Failure (Invalid PIN)
 **Request Payload:** `{"pin": "123"}` (Too short)
@@ -41,7 +57,7 @@ This document details the exact API contracts, logical flows, and edge cases for
 ```
 
 #### Scenario 3: Conflict (Duplicate Data)
-**Request Payload:** Existing email or phone.
+**Request Payload:** Existing email, username, or phone.
 **Response (409 Conflict):**
 ```json
 {
