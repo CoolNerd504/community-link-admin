@@ -17,7 +17,11 @@ export async function getUserFromRequest(req: NextRequest) {
     if (authHeader?.startsWith('Bearer ')) {
         const token = authHeader.substring(7)
         try {
-            const decoded = await decode({ token, secret })
+            const decoded = await decode({
+                token,
+                secret,
+                salt: 'authjs.session-token'
+            })
             if (decoded && decoded.sub) {
                 return {
                     id: decoded.sub as string,
@@ -40,7 +44,11 @@ export async function getUserFromRequest(req: NextRequest) {
 
     if (sessionToken) {
         try {
-            const decoded = await decode({ token: sessionToken, secret })
+            const decoded = await decode({
+                token: sessionToken,
+                secret,
+                salt: 'authjs.session-token'
+            })
             if (decoded && decoded.sub) {
                 return {
                     id: decoded.sub as string,

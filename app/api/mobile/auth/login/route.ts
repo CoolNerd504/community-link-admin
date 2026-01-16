@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
                 kycStatus: user.kycStatus,
             },
             secret,
+            salt: 'authjs.session-token',
             maxAge: 30 * 24 * 60 * 60, // 30 days
         })
 
