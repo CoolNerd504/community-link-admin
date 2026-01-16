@@ -336,7 +336,221 @@ This document details the exact API contracts, logical flows, and edge cases for
 - `APPROVED` - Verified (unlocks premium features)
 - `REJECTED` - Verification failed (user can resubmit)
 
-### B. Update Profile
+---
+
+### C. KYC Implementation Guide (Mobile)
+
+#### 1. After Login Check
+```javascript
+// In your AuthContext or post-login handler
+const handlePostLogin = async (user, token) => {
+  // Store auth data
+  await AsyncStorage.setItem('@auth_token', token);
+  await AsyncStorage.setItem('@user', JSON.stringify(user));
+  
+  // Check if KYC prompt should be shown
+  if (user.role === 'PROVIDER' && user.kycStatus === 'PENDING') {
+    const hasSeenKycPrompt = await AsyncStorage.getItem('@kyc_prompt_dismissed');
+    
+    if (!hasSeenKycPrompt) {
+      // Show one-time KYC prompt
+      showKycPromptModal();
+    }
+  }
+  
+  // Navigate to home/dashboard
+  navigation.navigate('Home');
+};
+```
+
+#### 2. KYC Prompt Modal Component
+```javascript
+const KycPromptModal = ({ visible, onDismiss, onComplete }) => {
+  const handleSkip = async () => {
+    // Mark as dismissed so it doesn't show again
+    await AsyncStorage.setItem('@kyc_prompt_dismissed', 'true');
+    onDismiss();
+  };
+
+  return (
+    <Modal visible={visible} animationType="slide">
+      <View style={styles.container}>
+        <Icon name="shield-check" size={64} color="#4CAF50" />
+        
+        <Text style={styles.title}>
+          Complete Your KYC
+        </Text>
+        
+        <Text style={styles.description}>
+          Verify your identity to unlock all features:
+          {'\n'}• Higher visibility in search
+          {'\n'}• Premium provider badge
+          {'\n'}• Access to advanced analytics
+        </Text>
+        
+        <Button 
+          title="Complete Now" 
+          onPress={onComplete}
+          style={styles.primaryButton}
+        />
+        
+        <TouchableOpacity onPress={handleSkip}>
+          <Text style={styles.skipButton}>Skip for Now</Text>
+        </TouchableOpacity>
+        
+        <Text style={styles.footnote}>
+          You can complete this anytime from your Profile
+        </Text>
+      </View>
+    </Modal>
+  );
+};
+```
+
+#### 3. Profile Tab KYC Section
+```javascript
+const ProfileScreen = () => {
+  const { user } = useAuth();
+  
+  const renderKycSection = () => {
+    if (user.role !== 'PROVIDER') return null;
+    
+    switch (user.kycStatus) {
+      case 'PENDING':
+        return (
+          <Card style={styles.kycCard}>
+            <Icon name="alert-circle" color="#FF9800" />
+            <Text>Complete KYC to unlock premium features</Text>
+            <Button 
+              title="Verify Now" 
+              onPress={() => navigation.navigate('KycUpload')}
+            />
+          </Card>
+        );
+      
+      case 'SUBMITTED':
+        return (
+          <Card style={styles.kycCard}>
+            <Icon name="clock" color="#2196F3" />
+            <Text>KYC verification in progress...</Text>
+          </Card>
+        );
+      
+      case 'APPROVED':
+        return (
+          <Card style={styles.kycCard}>
+            <Icon name="check-circle" color="#4CAF50" />
+            <Text>✓ Verified Provider</Text>
+          </Card>
+        );
+      
+      case 'REJECTED':
+        return (
+          <Card style={styles.kycCard}>
+            <Icon name="x-circle" color="#F44336" />
+            <Text>Verification failed. Please resubmit.</Text>
+            <Button 
+              title="Resubmit Documents" 
+              onPress={() => navigation.navigate('KycUpload')}
+            />
+          </Card>
+        );
+    }
+  };
+  
+  return (
+    <ScrollView>
+      {renderKycSection()}
+      {/* Rest of profile UI */}
+    </ScrollView>
+  );
+};
+```
+
+#### 4. KYC Upload Screen
+```javascript
+const KycUploadScreen = () => {
+  const [idFront, setIdFront] = useState(null);
+  const [idBack, setIdBack] = useState(null);
+  const [selfie, setSelfie] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      // Upload images to your storage (S3, Firebase, etc.)
+      const idFrontUrl = await uploadImage(idFront);
+      const idBackUrl = await uploadImage(idBack);
+      const selfieUrl = await uploadImage(selfie);
+      
+      // Submit to backend
+      const token = await AsyncStorage.getItem('@auth_token');
+      const response = await axios.post('/api/kyc/submit', {
+        idFront: idFrontUrl,
+        idBack: idBackUrl,
+        selfie: selfieUrl
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Update user in storage
+      const user = JSON.parse(await AsyncStorage.getItem('@user'));
+      user.kycStatus = 'SUBMITTED';
+      await AsyncStorage.setItem('@user', JSON.stringify(user));
+      
+      Alert.alert('Success', 'KYC documents submitted for review');
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to submit KYC documents');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Identity Verification</Text>
+      
+      <ImagePicker
+        label="ID Front"
+        value={idFront}
+        onChange={setIdFront}
+      />
+      
+      <ImagePicker
+        label="ID Back"
+        value={idBack}
+        onChange={setIdBack}
+      />
+      
+      <ImagePicker
+        label="Selfie with ID"
+        value={selfie}
+        onChange={setSelfie}
+      />
+      
+      <Button
+        title="Submit for Verification"
+        onPress={handleSubmit}
+        disabled={!idFront || !idBack || !selfie || loading}
+        loading={loading}
+      />
+    </ScrollView>
+  );
+};
+```
+
+**Implementation Checklist:**
+- [ ] Never block API calls based on KYC status
+- [ ] Show one-time modal after first login (if PENDING)
+- [ ] Store dismissal flag in AsyncStorage (`@kyc_prompt_dismissed`)
+- [ ] Always show KYC status/button in Profile tab
+- [ ] Explain benefits clearly ("unlock features" not "required")
+- [ ] Provide easy "Skip for Now" option
+
+---
+
+### D. Update Profile
 **Intent:** User updates bio/headline.
 **Endpoint:** `PATCH /api/profile/me`
 
