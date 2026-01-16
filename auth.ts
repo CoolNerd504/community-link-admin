@@ -22,39 +22,50 @@ export const config = {
                 password: { label: "Password", type: "password" },
             },
             authorize: async (credentials) => {
-                if (!credentials?.email || !credentials?.password) {
-                    return null
-                }
+                try {
+                    console.log("[Auth] Authorize called with:", { email: credentials?.email })
 
-                const email = credentials.email as string
-
-                // Find user by email
-                const user = await prisma.user.findUnique({
-                    where: { email },
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        image: true,
-                        password: true,
-                        role: true,
-                        username: true,
-                        kycStatus: true,
+                    if (!credentials?.email || !credentials?.password) {
+                        console.log("[Auth] Missing credentials")
+                        return null
                     }
-                })
 
-                if (!user || !user.password) {
-                    // Verify if we want to allow login failure or implicit registration? 
-                    // Usually login failure. Registration handles creation.
-                    return null
+                    const email = credentials.email as string
+
+                    // Find user by email
+                    const user = await prisma.user.findUnique({
+                        where: { email },
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            image: true,
+                            password: true,
+                            role: true,
+                            username: true,
+                            kycStatus: true,
+                        }
+                    })
+
+                    if (!user || !user.password) {
+                        console.log("[Auth] User not found or no password")
+                        return null
+                    }
+
+                    const isValid = await compare(credentials.password as string, user.password)
+
+                    if (!isValid) {
+                        console.log("[Auth] Invalid password")
+                        return null
+                    }
+
+                    // Return user object if valid
+                    console.log("[Auth] User authenticated:", user.id)
+                    return user
+                } catch (error) {
+                    console.error("[Auth] Authorize error:", error)
+                    throw error
                 }
-
-                const isValid = await compare(credentials.password as string, user.password)
-
-                if (!isValid) return null
-
-                // Return user object if valid
-                return user
             },
         }),
     ],
