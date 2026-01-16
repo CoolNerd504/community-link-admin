@@ -441,14 +441,91 @@ const searchProviders = async (query, filters) => {
 
 ---
 
-## 💰 5. Wallet & Payouts (Provider)
+---
+
+## 💰 5. Wallet & Minutes (Client & Provider)
+
+### A. Get Minute Packages (Client)
+**Intent:** List available minute packages for purchase.
+**Endpoint:** `GET /api/packages`
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": "pkg-001",
+    "name": "Starter Pack",
+    "minutes": 50,
+    "priceZMW": 100,
+    "discountPercent": 0,
+    "isPopular": false
+  },
+  {
+    "id": "pkg-002",
+    "name": "Value Pack",
+    "minutes": 100,
+    "priceZMW": 180,
+    "discountPercent": 10,
+    "isPopular": true
+  }
+]
+```
+
+### B. Purchase Minutes (Client)
+**Intent:** Buy a minute package.
+**Endpoint:** `POST /api/wallet/purchase`
+
+**Request Payload:**
+```json
+{
+  "packageId": "pkg-002",
+  "paymentMethod": "MOBILE_MONEY" // Optional, default 'MOBILE_MONEY'
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "pmt-123",
+  "packageName": "Value Pack",
+  "minutesPurchased": 100,
+  "paymentStatus": "COMPLETED",
+  "transactionRef": "REF-..."
+}
+```
+
+### C. Get Wallet Balance (Client & Provider)
+**Intent:** Check available minutes and transaction history.
+**Endpoint:** `GET /api/wallet`
+
+**Response (200 OK):**
+```json
+{
+  "id": "wallet-001",
+  "balance": 500, // Provider Cash Balance (if applicable)
+  "availableMinutes": 150, // Client Minute Balance
+  "totalMinutesPurchased": 200,
+  "minutePurchases": [
+    {
+      "id": "pmt-123",
+      "packageName": "Value Pack",
+      "minutesPurchased": 100,
+      "amount": 180,
+      "createdAt": "..."
+    }
+  ],
+  "formattedBalance": "ZMW 500.00"
+}
+```
+
+---
+
+## 💸 6. Payouts (Provider Only)
 
 ### A. Request Payout
-**Intent:** Withdraw earnings to bank/mobile money.
+**Intent:** Withdraw earnings.
 **Endpoint:** `POST /api/wallet/payout`
 
-#### Scenario 1: Successful Request
-**Pre-condition:** Balance >= Amount.
 **Request Payload:**
 ```json
 {
@@ -456,6 +533,7 @@ const searchProviders = async (query, filters) => {
   "bankDetails": "Airtel Money: 097-xxx-xxxx"
 }
 ```
+
 **Response (200 OK):**
 ```json
 {
@@ -463,15 +541,6 @@ const searchProviders = async (query, filters) => {
   "amount": 500.00,
   "status": "PENDING",
   "message": "Payout request submitted."
-}
-```
-
-#### Scenario 2: Insufficient Funds
-**Request:** Amount = 5000 (Balance = 100).
-**Response (400 Bad Request):**
-```json
-{
-  "message": "Insufficient funds. Available balance: 100.00"
 }
 ```
 
