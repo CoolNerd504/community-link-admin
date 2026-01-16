@@ -357,7 +357,45 @@ const searchProviders = async (query, filters) => {
 
 ## 📅 4. Booking Flow
 
-### A. Create Request (Client)
+### A. Get Bookings (User & Provider)
+**Intent:** Retrieve all bookings for the authenticated user.
+- **Client:** Shows bookings you requested.
+- **Provider:** Shows bookings requested for your services.
+- **Mixed:** Shows both if applicable.
+
+**Endpoint:** `GET /api/bookings`
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": "bk-789",
+    "status": "PENDING",
+    "requestedTime": "2026-01-20T14:00:00.000Z",
+    "notes": "Gate code is 1234",
+    "createdAt": "2026-01-16T12:00:00.000Z",
+    "service": {
+      "id": "svc-101",
+      "title": "Pipe Repair",
+      "price": 350,
+      "duration": 60,
+      "provider": {
+        "id": "prov-001",
+        "name": "Mario Bros",
+        "image": "...",
+        "role": "PROVIDER"
+      }
+    },
+    "client": {
+      "id": "user-001",
+      "name": "Sarah Connor",
+      "image": null
+    }
+  }
+]
+```
+
+### B. Create Request (Client)
 **Intent:** Client requests a session.
 **Endpoint:** `POST /api/bookings`
 
@@ -365,9 +403,8 @@ const searchProviders = async (query, filters) => {
 **Request Payload:**
 ```json
 {
-  "providerId": "prov-001",
   "serviceId": "svc-101",
-  "date": "2026-01-20T14:00:00Z", // ISO Date
+  "date": "2026-01-20T14:00:00Z", // ISO Date String
   "notes": "Gate code is 1234. Please bring own tools."
 }
 ```
@@ -376,12 +413,13 @@ const searchProviders = async (query, filters) => {
 {
   "id": "bk-789",
   "status": "PENDING",
+  "requestedTime": "2026-01-20T14:00:00.000Z",
   "service": { "title": "Pipe Repair" },
   "client": { "name": "Sarah Connor" }
 }
 ```
 
-### B. Respond to Request (Provider)
+### C. Respond to Request (Provider)
 **Intent:** Provider Accepts or Declines.
 **Endpoint:** `POST /api/bookings/{id}/respond`
 
@@ -389,7 +427,7 @@ const searchProviders = async (query, filters) => {
 **Request Payload:**
 ```json
 {
-  "status": "accepted" // Case sensitive enum: 'accepted', 'declined'
+  "status": "accepted" // "accepted" or "declined"
 }
 ```
 **Response (200 OK):**
