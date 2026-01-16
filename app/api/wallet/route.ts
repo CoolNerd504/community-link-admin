@@ -36,7 +36,11 @@ export async function GET(req: NextRequest) {
 
             // Create wallet if it doesn't exist (should have been created on register but safety check)
             const newWallet = await prisma.wallet.create({
-                data: { userId: user.id }
+                data: { userId: user.id },
+                include: {
+                    minutePurchases: true,
+                    minuteUsage: true
+                }
             })
             return NextResponse.json(newWallet)
         }

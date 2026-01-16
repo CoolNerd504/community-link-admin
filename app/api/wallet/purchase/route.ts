@@ -27,6 +27,11 @@ export async function POST(req: NextRequest) {
         // Ensure wallet exists
         let wallet = await prisma.wallet.findUnique({ where: { userId: user.id } })
         if (!wallet) {
+            // Verify user exists first to prevent FK constraint errors
+            const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
+            if (!dbUser) {
+                return NextResponse.json({ message: 'User account not found or stale token' }, { status: 401 })
+            }
             wallet = await prisma.wallet.create({ data: { userId: user.id } })
         }
 
