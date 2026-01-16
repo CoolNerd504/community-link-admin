@@ -3,23 +3,39 @@ import { useState } from "react"
 import { Button } from "../../../components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card"
 import { Badge } from "../../../components/ui/badge"
-import { 
-  Star, 
-  Users, 
-  Shield, 
-  Zap, 
-  Video, 
-  MessageCircle, 
-  Clock, 
+import {
+  Star,
+  Users,
+  Shield,
+  Zap,
+  Video,
+  MessageCircle,
+  Clock,
   MapPin,
   ArrowRight,
   CheckCircle,
-  Play
+  Play,
+  LayoutDashboard
 } from "lucide-react"
 import { AuthPage } from "./AuthPage"
+import { useAuth } from "../../../hooks/use-auth"
+import { useRouter } from "next/navigation"
 
 export function LandingPage() {
   const [showAuth, setShowAuth] = useState(false)
+  const { user, signOut } = useAuth()
+  const router = useRouter()
+
+  const getDashboardRoute = () => {
+    return "/dashboard"
+  }
+
+  const getDashboardLabel = () => {
+    if (!user) return "Dashboard"
+    if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") return "Admin Dashboard"
+    if (user.role === "PROVIDER") return "Provider Dashboard"
+    return "My Dashboard"
+  }
 
   if (showAuth) {
     return <AuthPage />
@@ -35,12 +51,33 @@ export function LandingPage() {
               <h1 className="text-2xl font-bold text-gray-900">CommLink</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => setShowAuth(true)}>
-                Sign In
-              </Button>
-              <Button onClick={() => setShowAuth(true)}>
-                Get Started
-              </Button>
+              {user ? (
+                <>
+                  <Button
+                    variant="ghost"
+                    onClick={() => router.push(getDashboardRoute())}
+                    className="flex items-center gap-2"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    {getDashboardLabel()}
+                  </Button>
+                  <Button onClick={() => router.push("/search")}>
+                    Find Providers
+                  </Button>
+                  <Button variant="ghost" onClick={() => signOut()}>
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="ghost" onClick={() => setShowAuth(true)}>
+                    Sign In
+                  </Button>
+                  <Button onClick={() => setShowAuth(true)}>
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -56,7 +93,7 @@ export function LandingPage() {
             Instantly
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            CommLink bridges the gap between clients and verified service providers through real-time voice calls, 
+            CommLink bridges the gap between clients and verified service providers through real-time voice calls,
             instant messaging, and secure payments.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -83,7 +120,7 @@ export function LandingPage() {
               Experience seamless connections with verified professionals across various services
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center">
               <CardHeader>
@@ -221,18 +258,18 @@ export function LandingPage() {
             Join thousands of users who are already connecting with verified service providers on CommLink.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              variant="secondary" 
+            <Button
+              size="lg"
+              variant="secondary"
               onClick={() => setShowAuth(true)}
               className="text-lg px-8 py-3"
             >
               Sign Up Now
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
+            <Button
+              size="lg"
+              variant="outline"
               onClick={() => setShowAuth(true)}
               className="text-lg px-8 py-3 border-white text-white hover:bg-white hover:text-blue-600"
             >

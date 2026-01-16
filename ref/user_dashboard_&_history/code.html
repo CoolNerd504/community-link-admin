@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Dashboard &amp; History - Professional Support</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="w-64 border-r border-[#f0f2f4] dark:border-gray-800 bg-white dark:bg-background-dark flex flex-col fixed h-full">
+<div class="p-6 flex flex-col gap-8">
+<div class="flex items-center gap-3">
+<div class="bg-primary rounded-lg size-10 flex items-center justify-center text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-[#111418] dark:text-white text-base font-bold leading-tight">ProSupport</h1>
+<p class="text-[#617589] dark:text-gray-400 text-xs font-normal">Marketplace</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined active-icon">dashboard</span>
+<p class="text-sm font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#617589] dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<p class="text-sm font-medium">Bookings</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#617589] dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+<p class="text-sm font-medium">History</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#617589] dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium">Settings</p>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-[#f0f2f4] dark:border-gray-800">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-cover bg-center" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCSheiLR-_S_Vk6Qag_TDKGinNF_xFEq_bRyi6pUop5AvGGt-qB2t8fT-L9BcSeJ39pADNSvDJ4qpT_ZH1GccbM9v9fP-BWHlKWXFF4iOhNlYip5Ktzg7YftTgyW68bC5EXHX_Epg-CHyMA9GJGUnUQsJ-1ZgVIrFv0vZnzY247Ttol13Q9LgvSvPqZWseyjTDh_64bDe6VczyYBH1YXFl9SkZA0uNgQWhS9SYbcNquXE-rHpdDdJ0ZjGi91aEVjxGLt5zno2GzkhM");'></div>
+<div class="flex flex-col">
+<p class="text-sm font-bold text-[#111418] dark:text-white">Alex Rivera</p>
+<p class="text-xs text-[#617589] dark:text-gray-400">Pro Member</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 ml-64">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between border-b border-[#f0f2f4] dark:border-gray-800 bg-white dark:bg-background-dark px-10 py-4 sticky top-0 z-10">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<h2 class="text-xl font-bold tracking-tight">User Dashboard</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-lg size-10 bg-[#f0f2f4] dark:bg-gray-800 text-[#111418] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-8 w-[1px] bg-[#f0f2f4] dark:bg-gray-800 mx-2"></div>
+<div class="flex items-center gap-3">
+<span class="text-sm font-medium text-[#111418] dark:text-white">Alex Rivera</span>
+<div class="size-10 rounded-full bg-cover bg-center border-2 border-primary/20" data-alt="Small circular profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDutgQTVBKKMuKGsq33yIDamtdRD-HAZOX2zfZF7XIwvGKc-MQBP1ZteyhRHFICIMnsUlLXQQcAFgpzL2-XIMqCs3Urs0Mtq1SMHbcbcXBaAD9LGeGL54murP7G7G1XVEV5xNBfBV5Uj_UWUwkPOxXpheRo870dM0AXlzY4PuatRa5omrTHczJWG7wvTGbuVxIp9__tdZDAjKxsOsj7aSJyP-prgGveFSI_dfk7M3ZKM6KGW-bQSIfDFsg6n9qY_YNQzhIhWLL0aqw");'></div>
+</div>
+</div>
+</header>
+<div class="p-10 max-w-6xl mx-auto space-y-10">
+<!-- Upcoming Sessions Section -->
+<section>
+<div class="flex items-center justify-between mb-6 px-4">
+<h2 class="text-[#111418] dark:text-white text-2xl font-bold tracking-tight">Upcoming Sessions</h2>
+<button class="text-primary text-sm font-semibold hover:underline">View all</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+<!-- Session Card 1 -->
+<div class="bg-white dark:bg-background-dark rounded-xl border border-[#f0f2f4] dark:border-gray-800 p-6 flex flex-col gap-5 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="size-16 rounded-full bg-cover bg-center border-4 border-[#f0f2f4] dark:border-gray-800" data-alt="Portrait of Sarah Jenkins mentor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAx8hNNE11YF0yceLGTVeNd2c5Pb9ptk5ZeeFXRZ3LjWusiA2Hoi0AtBBhDtLShyjMIiRW73VUjRMXypelrfKyF3AW6uw2k92khZHBSr49KMvePH1rnM_PJ8LM-4E_Ni4ynQOI21Ici5tMCnuL0gu_w80clZdQ2BV_2udvzxxVXz-ACuISjaMu9KBLOYcPp8ohWJKszJae1RwdOEeGqId5j73hmwHfFnnFpHEDzTXC18AIROpfVY9BlTFd3TcrBvFbvHKyuf8ckifk");'></div>
+<span class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs font-bold rounded-full">Confirmed</span>
+</div>
+<div>
+<h4 class="text-lg font-bold text-[#111418] dark:text-white">1:1 Strategy Session</h4>
+<p class="text-[#617589] dark:text-gray-400 text-sm">Sarah Jenkins • Senior Product Architect</p>
+<div class="flex items-center gap-2 mt-3 text-primary">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<p class="text-sm font-semibold">Today, 2:00 PM - 3:00 PM</p>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">videocam</span>
+                                Join Call
+                            </button>
+</div>
+<!-- Session Card 2 -->
+<div class="bg-white dark:bg-background-dark rounded-xl border border-[#f0f2f4] dark:border-gray-800 p-6 flex flex-col gap-5 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="size-16 rounded-full bg-cover bg-center border-4 border-[#f0f2f4] dark:border-gray-800" data-alt="Portrait of Michael Chen mentor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCmjcp64rBM_G1DiruR8zlpi7dGgsbL735wK7VQWN8uIdMYHQmRbxIJhj4uEC-IfFn5CYRm6IJAapcOY7NNsXXMwIaghsie23gJOR4RtTR1zUrCdlVrBVbIGLgIaJJQE-hzaLAiZ5y38lxtMLc-sRjX_tTdMLRbafQWb_eyOb1P3i_uhY_qDbmkIOg0NzyzDY0EN7cbJHaItKF7ml6p2r3GoPm31u028J1L5GxuwrEUbT2m0H_kkAku-Pd7yWu0wlzi41521xK7NsI");'></div>
+<span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Coming up</span>
+</div>
+<div>
+<h4 class="text-lg font-bold text-[#111418] dark:text-white">Career Mentorship</h4>
+<p class="text-[#617589] dark:text-gray-400 text-sm">Dr. Michael Chen • Career Coach</p>
+<div class="flex items-center gap-2 mt-3 text-[#617589] dark:text-gray-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<p class="text-sm font-semibold">Tomorrow, 10:00 AM</p>
+</div>
+</div>
+<button class="w-full bg-[#f0f2f4] dark:bg-gray-800 text-[#617589] dark:text-gray-300 font-bold py-3 rounded-lg cursor-not-allowed">
+                                Link Active in 18h
+                            </button>
+</div>
+<!-- Session Card 3 -->
+<div class="bg-white dark:bg-background-dark rounded-xl border border-[#f0f2f4] dark:border-gray-800 p-6 flex flex-col gap-5 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="size-16 rounded-full bg-cover bg-center border-4 border-[#f0f2f4] dark:border-gray-800" data-alt="Portrait of Elena Rodriguez mentor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBabQx6uKsquIw19c_ORNUy_kBWfU1t9k3kALLIv1Vwxo8tLYLMxhzE532ES8YKdlwBia9diSuzhzXJXilph6ldWy-pUKcvzMklw0KVk49_o3mCt7AMLOTcFr1CUZUjX9QlCHx71a7qurWx9NdZRYFyHBgMFBefODExKk1V7GJtKKmO6qVTCHSiFp1P4MWOxau15abvNkvwMi-65VOHuN9cW478_6OivemwMNOPtBfZbgR12WGS9yW16v_D6zwsSnVeWBZftp4DJ6Y");'></div>
+<span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Coming up</span>
+</div>
+<div>
+<h4 class="text-lg font-bold text-[#111418] dark:text-white">UX Design Review</h4>
+<p class="text-[#617589] dark:text-gray-400 text-sm">Elena Rodriguez • Senior Designer</p>
+<div class="flex items-center gap-2 mt-3 text-[#617589] dark:text-gray-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<p class="text-sm font-semibold">Oct 24, 4:30 PM</p>
+</div>
+</div>
+<button class="w-full bg-[#f0f2f4] dark:bg-gray-800 text-[#617589] dark:text-gray-300 font-bold py-3 rounded-lg cursor-not-allowed">
+                                Link Active in 3d
+                            </button>
+</div>
+</div>
+</section>
+<!-- Recent Activity Section -->
+<section>
+<div class="px-4 pb-4">
+<h3 class="text-[#111418] dark:text-white text-2xl font-bold tracking-tight">Recent Activity</h3>
+</div>
+<div class="mx-4 overflow-hidden rounded-xl border border-[#f0f2f4] dark:border-gray-800 bg-white dark:bg-background-dark shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-gray-50 dark:bg-gray-800/50 border-b border-[#f0f2f4] dark:border-gray-800">
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider">Session Service</th>
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider">Date</th>
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider">Provider</th>
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#f0f2f4] dark:divide-gray-800">
+<!-- Row 1 -->
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+<td class="px-6 py-4">
+<p class="text-sm font-bold text-[#111418] dark:text-white">Technical Interview Prep</p>
+<p class="text-xs text-[#617589] dark:text-gray-400">60 mins session</p>
+</td>
+<td class="px-6 py-4 text-sm text-[#111418] dark:text-gray-300">Oct 18, 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-6 rounded-full bg-cover bg-center" data-alt="Avatar of mentor Mark Thompson" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBanlSy7oehhsAM6BdGBjcMR7p6dcNulun6o8zChchcvDZtdtgFSdx5z77dRKNaD_yE6wSs12vsR6jVjT36_wK2xxDsebOnupYZBnmrfdwNNM15ASNpHsgE2DWpdTvx4b9HxRaiGZqdEHeNyOSCcf9Sbt70Ix4orDuFqQUZQqsAb4IFFEJ8scGEKVDed7OHjQyWf0GAK8L4zG11Wtlt-vKFsgHpl5k6HOBF9xlc5tJO3HBuCNtpFjXbeBL__vo9jZdmyc6mi3QMczg");'></div>
+<span class="text-sm text-[#111418] dark:text-gray-300">Mark Thompson</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-green-600 dark:text-green-400">
+<span class="size-1.5 rounded-full bg-green-600 dark:bg-green-400"></span>
+                                            Completed
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<a class="inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-blue-700" href="#">
+<span class="material-symbols-outlined text-base">download</span>
+                                            Download Receipt
+                                        </a>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+<td class="px-6 py-4">
+<p class="text-sm font-bold text-[#111418] dark:text-white">Resume Review</p>
+<p class="text-xs text-[#617589] dark:text-gray-400">30 mins session</p>
+</td>
+<td class="px-6 py-4 text-sm text-[#111418] dark:text-gray-300">Oct 15, 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-6 rounded-full bg-cover bg-center" data-alt="Avatar of mentor Emily Davis" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBdRgSqxvg6tdWr8wVB0HOnOln77KDxzSnRqCC4Zl6pgFzMtcyxsbP09amKQllTgiSSNRa8OqzqFN_Jjp6YcmTukvRXiQyAC8AeS2ZD5aCQ80Yob-zsflZU-eipOhIBR8A7ugrnYhZhcz7LCZZE3Uj4pLELT97haiFEvJVcdFlY_lOw8NVZRJ7uRaiPMHSZYA8r4xvRflWf1kyg4M1kp4eywiMK6ApFv7jA_7OWNfXCu8S_Ruk80HDY3uwwevqJCSZq9PtU0ahE7-Q");'></div>
+<span class="text-sm text-[#111418] dark:text-gray-300">Emily Davis</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-green-600 dark:text-green-400">
+<span class="size-1.5 rounded-full bg-green-600 dark:bg-green-400"></span>
+                                            Completed
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<a class="inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-blue-700" href="#">
+<span class="material-symbols-outlined text-base">download</span>
+                                            Download Receipt
+                                        </a>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+<td class="px-6 py-4">
+<p class="text-sm font-bold text-[#111418] dark:text-white">Leadership Coaching</p>
+<p class="text-xs text-[#617589] dark:text-gray-400">45 mins session</p>
+</td>
+<td class="px-6 py-4 text-sm text-[#111418] dark:text-gray-300">Oct 12, 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-6 rounded-full bg-cover bg-center" data-alt="Avatar of mentor James Wilson" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAbzwfAjPf8F0jiMMfzTrfcpzjhXUkEw194JMhIJN8f0VZaH3YejjoxjYcZKwEHFhso6waQgOTM85BrI2nFelnYEqAYuX3YYUN19YVvLE_bP48B02G1EbHB7LTL65aGzmyoneXy8iMkRKFzbkZUfUXwvZc-dcGNq-Th1o1V76XNOoks_UGsHEb-Y_6sh5Ozt2-6Jb32xhTXvW8Cq5kYIHK_3RzHQZDsEecMq2QCLHD62lYkqRgcvAZQAuK5byihUUzF1TbF70f2wJ8");'></div>
+<span class="text-sm text-[#111418] dark:text-gray-300">James Wilson</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400">
+<span class="size-1.5 rounded-full bg-gray-500 dark:bg-gray-400"></span>
+                                            Refunded
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<a class="inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-blue-700" href="#">
+<span class="material-symbols-outlined text-base">info</span>
+                                            View Details
+                                        </a>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-[#f0f2f4] dark:border-gray-800 text-center">
+<button class="text-sm font-bold text-[#617589] dark:text-gray-400 hover:text-primary transition-colors">
+                                Load more activity
+                            </button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>

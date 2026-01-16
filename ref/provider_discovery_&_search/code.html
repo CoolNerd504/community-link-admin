@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provider Discovery &amp; Search | MentorMarket</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .promoted-glow {
+            box-shadow: 0 0 15px -3px rgba(19, 127, 236, 0.3);
+            border: 1px solid rgba(19, 127, 236, 0.4);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111418] dark:text-white">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full bg-white dark:bg-[#1a242e] border-b border-solid border-[#f0f2f4] dark:border-gray-800">
+<div class="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"></path>
+</svg>
+</div>
+<h2 class="text-xl font-extrabold tracking-tight">MentorMarket</h2>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Find Mentors</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">How it Works</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Resources</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Messages</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold">
+                    Sign In
+                </button>
+<div class="size-10 rounded-full bg-cover bg-center border border-gray-200" data-alt="User profile avatar placeholder" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuADXgIRW6XrAa9xgmm9c2WHN_e4rqAtacgvgR7hAbrX5pFOuunOYkwxRN51EQpT73y0HK72hmqINJR-UgsY04udPn3_skIdC7JMN-bPUbnmWJJhKxQCfqdkp5drHf9FG1uEml7t5ABNtyATHsLEdEHFHy6j--kAw2hM5xOYek32VogIgnLUFHIXX52iryQpYe5b2P0UddludN9uS0qo29pq74cdbBK9CDn5ZPl_pkWR3c7CVf3KUjrwPikko_3Cd_RQfB-vZo_gZ84');">
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto px-6 py-8">
+<!-- Header & Top Search -->
+<div class="mb-8">
+<h1 class="text-4xl font-extrabold tracking-tight mb-2">Provider Discovery</h1>
+<p class="text-[#617589] dark:text-gray-400 text-lg">Browse 2,000+ top-rated professionals for mentorship and support</p>
+</div>
+<!-- Quick Filter Bar -->
+<div class="bg-white dark:bg-[#1a242e] p-4 rounded-xl shadow-sm border border-[#f0f2f4] dark:border-gray-800 flex flex-wrap gap-4 items-center mb-8">
+<div class="flex-1 min-w-[300px]">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#617589]">search</span>
+<input class="w-full pl-10 pr-4 h-12 bg-background-light dark:bg-background-dark border-none rounded-lg focus:ring-2 focus:ring-primary text-sm" placeholder="Search by name, skill, or industry" type="text"/>
+</div>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2 md:pb-0">
+<button class="flex h-10 shrink-0 items-center gap-2 rounded-lg bg-background-light dark:bg-background-dark px-4 hover:bg-primary/10 transition-colors">
+<span class="text-sm font-medium">Category</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center gap-2 rounded-lg bg-background-light dark:bg-background-dark px-4 hover:bg-primary/10 transition-colors">
+<span class="text-sm font-medium">Price Range</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center gap-2 rounded-lg bg-background-light dark:bg-background-dark px-4 hover:bg-primary/10 transition-colors">
+<span class="text-sm font-medium">Availability</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex h-10 items-center gap-2 rounded-lg bg-primary text-white px-6 hover:opacity-90 transition-opacity">
+<span class="text-sm font-bold">Search</span>
+</button>
+</div>
+</div>
+<div class="flex gap-8">
+<!-- Sidebar Filters -->
+<aside class="w-64 shrink-0 hidden lg:block">
+<div class="sticky top-24 space-y-8">
+<div>
+<h3 class="text-sm font-bold uppercase tracking-wider text-[#617589] mb-4">Experience Level</h3>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary w-5 h-5 border-gray-300" type="checkbox"/>
+<span class="text-sm font-medium group-hover:text-primary">Junior (1-3 yrs)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded text-primary focus:ring-primary w-5 h-5 border-gray-300" type="checkbox"/>
+<span class="text-sm font-medium group-hover:text-primary">Mid-Level (4-7 yrs)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary w-5 h-5 border-gray-300" type="checkbox"/>
+<span class="text-sm font-medium group-hover:text-primary">Senior (8+ yrs)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary w-5 h-5 border-gray-300" type="checkbox"/>
+<span class="text-sm font-medium group-hover:text-primary">Executive / Lead</span>
+</label>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-bold uppercase tracking-wider text-[#617589] mb-4">Rating</h3>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="text-primary focus:ring-primary w-5 h-5 border-gray-300" name="rating" type="radio"/>
+<div class="flex text-yellow-400">
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="material-symbols-outlined text-sm">star_half</span>
+<span class="text-xs text-[#617589] ml-1 mt-0.5">4.5 &amp; up</span>
+</div>
+</label>
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="text-primary focus:ring-primary w-5 h-5 border-gray-300" name="rating" type="radio"/>
+<div class="flex text-yellow-400">
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="material-symbols-outlined text-sm">star_outline</span>
+<span class="text-xs text-[#617589] ml-1 mt-0.5">4.0 &amp; up</span>
+</div>
+</label>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-bold uppercase tracking-wider text-[#617589] mb-4">Language</h3>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded text-primary focus:ring-primary w-5 h-5 border-gray-300" type="checkbox"/>
+<span class="text-sm font-medium group-hover:text-primary">English</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary w-5 h-5 border-gray-300" type="checkbox"/>
+<span class="text-sm font-medium group-hover:text-primary">Spanish</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded text-primary focus:ring-primary w-5 h-5 border-gray-300" type="checkbox"/>
+<span class="text-sm font-medium group-hover:text-primary">French</span>
+</label>
+</div>
+</div>
+</div>
+</aside>
+<!-- Results Section -->
+<div class="flex-1">
+<!-- Active Chips -->
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold flex items-center gap-1">
+                        Engineering <span class="material-symbols-outlined text-xs cursor-pointer">close</span>
+</span>
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold flex items-center gap-1">
+                        $50 - $150 <span class="material-symbols-outlined text-xs cursor-pointer">close</span>
+</span>
+<button class="text-xs font-bold text-[#617589] hover:text-primary underline">Clear All</button>
+</div>
+<!-- Provider Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Provider Card 1 (Promoted) -->
+<div class="bg-white dark:bg-[#1a242e] rounded-xl overflow-hidden promoted-glow transition-all hover:-translate-y-1 relative border border-primary/20">
+<div class="absolute top-3 left-3 z-10">
+<span class="px-2 py-1 bg-primary text-white text-[10px] font-extrabold rounded uppercase tracking-wider">Promoted</span>
+</div>
+<div class="h-48 w-full bg-cover bg-center" data-alt="Professional headshot of a female mentor" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAfNaJ8mJuv5e7zumGhZsx7wnLhCsZu5EJ1NsIhnU6gVuMlOoQrxvHH8sSZRLHkqMk3KG9PS1jgdiLAWHiqxhYRMjfBbNdjaiVxL0iE-2iZG4Hh3IbEwAj5RuzxspR9XU8g4i7hJ2qXNq1ZipZxrTy8weEwuXunJHtfuVzj1WrnTfIMOwJ47cTGR2Aeb62CAb01nEbhJIL3X87dEyjYKQIQVMkHLEdTxDZjXJK6W2MQqqn57889bnZcOR8QDF7oqRqDC7M52zVD5UM');">
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="flex items-center gap-1">
+<h3 class="font-bold text-lg">Sarah Jenkins</h3>
+<span class="material-symbols-outlined text-primary text-base" title="Verified">verified</span>
+</div>
+<p class="text-sm text-[#617589] dark:text-gray-400">Senior Product Designer @ Meta</p>
+</div>
+<div class="text-right">
+<div class="text-primary font-extrabold text-lg">$120</div>
+<div class="text-[10px] text-[#617589] uppercase font-bold">per session</div>
+</div>
+</div>
+<div class="flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-yellow-400 text-lg fill-1">star</span>
+<span class="font-bold text-sm">4.9</span>
+<span class="text-[#617589] text-xs">(128 reviews)</span>
+</div>
+<button class="w-full py-2.5 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition-opacity">View Profile</button>
+</div>
+</div>
+<!-- Provider Card 2 -->
+<div class="bg-white dark:bg-[#1a242e] rounded-xl overflow-hidden border border-[#f0f2f4] dark:border-gray-800 transition-all hover:shadow-lg hover:-translate-y-1">
+<div class="h-48 w-full bg-cover bg-center" data-alt="Professional headshot of a male mentor" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAx79Sr6RPD8VYptNjJfAl_Yfix-ULLchVEgFhxTAJZubX9e8bhhvRZ9HRktxP9tAJHnmCe_vu1s381uzQgzpLVfHRtyWw2iYFtiv8iblK7CIftwoGK66RpcrOA65yHXLJbN80WsO2sCwSb71dfs-c-TnTJGEFI2VXqpMz1F4nszoW30xIF3xHsoCIhJQP0Qc5IsUaQ3oktjMcbwMvxNy6-9vsHFkCxdTNtEiONiBkjQwrvZBsApHTRLI7MvPU0KoAjzh-Lrgdlj30');">
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="flex items-center gap-1">
+<h3 class="font-bold text-lg">David Chen</h3>
+<span class="material-symbols-outlined text-primary text-base">verified</span>
+</div>
+<p class="text-sm text-[#617589] dark:text-gray-400">Lead Software Engineer</p>
+</div>
+<div class="text-right">
+<div class="text-primary font-extrabold text-lg">$95</div>
+<div class="text-[10px] text-[#617589] uppercase font-bold">per session</div>
+</div>
+</div>
+<div class="flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-yellow-400 text-lg fill-1">star</span>
+<span class="font-bold text-sm">4.8</span>
+<span class="text-[#617589] text-xs">(84 reviews)</span>
+</div>
+<button class="w-full py-2.5 bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-bold rounded-lg border border-[#f0f2f4] dark:border-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">View Profile</button>
+</div>
+</div>
+<!-- Provider Card 3 -->
+<div class="bg-white dark:bg-[#1a242e] rounded-xl overflow-hidden border border-[#f0f2f4] dark:border-gray-800 transition-all hover:shadow-lg hover:-translate-y-1">
+<div class="h-48 w-full bg-cover bg-center" data-alt="Professional headshot of a female marketing expert" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBf-sZBPCxveYv_P7yQ_6sF2z8bI9gSgkqL3Vec01V2Dve_ojVWLGkKP7w_GSRjDdlvD6cjDFOJu4km8xkOARVsel3CI7dyRW8hEtTOaliwrQaYoBjYI9UO2brAqhmwt76oZJ_5S08_KGcPzFK9vpBBn1hXbVE1fTli2lE7sRRPRSTQGYXoEefTngAwVOTXE-M-tksPBGNoIMFmtTij2wMbKornMY_3zJRfMLeh42OcCDLwBBCdew2W9MKwirvW9bIrBGb9oXBSK4M');">
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="flex items-center gap-1">
+<h3 class="font-bold text-lg">Maria Rodriguez</h3>
+</div>
+<p class="text-sm text-[#617589] dark:text-gray-400">Marketing Strategy Director</p>
+</div>
+<div class="text-right">
+<div class="text-primary font-extrabold text-lg">$110</div>
+<div class="text-[10px] text-[#617589] uppercase font-bold">per session</div>
+</div>
+</div>
+<div class="flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-yellow-400 text-lg fill-1">star</span>
+<span class="font-bold text-sm">5.0</span>
+<span class="text-[#617589] text-xs">(42 reviews)</span>
+</div>
+<button class="w-full py-2.5 bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-bold rounded-lg border border-[#f0f2f4] dark:border-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">View Profile</button>
+</div>
+</div>
+<!-- Provider Card 4 -->
+<div class="bg-white dark:bg-[#1a242e] rounded-xl overflow-hidden border border-[#f0f2f4] dark:border-gray-800 transition-all hover:shadow-lg hover:-translate-y-1">
+<div class="h-48 w-full bg-cover bg-center" data-alt="Professional headshot of an executive coach" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAqviEoHCzNc_Pf67dJopYpLzoGsNnPkzoBvEzcUGaGGFtN3ZxAvyDi1mVVZ9IopS-S9QcGRofoLXF3QeYSu9eH0SO-ex7wIDuS0O-0RuuC1Epcou3Gu1Uw9N8SZQ_qwDBnXOWnvz70YgOx66Z_MFYR5Pxjmcq4ZUAFJMyWbRd7G3BN_WiuZJRX6IOXBmCuk4bqxvixGVfsNgtIeItTwfd9JzWWz1Gw1RgYc3WIHUHN7Y01US-4CV7j7_HVDAAf13N_GEftOIn8OEs');">
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="flex items-center gap-1">
+<h3 class="font-bold text-lg">James Wilson</h3>
+<span class="material-symbols-outlined text-primary text-base">verified</span>
+</div>
+<p class="text-sm text-[#617589] dark:text-gray-400">Executive Leadership Coach</p>
+</div>
+<div class="text-right">
+<div class="text-primary font-extrabold text-lg">$250</div>
+<div class="text-[10px] text-[#617589] uppercase font-bold">per session</div>
+</div>
+</div>
+<div class="flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-yellow-400 text-lg fill-1">star</span>
+<span class="font-bold text-sm">4.7</span>
+<span class="text-[#617589] text-xs">(210 reviews)</span>
+</div>
+<button class="w-full py-2.5 bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-bold rounded-lg border border-[#f0f2f4] dark:border-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">View Profile</button>
+</div>
+</div>
+<!-- Provider Card 5 -->
+<div class="bg-white dark:bg-[#1a242e] rounded-xl overflow-hidden border border-[#f0f2f4] dark:border-gray-800 transition-all hover:shadow-lg hover:-translate-y-1">
+<div class="h-48 w-full bg-cover bg-center" data-alt="Professional headshot of a UX researcher" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuChZLsjcJRcI3ttlVoNFSdDdqhe7zTsTjIaJJL1p-dk-OAtrJKiOmWDHZdlsH40Bfl3mYN9KwR-mgzskwEsx7uf1TkCFvhYdiJ_Qio2tstFkmR3kF6IBHrsjx1LT8AtWIx54I2fRsplfzrD5FqYY_uDjeTcwT_Z7Amn-t3WNI-c9Ck09h6Vsei3IZCS4DBMgmRXdW_GOsejxGWuautctOy_aamsRNGx6Ux8g-y1Y1_3I1zj37y1sE_E-CoRR2caLowCmwzlQyMH__s');">
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="flex items-center gap-1">
+<h3 class="font-bold text-lg">Elena Fischer</h3>
+</div>
+<p class="text-sm text-[#617589] dark:text-gray-400">Principal UX Researcher</p>
+</div>
+<div class="text-right">
+<div class="text-primary font-extrabold text-lg">$140</div>
+<div class="text-[10px] text-[#617589] uppercase font-bold">per session</div>
+</div>
+</div>
+<div class="flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-yellow-400 text-lg fill-1">star</span>
+<span class="font-bold text-sm">4.9</span>
+<span class="text-[#617589] text-xs">(67 reviews)</span>
+</div>
+<button class="w-full py-2.5 bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-bold rounded-lg border border-[#f0f2f4] dark:border-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">View Profile</button>
+</div>
+</div>
+<!-- Provider Card 6 -->
+<div class="bg-white dark:bg-[#1a242e] rounded-xl overflow-hidden border border-[#f0f2f4] dark:border-gray-800 transition-all hover:shadow-lg hover:-translate-y-1">
+<div class="h-48 w-full bg-cover bg-center" data-alt="Professional headshot of a data scientist" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCA5aKObXBSDxmVgoqI7xn3WKFBRYYxI5Rq9-FCs6DMkJJEGOdPQQkPZQ_8OgIroqXqBKA7mxPNiN9m-4__f0fTuMdd8npn2-twft_oBN3tSsY3QJ7oMATpYIWhpWYQYg4d3hN6DQ02lpEBkSqw9yhj6mWsJrLXNMsFl2SRV1WAtMMMdZkTh-xG06pRzu_HgDF5s_t5gFYO8JARLlqtF0HwQNgu3H6jmVpULpuZ09iJ48EnEvPeLA7MCGL1KjI8nxv-Wieo6zPx7Lc');">
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="flex items-center gap-1">
+<h3 class="font-bold text-lg">Marcus Thorne</h3>
+<span class="material-symbols-outlined text-primary text-base">verified</span>
+</div>
+<p class="text-sm text-[#617589] dark:text-gray-400">Data Science Manager</p>
+</div>
+<div class="text-right">
+<div class="text-primary font-extrabold text-lg">$130</div>
+<div class="text-[10px] text-[#617589] uppercase font-bold">per session</div>
+</div>
+</div>
+<div class="flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-yellow-400 text-lg fill-1">star</span>
+<span class="font-bold text-sm">4.6</span>
+<span class="text-[#617589] text-xs">(19 reviews)</span>
+</div>
+<button class="w-full py-2.5 bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-bold rounded-lg border border-[#f0f2f4] dark:border-gray-700 hover:bg-primary/10 hover:text-primary transition-colors">View Profile</button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex justify-center items-center gap-4">
+<button class="p-2 rounded-lg bg-white dark:bg-[#1a242e] border border-[#f0f2f4] dark:border-gray-800 hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex gap-2">
+<button class="size-10 rounded-lg bg-primary text-white font-bold text-sm">1</button>
+<button class="size-10 rounded-lg bg-white dark:bg-[#1a242e] border border-[#f0f2f4] dark:border-gray-800 font-bold text-sm hover:border-primary transition-colors">2</button>
+<button class="size-10 rounded-lg bg-white dark:bg-[#1a242e] border border-[#f0f2f4] dark:border-gray-800 font-bold text-sm hover:border-primary transition-colors">3</button>
+<span class="flex items-center px-1">...</span>
+<button class="size-10 rounded-lg bg-white dark:bg-[#1a242e] border border-[#f0f2f4] dark:border-gray-800 font-bold text-sm hover:border-primary transition-colors">12</button>
+</div>
+<button class="p-2 rounded-lg bg-white dark:bg-[#1a242e] border border-[#f0f2f4] dark:border-gray-800 hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-white dark:bg-[#1a242e] border-t border-[#f0f2f4] dark:border-gray-800 mt-16 py-12">
+<div class="max-w-[1440px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-3 mb-4">
+<div class="size-6 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"></path>
+</svg>
+</div>
+<span class="font-extrabold text-lg">MentorMarket</span>
+</div>
+<p class="text-sm text-[#617589] dark:text-gray-400">Empowering professional growth through accessible, high-quality mentorship and support.</p>
+</div>
+<div>
+<h4 class="font-bold mb-4">Explore</h4>
+<ul class="space-y-2 text-sm text-[#617589] dark:text-gray-400">
+<li><a class="hover:text-primary" href="#">Find a Mentor</a></li>
+<li><a class="hover:text-primary" href="#">Become a Mentor</a></li>
+<li><a class="hover:text-primary" href="#">Pricing</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-4">Support</h4>
+<ul class="space-y-2 text-sm text-[#617589] dark:text-gray-400">
+<li><a class="hover:text-primary" href="#">Help Center</a></li>
+<li><a class="hover:text-primary" href="#">Safety</a></li>
+<li><a class="hover:text-primary" href="#">Contact Us</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-4">Newsletter</h4>
+<div class="flex gap-2">
+<input class="flex-1 rounded-lg border-[#f0f2f4] dark:border-gray-700 bg-background-light dark:bg-background-dark text-sm" placeholder="Your email" type="email"/>
+<button class="bg-primary text-white px-4 rounded-lg font-bold text-sm">Join</button>
+</div>
+</div>
+</div>
+<div class="max-w-[1440px] mx-auto px-6 border-t border-[#f0f2f4] dark:border-gray-800 mt-8 pt-8 text-center text-xs text-[#617589]">
+            © 2024 MentorMarket. All rights reserved.
+        </div>
+</footer>
+</body></html>

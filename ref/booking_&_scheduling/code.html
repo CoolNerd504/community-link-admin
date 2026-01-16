@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking &amp; Scheduling - MentorMarket</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111418] dark:text-white">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-solid border-[#e5e7eb] dark:border-[#2d394a] bg-white dark:bg-[#111418] px-4 lg:px-40 py-3">
+<div class="flex items-center justify-between whitespace-nowrap max-w-[1280px] mx-auto">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold tracking-tight">MentorMarket</h2>
+</div>
+<div class="flex items-center gap-8">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Find Mentors</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">My Bookings</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Messages</a>
+</nav>
+<div class="rounded-full size-10 bg-cover bg-center border border-gray-200 dark:border-gray-700" data-alt="Professional user profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBRPyD4NSeY-ThxmiRgUb9UxCLL2vB0w0hpm_gtOjHlx_zaMJSrZmffIko6d_lOdssU7p0j7GLb4LvE_sUhZneUX8DYZiMMhlDr0mNVCwWruoSHW_EvVEKlhG7GHGBLpE5j7iCMPKYO-0H8iYMlWHEAoU2sFPhpgemV4etSgLxsEziZlwa7ph9j721QponjRnHmE040_D9JSK1Ua-J06PgMMZSdtkdKqd-ttvZ8vzxxSSpjbGIwjHSaDUKY9TKgStcHB0YJxwEVimo")'></div>
+</div>
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto px-4 lg:px-40 py-8">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 mb-6">
+<a class="text-[#617589] dark:text-gray-400 text-sm font-medium hover:text-primary" href="#">Find Mentors</a>
+<span class="text-[#617589] dark:text-gray-400 text-sm">/</span>
+<a class="text-[#617589] dark:text-gray-400 text-sm font-medium hover:text-primary" href="#">Dr. Sarah Jenkins</a>
+<span class="text-[#617589] dark:text-gray-400 text-sm">/</span>
+<span class="text-primary text-sm font-semibold">Schedule Session</span>
+</div>
+<!-- Page Heading -->
+<div class="mb-10">
+<h1 class="text-4xl font-black tracking-tight mb-2">Book a Session</h1>
+<p class="text-[#617589] dark:text-gray-400 text-lg">Select your preferred date and time for a mentorship session with Dr. Sarah Jenkins.</p>
+</div>
+<!-- Booking Interface Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+<!-- Left: Calendar Column -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="bg-white dark:bg-[#1a2633] p-6 rounded-xl border border-gray-200 dark:border-[#2d394a] shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<p class="text-lg font-bold">October 2023</p>
+<button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<div class="grid grid-cols-7 text-center mb-2">
+<span class="text-xs font-bold text-gray-400 uppercase">S</span>
+<span class="text-xs font-bold text-gray-400 uppercase">M</span>
+<span class="text-xs font-bold text-gray-400 uppercase">T</span>
+<span class="text-xs font-bold text-gray-400 uppercase">W</span>
+<span class="text-xs font-bold text-gray-400 uppercase">T</span>
+<span class="text-xs font-bold text-gray-400 uppercase">F</span>
+<span class="text-xs font-bold text-gray-400 uppercase">S</span>
+</div>
+<div class="grid grid-cols-7 gap-1">
+<!-- Empty start days -->
+<div class="h-10"></div><div class="h-10"></div><div class="h-10"></div>
+<!-- Days -->
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">1</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">2</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">3</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">4</button>
+<!-- Selected Day -->
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg bg-primary text-white font-bold">5</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">6</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">7</button>
+<!-- Rest of the month simplified -->
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">8</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">9</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg text-gray-300 dark:text-gray-600 cursor-not-allowed">10</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">11</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">12</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">13</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">14</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">15</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">16</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg bg-primary/10 text-primary font-bold">17</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">18</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">19</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">20</button>
+<button class="h-10 w-full flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">21</button>
+</div>
+</div>
+<div class="flex items-start gap-3 p-4 bg-primary/5 rounded-xl border border-primary/20">
+<span class="material-symbols-outlined text-primary">info</span>
+<p class="text-sm leading-relaxed text-[#111418] dark:text-gray-300">
+                        Dates with a <span class="font-bold text-primary">blue dot</span> indicate Sarah's high-availability days.
+                    </p>
+</div>
+</div>
+<!-- Right: Time Slots and Configuration -->
+<div class="lg:col-span-8 flex flex-col gap-8">
+<!-- Time Selection Section -->
+<div>
+<h3 class="text-xl font-bold mb-4">Available on Thursday, Oct 5</h3>
+<p class="text-sm text-gray-500 mb-6 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                        Times are shown in your local timezone: <span class="font-semibold">America/Los_Angeles (GMT-7)</span>
+</p>
+<div class="space-y-6">
+<div>
+<p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Morning</p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<button class="py-3 px-4 rounded-lg border border-gray-200 dark:border-[#2d394a] bg-white dark:bg-[#1a2633] text-sm font-medium hover:border-primary hover:text-primary transition-all">09:00 AM</button>
+<button class="py-3 px-4 rounded-lg border border-gray-200 dark:border-[#2d394a] bg-white dark:bg-[#1a2633] text-sm font-medium hover:border-primary hover:text-primary transition-all">10:00 AM</button>
+<button class="py-3 px-4 rounded-lg border border-primary bg-primary text-white text-sm font-bold shadow-md">11:30 AM</button>
+<button class="py-3 px-4 rounded-lg border border-gray-200 dark:border-[#2d394a] bg-white dark:bg-[#1a2633] text-sm font-medium opacity-40 cursor-not-allowed">12:00 PM</button>
+</div>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Afternoon</p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<button class="py-3 px-4 rounded-lg border border-gray-200 dark:border-[#2d394a] bg-white dark:bg-[#1a2633] text-sm font-medium hover:border-primary hover:text-primary transition-all">01:30 PM</button>
+<button class="py-3 px-4 rounded-lg border border-gray-200 dark:border-[#2d394a] bg-white dark:bg-[#1a2633] text-sm font-medium hover:border-primary hover:text-primary transition-all">02:00 PM</button>
+<button class="py-3 px-4 rounded-lg border border-gray-200 dark:border-[#2d394a] bg-white dark:bg-[#1a2633] text-sm font-medium hover:border-primary hover:text-primary transition-all">03:30 PM</button>
+<button class="py-3 px-4 rounded-lg border border-gray-200 dark:border-[#2d394a] bg-white dark:bg-[#1a2633] text-sm font-medium hover:border-primary hover:text-primary transition-all">04:00 PM</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Session Type Configuration -->
+<div class="bg-white dark:bg-[#1a2633] p-6 rounded-xl border border-gray-200 dark:border-[#2d394a]">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-bold text-lg">Group Session</h4>
+<span class="bg-green-100 text-green-700 text-[10px] font-black uppercase px-1.5 py-0.5 rounded">Save 20%</span>
+</div>
+<p class="text-sm text-gray-500">Invite up to 2 colleagues to join your session at a discounted rate.</p>
+</div>
+<div class="flex items-center gap-4">
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+<!-- Participant Dropdown (Visible when group is toggled) -->
+<div class="min-w-[140px]">
+<select class="w-full bg-background-light dark:bg-background-dark border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium focus:ring-primary focus:border-primary">
+<option>2 Participants</option>
+<option selected="">3 Participants</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Summary & CTA Section -->
+<div class="bg-[#111418] text-white p-8 rounded-xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-gray-800">
+<div class="flex items-center gap-4">
+<div class="rounded-lg size-16 bg-cover bg-center border-2 border-primary/30" data-alt="Professional portrait of mentor Sarah Jenkins" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAYjkf1QuozsK7AS1L7o8TgMO9nJ14V16mlH1uxegjuWXhfjOgwpxVAXAwXwy7eabU3_-Jg27Dmpgu8VW8FicsJA-Do4H-KKGKZhBxssdVStfsxh5wSDTgyAYuJw7kunuFFAOc6v9gsMvCZHMg8ByNyo22wY1xAju6eTjYlw3DMOZloAOZG4vlkKJpIOVw0fgaz6XirZyU863o7ehLGuGGGO3rJvIqkO2uOklg1A47ezRcsmo0G4KTouGPbyxddJB68wOCbCqMb23I")'></div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-primary mb-1">Booking Summary</p>
+<h5 class="text-xl font-bold">Dr. Sarah Jenkins</h5>
+<p class="text-gray-400 text-sm">Thursday, October 5 • 11:30 AM (60 min)</p>
+<p class="text-gray-400 text-xs mt-1">Group Session (3 participants)</p>
+</div>
+</div>
+<div class="flex flex-col items-center md:items-end gap-3 w-full md:w-auto">
+<div class="text-right">
+<p class="text-2xl font-black">$145.00</p>
+<p class="text-xs text-gray-500 line-through">$180.00 Total</p>
+</div>
+<button class="w-full md:w-auto px-10 py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2">
+                            Confirm &amp; Continue
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-20 border-t border-gray-200 dark:border-[#2d394a] py-10 px-4 lg:px-40">
+<div class="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
+<p>© 2023 MentorMarket. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Help Center</a>
+</div>
+</div>
+</footer>
+</body></html>

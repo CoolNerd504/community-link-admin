@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provider Wallet &amp; Earnings Dashboard</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f66bd",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen text-[#111418] dark:text-white">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#dbe0e6] dark:border-[#2d394a] bg-white dark:bg-[#1a2634] px-10 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">ProMarketplace</h2>
+</div>
+<label class="flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-[#617589] flex border-none bg-[#f0f2f4] dark:bg-[#2d394a] items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f2f4] dark:bg-[#2d394a] h-full placeholder:text-[#617589] px-4 rounded-l-none pl-2 text-base font-normal leading-normal" placeholder="Search transactions..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-9">
+<a class="text-[#111418] dark:text-[#a0acba] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-[#111418] dark:text-[#a0acba] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Mentorships</a>
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary py-1" href="#">Wallet</a>
+<a class="text-[#111418] dark:text-[#a0acba] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Settings</a>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-[#dbe0e6] dark:border-[#2d394a]" data-alt="Professional portrait of a service provider" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAQzIrju0a642Hn883EzUPZXyIwV27DQb-9HwrXINu6Z2Z39cxo4M28s926RFEZReOKU_jBt0Mybpr6cxG7MzAQJBd1HNC6pyDiLLHCS8s0HHiSCoIwpkglQVwgtkgzoyw05LPvIwHLkLNzC2dXWx9jtVGxQGAwnwX6thnHxplKruUzVVOeXYG9Yg0sc6vadr2uiSmoInd8yqTK2MmWKl1cGqltjTA7nAzp96-xQ9EFwhisWww9iYhafEmiE1_peS4k_V0Dghx1Q80");'></div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-6 py-8">
+<!-- Page Heading & Primary Action -->
+<div class="flex flex-wrap justify-between items-end gap-3 mb-8">
+<div class="flex flex-col gap-2">
+<h1 class="text-[#111418] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Wallet &amp; Earnings</h1>
+<p class="text-[#617589] dark:text-[#a0acba] text-base font-normal leading-normal">Last updated: 5 minutes ago</p>
+</div>
+<div class="flex gap-3">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+<span class="material-symbols-outlined mr-2">payments</span>
+<span class="truncate">Request Withdrawal</span>
+</button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-[#1a2634] border border-[#dbe0e6] dark:border-[#2d394a] shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<p class="text-[#617589] dark:text-[#a0acba] text-sm font-semibold uppercase tracking-wider">Current Balance</p>
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+</div>
+<p class="text-[#111418] dark:text-white tracking-tight text-3xl font-bold leading-tight">$3,450.00</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[#078838] text-sm">trending_up</span>
+<p class="text-[#078838] text-sm font-bold leading-normal">+12.4% from last month</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-[#1a2634] border border-[#dbe0e6] dark:border-[#2d394a] shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<p class="text-[#617589] dark:text-[#a0acba] text-sm font-semibold uppercase tracking-wider">Pending Clearances</p>
+<span class="material-symbols-outlined text-[#617589]">schedule</span>
+</div>
+<p class="text-[#111418] dark:text-white tracking-tight text-3xl font-bold leading-tight">$820.50</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[#617589] text-sm">info</span>
+<p class="text-[#617589] dark:text-[#a0acba] text-sm font-medium leading-normal">Clearing in 2-3 business days</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-[#1a2634] border border-[#dbe0e6] dark:border-[#2d394a] shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<p class="text-[#617589] dark:text-[#a0acba] text-sm font-semibold uppercase tracking-wider">Total Earned</p>
+<span class="material-symbols-outlined text-[#078838]">monetization_on</span>
+</div>
+<p class="text-[#111418] dark:text-white tracking-tight text-3xl font-bold leading-tight">$18,940.00</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[#078838] text-sm">expand_less</span>
+<p class="text-[#078838] text-sm font-bold leading-normal">+15% overall growth</p>
+</div>
+</div>
+</div>
+<!-- Earnings Overview Section -->
+<div class="bg-white dark:bg-[#1a2634] rounded-xl border border-[#dbe0e6] dark:border-[#2d394a] shadow-sm mb-8 overflow-hidden">
+<div class="flex flex-wrap justify-between items-center px-6 pt-6 pb-2">
+<h2 class="text-[#111418] dark:text-white text-xl font-bold">Earnings Overview</h2>
+<div class="flex border-b border-[#dbe0e6] dark:border-[#2d394a] gap-6">
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#617589] dark:text-[#a0acba] pb-[10px] pt-2" href="#">
+<p class="text-xs font-bold uppercase tracking-wider">7D</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary text-primary pb-[10px] pt-2" href="#">
+<p class="text-xs font-bold uppercase tracking-wider">30D</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#617589] dark:text-[#a0acba] pb-[10px] pt-2" href="#">
+<p class="text-xs font-bold uppercase tracking-wider">12M</p>
+</a>
+</div>
+</div>
+<!-- Mock Line Graph Representation -->
+<div class="px-6 py-6 h-64 flex flex-col justify-between">
+<div class="flex-1 flex items-end gap-2 px-2 relative border-b border-l border-[#f0f2f4] dark:border-[#2d394a]">
+<!-- Chart Bars/Points Mockup -->
+<div class="absolute bottom-10 left-0 right-0 h-24 bg-gradient-to-t from-primary/10 to-transparent pointer-events-none"></div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full h-20 bg-primary/20 group-hover:bg-primary transition-colors rounded-t-sm relative">
+<div class="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded shadow-xl whitespace-nowrap">$420</div>
+</div>
+<span class="text-[10px] text-[#617589] mt-2">Oct 01</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full h-32 bg-primary/20 group-hover:bg-primary transition-colors rounded-t-sm relative"></div>
+<span class="text-[10px] text-[#617589] mt-2">Oct 07</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full h-24 bg-primary/20 group-hover:bg-primary transition-colors rounded-t-sm relative"></div>
+<span class="text-[10px] text-[#617589] mt-2">Oct 14</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full h-44 bg-primary/20 group-hover:bg-primary transition-colors rounded-t-sm relative"></div>
+<span class="text-[10px] text-[#617589] mt-2">Oct 21</span>
+</div>
+<div class="flex-1 flex flex-col items-center group">
+<div class="w-full h-36 bg-primary/20 group-hover:bg-primary transition-colors rounded-t-sm relative"></div>
+<span class="text-[10px] text-[#617589] mt-2">Oct 28</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Transaction History Table -->
+<div class="bg-white dark:bg-[#1a2634] rounded-xl border border-[#dbe0e6] dark:border-[#2d394a] shadow-sm overflow-hidden">
+<div class="px-6 py-5 border-b border-[#dbe0e6] dark:border-[#2d394a] flex justify-between items-center">
+<h2 class="text-[#111418] dark:text-white text-lg font-bold">Transaction History</h2>
+<button class="text-sm text-primary font-bold hover:underline">Download CSV</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-background-light dark:bg-[#141d28]">
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589] dark:text-[#a0acba]">Transaction ID</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589] dark:text-[#a0acba]">Date</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589] dark:text-[#a0acba]">Details</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#617589] dark:text-[#a0acba]">Status</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right text-[#617589] dark:text-[#a0acba]">Amount</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#dbe0e6] dark:divide-[#2d394a]">
+<tr class="hover:bg-[#f8fafc] dark:hover:bg-[#212d3b] transition-colors">
+<td class="px-6 py-4 text-sm font-medium">#TR-89234</td>
+<td class="px-6 py-4 text-sm text-[#617589] dark:text-[#a0acba]">Oct 24, 2023</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Mentorship Session: UX Career Path</span>
+<span class="text-xs text-[#617589]">Client: Alex Thompson</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Completed</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-right text-primary">+$150.00</td>
+</tr>
+<tr class="hover:bg-[#f8fafc] dark:hover:bg-[#212d3b] transition-colors">
+<td class="px-6 py-4 text-sm font-medium">#TR-89211</td>
+<td class="px-6 py-4 text-sm text-[#617589] dark:text-[#a0acba]">Oct 22, 2023</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Withdrawal to Bank</span>
+<span class="text-xs text-[#617589]">Ending in 4421</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Processing</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-right">-$1,200.00</td>
+</tr>
+<tr class="hover:bg-[#f8fafc] dark:hover:bg-[#212d3b] transition-colors">
+<td class="px-6 py-4 text-sm font-medium">#TR-89190</td>
+<td class="px-6 py-4 text-sm text-[#617589] dark:text-[#a0acba]">Oct 21, 2023</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Portfolio Review Package</span>
+<span class="text-xs text-[#617589]">Client: Sarah Miller</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Completed</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-right text-primary">+$280.00</td>
+</tr>
+<tr class="hover:bg-[#f8fafc] dark:hover:bg-[#212d3b] transition-colors">
+<td class="px-6 py-4 text-sm font-medium">#TR-89155</td>
+<td class="px-6 py-4 text-sm text-[#617589] dark:text-[#a0acba]">Oct 19, 2023</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Platform Service Fee</span>
+<span class="text-xs text-[#617589]">Monthly subscription</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">Completed</span>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-right">-$29.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 border-t border-[#dbe0e6] dark:border-[#2d394a] flex justify-center">
+<button class="text-sm font-bold text-[#617589] dark:text-[#a0acba] hover:text-primary transition-colors">View All Transactions</button>
+</div>
+</div>
+</main>
+<!-- Slide-over / Modal Overlay (Simplified Withdrawal Form) -->
+<!-- In a real app, this would be hidden by default -->
+<div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex justify-end transition-opacity overflow-hidden pointer-events-none opacity-0">
+<!-- Withdrawal Form Container -->
+<div class="w-full max-w-md bg-white dark:bg-[#1a2634] h-full shadow-2xl flex flex-col pointer-events-auto translate-x-full transition-transform">
+<div class="p-6 border-b border-[#dbe0e6] dark:border-[#2d394a] flex justify-between items-center">
+<h3 class="text-xl font-bold">Request Withdrawal</h3>
+<button class="material-symbols-outlined text-[#617589] hover:text-black dark:hover:text-white">close</button>
+</div>
+<div class="p-6 flex flex-col gap-6">
+<div>
+<label class="block text-sm font-bold mb-2">Withdrawal Amount</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-lg">$</span>
+<input class="w-full pl-8 pr-4 py-3 rounded-lg border border-[#dbe0e6] dark:border-[#2d394a] dark:bg-[#2d394a] focus:ring-2 focus:ring-primary focus:border-primary outline-none text-lg font-bold" type="number" value="1000.00"/>
+</div>
+<p class="text-xs text-[#617589] mt-2">Available for withdrawal: <span class="font-bold text-primary">$3,450.00</span></p>
+</div>
+<div>
+<label class="block text-sm font-bold mb-2">Payout Method</label>
+<div class="space-y-3">
+<label class="flex items-center gap-3 p-4 rounded-lg border-2 border-primary bg-primary/5 cursor-pointer">
+<input checked="" class="text-primary focus:ring-primary" name="payout" type="radio"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold">Direct Bank Transfer</span>
+<span class="text-xs text-[#617589]">Chase Bank ****4421</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-primary">account_balance</span>
+</label>
+<label class="flex items-center gap-3 p-4 rounded-lg border border-[#dbe0e6] dark:border-[#2d394a] cursor-pointer hover:bg-[#f8fafc] dark:hover:bg-[#212d3b]">
+<input class="text-primary focus:ring-primary" name="payout" type="radio"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold">PayPal</span>
+<span class="text-xs text-[#617589]">m.provider@email.com</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-[#617589]">credit_card</span>
+</label>
+</div>
+</div>
+<div class="mt-auto pt-6 flex flex-col gap-3">
+<div class="flex justify-between text-sm">
+<span class="text-[#617589]">Processing Fee (0%)</span>
+<span class="font-bold">$0.00</span>
+</div>
+<div class="flex justify-between text-lg font-bold">
+<span>Total to Receive</span>
+<span class="text-primary">$1,000.00</span>
+</div>
+<button class="w-full bg-primary text-white font-bold py-4 rounded-lg hover:bg-primary/90 mt-4 shadow-lg shadow-primary/20 transition-all">
+                        Confirm Withdrawal
+                    </button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

@@ -24,7 +24,11 @@ import {
   respondToBookingRequestAction
 } from "../../../app/actions"
 // Data/Schema imports if needed
+// Data/Schema imports if needed
 import { sampleGroups, sampleBookingRequests } from "../shared/data"
+import { KycUploadFlow } from "./KycUploadFlow"
+import { WalletPage } from "../wallet/WalletPage"
+import { CheckCircle, XCircle, AlertCircle, Clock, Calendar, DollarSign, Users, TrendingUp, Plus, Edit, Trash2, LogOut } from "lucide-react"
 
 export function ProviderDashboard({ currentUser }: { currentUser: any }) {
   const router = useRouter()
@@ -61,7 +65,35 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
 
         setIsLoadingServices(true)
         const services = await getProviderServicesAction(authUser.id)
-        setProviderServices(services)
+        // Map services to ensure all expected UI fields exist (handling potential nulls from DB/Schema)
+        const formattedServices = services.map((s: any) => ({
+          ...s,
+          analytics: s.analytics || {
+            sessionsCompleted: 0,
+            totalEarnings: 0,
+            averageRating: 0,
+            reviewCount: 0
+          },
+          availability: s.availability || {
+            schedule: {
+              monday: { start: "09:00", end: "17:00", isAvailable: true },
+              tuesday: { start: "09:00", end: "17:00", isAvailable: true },
+              wednesday: { start: "09:00", end: "17:00", isAvailable: true },
+              thursday: { start: "09:00", end: "17:00", isAvailable: true },
+              friday: { start: "09:00", end: "17:00", isAvailable: true },
+              saturday: { start: "10:00", end: "15:00", isAvailable: false },
+              sunday: { start: "10:00", end: "15:00", isAvailable: false }
+            }
+          },
+          portfolio: s.portfolio || {
+            images: [],
+            videos: [],
+            documents: [],
+            testimonials: []
+          },
+          skills: s.skills || [] // Ensure skills is an array
+        }))
+        setProviderServices(formattedServices)
         console.log("Services loaded from DB")
       } catch (error) {
         console.error("Error fetching services:", error)
@@ -74,7 +106,7 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
   }, [authUser])
 
   // Bookings state
-  const [bookingRequests, setBookingRequests] = useState<any[]>(sampleBookingRequests)
+  const [bookingRequests, setBookingRequests] = useState<any[]>([])
 
   // Group management state
   const [groups, setGroups] = useState<any[]>(sampleGroups.filter(group => group.createdBy === "1"))
@@ -86,15 +118,14 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
 
   // Load instant booking requests from DB
   useEffect(() => {
-    const fetchInstantBookingRequests = async () => {
+    const fetchBookingRequests = async () => {
       try {
         if (!authUser?.id) return
 
         setIsLoadingRequests(true)
         const requests = await getProviderBookingRequestsAction(authUser.id)
 
-        // Map DB requests to UI format if needed
-        // Assuming requests are usable as is or mapping happens here
+        // Format requests
         const formattedRequests = requests.map(req => ({
           ...req,
           clientName: "Client " + req.clientId.substring(0, 4), // TODO: Fetch client details
@@ -103,10 +134,16 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
           duration: req.service.duration,
           preferredContactMethod: "video_call", // fallback
           urgency: "medium", // fallback
-          // message: req.notes
+          date: req.requestedTime ? new Date(req.requestedTime).toLocaleDateString() : 'N/A',
+          time: req.requestedTime ? new Date(req.requestedTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'
         }))
 
-        setInstantBookingRequests(formattedRequests)
+        // Separate Instant vs Scheduled
+        const instant = formattedRequests.filter(req => !req.requestedTime)
+        const scheduled = formattedRequests.filter(req => req.requestedTime)
+
+        setInstantBookingRequests(instant)
+        setBookingRequests(scheduled)
       } catch (error) {
         console.error("Error fetching booking requests:", error)
       } finally {
@@ -114,7 +151,7 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
       }
     }
 
-    fetchInstantBookingRequests()
+    fetchBookingRequests()
   }, [authUser])
 
   // Manage countdown timers for accepted requests
@@ -357,10 +394,74 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
     return calculateAcceptedTimeRemaining(request) <= 0
   }
 
+  // Check for KYC Status - show banner but don't block access
+  const kycStatus = currentUser?.kycStatus || "PENDING"
+  const showKycBanner = kycStatus === "PENDING" || kycStatus === "SUBMITTED"
+
+  // Only show KYC rejection message, don't block for PENDING
+  if (kycStatus === "REJECTED") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full text-center p-8">
+          <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Verification Rejected</h2>
+          <p className="text-gray-600 mb-6">
+            Unfortunately, we couldn't verify your documents. Please resubmit with clear, valid identification.
+          </p>
+          <Button onClick={() => window.location.reload()}>Resubmit Documents</Button>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Container with proper constraints */}
       <div className="container mx-auto px-4 py-6 max-w-7xl">
+
+        {/* KYC Status Banner */}
+        {showKycBanner && (
+          <div className={`mb-6 p-4 rounded-lg border ${kycStatus === "PENDING"
+            ? "bg-blue-50 border-blue-200"
+            : "bg-yellow-50 border-yellow-200"
+            }`}>
+            <div className="flex items-start gap-3">
+              <div className={`mt-0.5 ${kycStatus === "PENDING" ? "text-blue-600" : "text-yellow-600"
+                }`}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className={`font-semibold ${kycStatus === "PENDING" ? "text-blue-900" : "text-yellow-900"
+                  }`}>
+                  {kycStatus === "PENDING" ? "Complete Your Verification" : "Verification Under Review"}
+                </h3>
+                <p className={`text-sm mt-1 ${kycStatus === "PENDING" ? "text-blue-700" : "text-yellow-700"
+                  }`}>
+                  {kycStatus === "PENDING"
+                    ? "To unlock all provider features and start earning, please complete your identity verification."
+                    : "Your documents are being reviewed. This usually takes 24-48 hours. You'll be notified once approved."
+                  }
+                </p>
+              </div>
+              {kycStatus === "PENDING" && (
+                <Button
+                  size="sm"
+                  onClick={() => window.location.href = '/kyc'}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Complete KYC
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Profile Section */}
         <div className="flex items-center justify-between mb-8 p-6 bg-white rounded-lg shadow-sm border">
           <div className="flex items-center space-x-4">
@@ -378,13 +479,23 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
               </div>
             </div>
           </div>
-          <div className="flex flex-col items-end">
+          <div className="flex flex-col items-end gap-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">Welcome back{currentUser ? `, ${currentUser.name.split(' ')[0]}` : ''}!</p>
               <p className="text-xs text-gray-500">Ready to help clients today?</p>
-              <br />
-              <Button size="sm" variant="outline" onClick={handleViewProfile} className="mb-2">
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={handleViewProfile}>
                 View Profile
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={() => signOut({ callbackUrl: '/' })}
+              >
+                <LogOut className="w-4 h-4 mr-1" />
+                Logout
               </Button>
             </div>
           </div>
@@ -399,8 +510,9 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
           <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="availability">Availability</TabsTrigger>
-            <TabsTrigger value="groups" disabled className="cursor-not-allowed opacity-50">Groups</TabsTrigger>
+            <TabsTrigger value="groups">Groups</TabsTrigger>
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
+            {authUser?.kycStatus === 'APPROVED' && <TabsTrigger value="wallet">Wallet</TabsTrigger>}
             <TabsTrigger value="instant-requests">
               Instant Requests ({instantBookingRequests.filter(req => req.status === "pending").length})
             </TabsTrigger>
@@ -585,6 +697,10 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="wallet" className="space-y-6">
+            {authUser?.id ? <WalletPage providerId={authUser.id} /> : <div>Please log in</div>}
           </TabsContent>
 
           <TabsContent value="instant-requests" className="space-y-6">
@@ -804,6 +920,6 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </div >
   )
 } 

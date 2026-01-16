@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Multi-User Video Session Interface</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display overflow-hidden h-screen">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#f0f2f4] dark:border-slate-800 px-6 py-3 bg-white dark:bg-background-dark z-10">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path></svg>
+</div>
+<div>
+<h2 class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Advanced Strategy Session</h2>
+<p class="text-xs text-[#617589] font-medium">Mentorship Program • Dr. Sarah Jenkins</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<!-- Timer Component -->
+<div class="flex items-center gap-2 bg-[#f0f2f4] dark:bg-slate-800 px-4 py-2 rounded-lg">
+<span class="material-symbols-outlined text-primary text-sm">schedule</span>
+<div class="flex items-baseline gap-1">
+<p class="text-[#111418] dark:text-white text-sm font-bold leading-tight">24</p>
+<p class="text-[#617589] text-[10px] uppercase font-bold">m</p>
+<p class="text-[#111418] dark:text-white text-sm font-bold leading-tight">05</p>
+<p class="text-[#617589] text-[10px] uppercase font-bold">s</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold">
+<span>Session Details</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAUWckk20tRR4H73vv7Eul07XsGmj4VV4sAWpR-Y7vjoM2wVfsZ2CNhVdxeiEmS2AlnAsTAEIZcImPLPXUAFpPeSjk_QAkGfOgNINAbav2vgGiNw9npB3mRVTV1FeOMcKXvKRHH-7paVKq_euLKHQJn-hGEMiEMJhjyoGrvyaZDQljTJIVJ5E2uW-UvXedNOMi5b6W2Bt7kwWBGz7ai4htJwt9PA7CjV0jWKfDcZm6PuQp5ujTbCC45Ui5vy6va0o1bbzzKZtxlzBk");'></div>
+</div>
+</div>
+</header>
+<main class="flex h-[calc(100vh-64px)] w-full overflow-hidden">
+<!-- Main Video Stage Area -->
+<div class="relative flex flex-col flex-1 bg-[#0a0a0a] overflow-hidden">
+<!-- Main Video Feed -->
+<div class="relative flex flex-1 items-center justify-center p-4">
+<div class="relative w-full h-full max-w-[1200px] flex items-center justify-center bg-[#111418] rounded-xl overflow-hidden shadow-2xl group">
+<div class="absolute inset-0 bg-center bg-cover opacity-90" data-alt="Main speaker video feed showing a professional woman in a home office" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB7I2L0j3mtZcF_1lc5hjc9VNqD4iBxwnnlv-OVMWDIacaihh6BaeebOvyfdMPXjZBsNImdlDqt3rr0I_pbkYJVUJdln9i6wRznsyiyYuq7AY5hyinDJXDWUfme3T60rdF18I9-ftCTZaHn97d-1Xb44Y9xEjz87oP8ciuOMtQaY5TjFAFCtxkBM2ne_RDcvY6oOtw6zCGhRdULjGWsd_0y3xwNGiRja5z7qIbQEOd5twXhPVVo1-RHAZMWS70BRYMiP47dFXUkY2M");'></div>
+<!-- Speaker Label -->
+<div class="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg flex items-center gap-2 border border-white/10">
+<div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+<span class="text-white text-sm font-medium">Dr. Sarah Jenkins (Mentor)</span>
+</div>
+<!-- Speaker Status -->
+<div class="absolute top-4 right-4 flex gap-2">
+<div class="bg-black/40 p-2 rounded-full text-white">
+<span class="material-symbols-outlined text-sm">mic</span>
+</div>
+</div>
+</div>
+<!-- Floating Participant Tiles -->
+<div class="absolute right-8 top-8 flex flex-col gap-4 w-48">
+<div class="relative aspect-video rounded-lg overflow-hidden border-2 border-primary/40 bg-slate-900 shadow-lg">
+<div class="w-full h-full bg-cover bg-center" data-alt="Participant 1 video feed" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCH5mPygAnNr8Jb2OhqAWb4iVssRJmZEo9iDdGP99tVwN74T90eA9Yu2hk4vnCvTwkWKuLTAvgxnhGL54LGyzwITX_IjhXHJKBLnSt_oPPkvA8t4n94pbLEmkDG_iwYJ0nky2dOiMS-EyQd2tV0dbQCS19P8vgaGSjyQQp4n3CCqndl36tNHj9Lb41UxER16TFX83gWb1lNf6yZ1Ay2vly7Tdi_RAbf2QWsdJXXtajg6CQuOSw6nkc6wDrIxHYXc45HEBp5raXOvgQ");'></div>
+<div class="absolute bottom-1 left-2 text-[10px] text-white bg-black/40 px-1.5 rounded">You</div>
+</div>
+<div class="relative aspect-video rounded-lg overflow-hidden border border-white/10 bg-slate-900 shadow-lg">
+<div class="w-full h-full bg-cover bg-center" data-alt="Participant 2 video feed" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA8HJkRXUbQm-vmmCcFfyp9Y8k8AnnTmrhR-ITRO9kG_FMhBmEXCcYssjXOLi4t4v9SL3B0FAwpFfZSjQIMtWaAQSJYfHAQY383_NYCRdZtzk0TN5bWmY2n-GNkxzDfczVk2NoQlXl1TCFxF25pRfkXt3Q5RgeR5QBFfnFkOd9yMX6oy7XZUC97QUX6LRd8n3WBxGoyq7MB54pOBidmfDarddHp3zjXUH8DoFayRkfXuW2mNQEQyNJWaQ5TJ826f9brUj6kzz5cpSo");'></div>
+<div class="absolute bottom-1 left-2 text-[10px] text-white bg-black/40 px-1.5 rounded">Alex Rivera</div>
+<div class="absolute top-1 right-1">
+<span class="material-symbols-outlined text-red-500 text-sm">mic_off</span>
+</div>
+</div>
+<div class="relative aspect-video rounded-lg overflow-hidden border border-white/10 bg-slate-900 shadow-lg">
+<div class="w-full h-full bg-cover bg-center flex items-center justify-center" data-alt="Avatar placeholder for participant with camera off">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">MK</div>
+</div>
+<div class="absolute bottom-1 left-2 text-[10px] text-white bg-black/40 px-1.5 rounded">Maria K.</div>
+<div class="absolute top-1 right-1">
+<span class="material-symbols-outlined text-red-500 text-sm">videocam_off</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Control Bar -->
+<div class="h-20 flex items-center justify-center px-6 bg-transparent">
+<div class="flex items-center gap-3 bg-white/10 backdrop-blur-xl p-2 rounded-2xl border border-white/20">
+<button class="flex size-12 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="flex size-12 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+<div class="w-px h-8 bg-white/20 mx-1"></div>
+<button class="flex size-12 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined">present_to_all</span>
+</button>
+<button class="flex size-12 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined">mood</span>
+</button>
+<button class="flex size-12 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+<div class="w-px h-8 bg-white/20 mx-1"></div>
+<button class="flex min-w-[100px] h-12 px-4 items-center justify-center gap-2 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors">
+<span class="material-symbols-outlined">call_end</span>
+<span class="text-sm">Leave</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Sidebar Panel -->
+<aside class="w-[360px] bg-white dark:bg-slate-900 border-l border-[#f0f2f4] dark:border-slate-800 flex flex-col">
+<!-- Tabs Component -->
+<div class="border-b border-[#f0f2f4] dark:border-slate-800">
+<div class="flex px-4">
+<a class="flex-1 flex flex-col items-center justify-center border-b-[3px] border-primary py-4" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">chat</span>
+<p class="text-primary text-sm font-bold">Chat</p>
+<span class="bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full">3</span>
+</div>
+</a>
+<a class="flex-1 flex flex-col items-center justify-center border-b-[3px] border-transparent py-4 text-[#617589]" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xl">group</span>
+<p class="text-sm font-bold">People</p>
+</div>
+</a>
+</div>
+</div>
+<!-- Chat Area -->
+<div class="flex-1 overflow-y-auto p-4 space-y-4">
+<!-- Message 1 -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-[#111418] dark:text-white">Alex Rivera</span>
+<span class="text-[10px] text-[#617589]">10:14 AM</span>
+</div>
+<div class="bg-[#f0f2f4] dark:bg-slate-800 p-3 rounded-xl rounded-tl-none">
+<p class="text-sm">Could you expand more on the user retention metrics for B2B SaaS?</p>
+</div>
+</div>
+<!-- Message 2 -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-primary">Dr. Sarah Jenkins</span>
+<span class="text-[10px] text-[#617589]">10:15 AM</span>
+</div>
+<div class="bg-primary/10 border border-primary/20 p-3 rounded-xl rounded-tl-none">
+<p class="text-sm">Absolutely! I'll cover that in the next slide once we finish the funnel overview.</p>
+</div>
+</div>
+<!-- Message 3 -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-[#111418] dark:text-white">Maria K.</span>
+<span class="text-[10px] text-[#617589]">10:18 AM</span>
+</div>
+<div class="bg-[#f0f2f4] dark:bg-slate-800 p-3 rounded-xl rounded-tl-none">
+<p class="text-sm">That would be very helpful. Specifically around churn rate benchmarks.</p>
+</div>
+</div>
+</div>
+<!-- Chat Input -->
+<div class="p-4 border-t border-[#f0f2f4] dark:border-slate-800">
+<div class="relative">
+<textarea class="w-full bg-[#f0f2f4] dark:bg-slate-800 border-none rounded-xl py-3 px-4 pr-12 text-sm focus:ring-2 focus:ring-primary min-h-[48px] resize-none" placeholder="Message everyone..."></textarea>
+<button class="absolute right-2 top-1.5 size-9 flex items-center justify-center text-primary hover:bg-primary/10 rounded-lg transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+<div class="mt-3 flex items-center justify-between text-[#617589]">
+<div class="flex gap-3">
+<button class="hover:text-primary"><span class="material-symbols-outlined text-lg">attach_file</span></button>
+<button class="hover:text-primary"><span class="material-symbols-outlined text-lg">add_reaction</span></button>
+</div>
+<span class="text-[10px] font-medium">Auto-saving session logs</span>
+</div>
+</div>
+</aside>
+</main>
+</body></html>

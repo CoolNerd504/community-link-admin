@@ -13,51 +13,92 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  password      String?   // Hashed password for Credentials provider
-  accounts      Account[]
-  sessions      Session[] // NextAuth sessions (if database strategy used) or App sessions?
-  
+  password      String? // Hashed password for Credentials provider
+
+  // Mobile & Security
+  username      String? @unique // Optional initially to allow migration, but should be required in app logic
+  phoneNumber   String? @unique
+  pinHash       String? // For 6-digit PIN
+  isActive      Boolean @default(true)
+  phoneVerified Boolean @default(false)
+
+  // Biometric Flags
+  biometricEnabled Boolean @default(false)
+  lastLoginMethod  String? // 'pin', 'password', 'fingerprint', 'face_id'
+
+  // KYC Information
+  kycStatus          String    @default("PENDING") // PENDING, SUBMITTED, VERIFIED, REJECTED
+  kycSubmittedAt     DateTime?
+  kycVerifiedAt      DateTime?
+  kycRejectionReason String?
+
+  // KYC Documents (Direct Links)
+  idFrontUrl        String?
+  idBackUrl         String?
+  idFrontVerified   Boolean @default(false)
+  idBackVerified    Boolean @default(false)
+  selfieUrl         String?
+  proofOfAddressUrl String?
+
+  // Security Metadata
+  deviceId      String?
+  deviceOs      String?
+  lastIpAddress String?
+  lastLocation  String?
+
+  accounts Account[]
+  sessions Session[] // NextAuth sessions (if database strategy used) or App sessions?
+
   // Application specific fields
-  role          UserRole  @default(USER)
-  profile       Profile?
-  
+  role    UserRole @default(USER)
+  profile Profile?
+
   // Relations as Client
-  clientSessions      AppSession[] @relation("ClientSessions")
-  clientReviews       Review[]     @relation("ClientReviews")
-  sentMessages        Message[]    @relation("SentMessages")
-  createdDisputes     Dispute[]    @relation("CreatedDisputes")
-  notifications       Notification[]
+  clientSessions  AppSession[]     @relation("ClientSessions")
+  clientReviews   Review[]         @relation("ClientReviews")
+  sentMessages    Message[]        @relation("SentMessages")
+  createdDisputes Dispute[]        @relation("CreatedDisputes")
+  clientBookings  BookingRequest[] @relation("ClientBookings")
+  notifications   Notification[]
+  wallet          Wallet?
 
   // Relations as Provider
-  providerServices    Service[]
-  providerSessions    AppSession[] @relation("ProviderSessions")
-  providerReviews     Review[]     @relation("ProviderReviews")
-  providerDisputes    Dispute[]    @relation("ProviderDisputes")
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  providerServices Service[]
+  providerSessions AppSession[] @relation("ProviderSessions")
+  providerReviews  Review[]     @relation("ProviderReviews")
+  providerDisputes Dispute[]    @relation("ProviderDisputes")
+
+  // Admin Dispute Relations
+  disputesReported Dispute[] @relation("DisputesReported")
+  disputesAgainst  Dispute[] @relation("DisputesAgainst")
+
+  // Provider Earnings (NEW)
+  providerEarnings ProviderEarnings?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
-model Session { // NextAuth Session
+model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
@@ -79,27 +120,28 @@ enum UserRole {
   USER
   PROVIDER
   ADMIN
+  SUPER_ADMIN
 }
 
 model Profile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  bio         String?  @db.Text
-  headline    String?
-  location    String?
-  languages   String[]
-  
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bio       String?  @db.Text
+  headline  String?
+  location  String?
+  languages String[]
+
   // Provider specific
-  isVerified     Boolean @default(false)
-  vettingStatus  VettingStatus @default(PENDING)
-  hourlyRate     Float?
-  isOnline       Boolean  @default(false)
-  isAvailableForInstant Boolean @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isVerified            Boolean       @default(false)
+  vettingStatus         VettingStatus @default(PENDING)
+  hourlyRate            Float?
+  isOnline              Boolean       @default(false)
+  isAvailableForInstant Boolean       @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum VettingStatus {
@@ -109,42 +151,43 @@ enum VettingStatus {
 }
 
 model Service {
-  id          String   @id @default(cuid())
-  providerId  String
-  provider    User     @relation(fields: [providerId], references: [id])
-  
-  title       String
-  description String   @db.Text
-  price       Float
-  duration    Int      // in minutes
-  category    String
-  
-  isActive    Boolean  @default(true)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String @id @default(cuid())
+  providerId String
+  provider   User   @relation(fields: [providerId], references: [id])
 
-  bookings    BookingRequest[]
+  title       String
+  description String @db.Text
+  price       Float
+  duration    Int // in minutes
+  category    String
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings BookingRequest[]
 }
 
 model AppSession {
-  id          String   @id @default(cuid())
-  clientId    String
-  client      User     @relation("ClientSessions", fields: [clientId], references: [id])
-  providerId  String
-  provider    User     @relation("ProviderSessions", fields: [providerId], references: [id])
-  
-  status      AppSessionStatus @default(SCHEDULED)
-  startTime   DateTime
-  endTime     DateTime?
-  price       Float
-  
-  chatRoom    ChatRoom?
-  review      Review?
-  dispute     Dispute?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String @id @default(cuid())
+  clientId   String
+  client     User   @relation("ClientSessions", fields: [clientId], references: [id])
+  providerId String
+  provider   User   @relation("ProviderSessions", fields: [providerId], references: [id])
+
+  status    AppSessionStatus @default(SCHEDULED)
+  startTime DateTime
+  endTime   DateTime?
+  price     Float
+
+  chatRoom ChatRoom?
+  review   Review?
+  dispute  Dispute?
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  minuteUsage MinuteUsage?
 }
 
 enum AppSessionStatus {
@@ -155,17 +198,22 @@ enum AppSessionStatus {
 }
 
 model BookingRequest {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   serviceId String
-  service   Service  @relation(fields: [serviceId], references: [id])
+  service   Service @relation(fields: [serviceId], references: [id])
   clientId  String
   // Relation to Client User needed if we track who requested
-  
-  status    BookingStatus @default(PENDING)
-  notes     String?
-  
+
+  status BookingStatus @default(PENDING)
+  notes  String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Scheduled Booking Fields
+  requestedTime DateTime?
+
+  client User @relation("ClientBookings", fields: [clientId], references: [id])
 }
 
 enum BookingStatus {
@@ -175,95 +223,283 @@ enum BookingStatus {
   EXPIRED
 }
 
+// Payment & Monketization Models
+model Wallet {
+  id             String @id @default(cuid())
+  userId         String @unique
+  user           User   @relation(fields: [userId], references: [id])
+  balance        Float  @default(0.0)
+  pendingBalance Float  @default(0.0)
+  currency       String @default("ZMW")
+
+  // Minutes tracking (NEW)
+  totalMinutesPurchased Int @default(0)
+  totalMinutesUsed      Int @default(0)
+  availableMinutes      Int @default(0)
+
+  // Relations
+  minutePurchases MinutePurchase[]
+  minuteUsage     MinuteUsage[]
+  transactions    Transaction[]
+  payoutRequests  PayoutRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id       String @id @default(cuid())
+  walletId String
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+
+  amount      Float
+  type        TransactionType
+  status      TransactionStatus @default(PENDING)
+  description String?
+  referenceId String? // External payment Gateway ID or Booking ID
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PayoutRequest {
+  id       String @id @default(cuid())
+  walletId String
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+
+  amount      Float
+  status      PayoutStatus @default(PENDING)
+  bankDetails String? // JSON string or related model for bank info
+  notes       String?
+
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  EARNING
+  REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PROCESSED
+}
+
 model ChatRoom {
-  id        String   @id @default(cuid())
-  sessionId String   @unique
+  id        String     @id @default(cuid())
+  sessionId String     @unique
   session   AppSession @relation(fields: [sessionId], references: [id])
-  
-  messages  Message[]
-  
+
+  messages Message[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Message {
-  id        String   @id @default(cuid())
+  id         String   @id @default(cuid())
   chatRoomId String
-  chatRoom  ChatRoom @relation(fields: [chatRoomId], references: [id])
-  
-  senderId  String
-  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
-  
-  content   String   @db.Text
-  isRead    Boolean  @default(false)
-  
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+
+  senderId String
+  sender   User   @relation("SentMessages", fields: [senderId], references: [id])
+
+  content String  @db.Text
+  isRead  Boolean @default(false)
+
   createdAt DateTime @default(now())
 }
 
 model Review {
-  id        String   @id @default(cuid())
-  sessionId String   @unique
+  id        String     @id @default(cuid())
+  sessionId String     @unique
   session   AppSession @relation(fields: [sessionId], references: [id])
-  
-  clientId  String
-  client    User     @relation("ClientReviews", fields: [clientId], references: [id])
-  
+
+  clientId String
+  client   User   @relation("ClientReviews", fields: [clientId], references: [id])
+
   providerId String
-  provider   User     @relation("ProviderReviews", fields: [providerId], references: [id])
-  
-  rating    Int
-  comment   String?  @db.Text
-  
+  provider   User   @relation("ProviderReviews", fields: [providerId], references: [id])
+
+  rating  Int
+  comment String? @db.Text
+
   createdAt DateTime @default(now())
 }
 
 model Dispute {
-  id        String   @id @default(cuid())
-  sessionId String   @unique
-  session   AppSession @relation(fields: [sessionId], references: [id])
-  
-  reason    String
-  status    DisputeStatus @default(OPEN)
-  
+  id        String      @id @default(cuid())
+  sessionId String?     @unique
+  session   AppSession? @relation(fields: [sessionId], references: [id])
+
+  reason      String
+  description String?
+  status      DisputeStatus @default(OPEN)
+  resolution  String?
+  resolvedAt  DateTime?
+  notes       Json? // Array of admin notes
+
   creatorId String
-  creator   User     @relation("CreatedDisputes", fields: [creatorId], references: [id])
-  
+  creator   User   @relation("CreatedDisputes", fields: [creatorId], references: [id])
+
   providerId String
-  provider   User     @relation("ProviderDisputes", fields: [providerId], references: [id])
-  
+  provider   User   @relation("ProviderDisputes", fields: [providerId], references: [id])
+
+  // Admin panel relations
+  reportedById      String?
+  reportedBy        User?   @relation("DisputesReported", fields: [reportedById], references: [id])
+  reportedAgainstId String?
+  reportedAgainst   User?   @relation("DisputesAgainst", fields: [reportedAgainstId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 enum DisputeStatus {
   OPEN
+  PENDING
+  INVESTIGATING
   RESOLVED
   CLOSED
+  DISMISSED
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  
-  type      String
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  data      Json?    // Flexible data payload
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  type    String
+  title   String
+  message String
+  isRead  Boolean @default(false)
+  data    Json? // Flexible data payload
+
   createdAt DateTime @default(now())
 }
 
 model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique
+  id          String     @id @default(cuid())
+  name        String     @unique
   description String?
   icon        String?
+  isActive    Boolean    @default(true)
   parentId    String?
-  parent      Category? @relation("CategoryToCategory", fields: [parentId], references: [id])
+  parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryToCategory")
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Pricing Management
+model PricingTier {
+  id                String  @id @default(cuid())
+  name              String  @unique
+  description       String?
+  pricePerMinute    Float
+  maxSessionsPerDay Int     @default(10)
+  features          Json? // Array of feature strings
+  bundleDiscounts   Json? // Object with discount percentages
+  isActive          Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BundlePricing {
+  id       String  @id @default(cuid())
+  name     String
+  minutes  Int
+  price    Float
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================
+// MINUTES-BASED WALLET SYSTEM
+// ============================================
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model MinutePackage {
+  id              String  @id @default(cuid())
+  name            String
+  minutes         Int
+  priceZMW        Float
+  discountPercent Int     @default(0)
+  isActive        Boolean @default(true)
+  isPopular       Boolean @default(false)
+  description     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MinutePurchase {
+  id       String @id @default(cuid())
+  walletId String
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+
+  packageName      String
+  minutesPurchased Int
+  priceZMW         Float
+  paymentMethod    String?
+  paymentStatus    PaymentStatus @default(PENDING)
+  transactionRef   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MinuteUsage {
+  id        String     @id @default(cuid())
+  walletId  String
+  wallet    Wallet     @relation(fields: [walletId], references: [id])
+  sessionId String     @unique
+  session   AppSession @relation(fields: [sessionId], references: [id])
+
+  minutesUsed   Int
+  ratePerMinute Float
+  totalCost     Float
+
+  createdAt DateTime @default(now())
+}
+
+model ProviderEarnings {
+  id         String @id @default(cuid())
+  providerId String @unique
+  provider   User   @relation(fields: [providerId], references: [id])
+
+  totalMinutesServiced Int @default(0)
+  currentMonthMinutes  Int @default(0)
+
+  totalEarningsZMW     Float @default(0)
+  currentMonthEarnings Float @default(0)
+  pendingPayoutZMW     Float @default(0)
+
+  lastPayoutDate   DateTime?
+  lastPayoutAmount Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

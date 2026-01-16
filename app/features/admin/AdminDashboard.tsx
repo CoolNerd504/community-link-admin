@@ -11,6 +11,7 @@ import { Switch } from "../../../components/ui/switch"
 import { AdminProviderManagement } from "../../../components/admin-provider-management"
 import { SharedNavigation } from "../../../components/shared-navigation"
 import { AdminProviderSearch } from "../../../components/admin-provider-search"
+import { PackagesRatesTab } from "../../../components/packages-rates-tab"
 import { useState, useEffect } from "react"
 import { signOut } from "next-auth/react"
 import { useAuth } from "../../../hooks/use-auth"
@@ -23,7 +24,17 @@ import {
   getCategoriesAction,
   createCategoryAction,
   updateCategoryAction,
-  deleteCategoryAction
+  deleteCategoryAction,
+  getCategoriesWithStatsAction,
+  getPricingTiersAction,
+  createPricingTierAction,
+  updatePricingTierAction,
+  deletePricingTierAction,
+  getBundlePricingAction,
+  updateBundlePricingAction,
+  getDisputesAction,
+  updateDisputeStatusAction,
+  getAdminAnalyticsAction
 } from "../../../app/actions"
 // Types
 import { sampleServiceProviders, sampleDisputes } from "../shared/data"
@@ -31,7 +42,8 @@ import { sampleServiceProviders, sampleDisputes } from "../shared/data"
 export function AdminDashboard({ currentUser }: { currentUser: any }) {
   // Admin state - Pending providers will be loaded from Firebase
   const [serviceProviders, setServiceProviders] = useState(sampleServiceProviders as any[])
-  const [disputes, setDisputes] = useState(sampleDisputes)
+  const [disputes, setDisputes] = useState<any[]>([])
+  const [selectedDispute, setSelectedDispute] = useState<any>(null)
   const [selectedUserProfile, setSelectedUserProfile] = useState<any>(null)
   const [showUserProfileDialog, setShowUserProfileDialog] = useState(false)
 
@@ -48,65 +60,11 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
   const [pendingProvidersLoading, setPendingProvidersLoading] = useState(true)
 
   // Pricing and deals state - Updated to match Firebase schema
-  const [pricingTiers, setPricingTiers] = useState([
-    {
-      id: "1",
-      name: "Basic",
-      pricePerMinute: 2,
-      description: "Entry-level pricing for new providers",
-      isActive: true,
-      maxSessionsPerDay: 5,
-      features: ["Basic analytics", "Standard support", "Profile listing"],
-      bundleDiscounts: {
-        "10_min": 0,
-        "15_min": 5,
-        "30_min": 10,
-        "60_min": 15
-      }
-    },
-    {
-      id: "2",
-      name: "Premium",
-      pricePerMinute: 3,
-      description: "Advanced features for experienced providers",
-      isActive: true,
-      maxSessionsPerDay: 10,
-      features: ["Advanced analytics", "Priority support", "Featured listing", "Sponsored options"],
-      bundleDiscounts: {
-        "10_min": 5,
-        "15_min": 10,
-        "30_min": 15,
-        "60_min": 20
-      }
-    },
-    {
-      id: "3",
-      name: "Enterprise",
-      pricePerMinute: 4,
-      description: "Professional tier with maximum benefits",
-      isActive: false,
-      maxSessionsPerDay: 20,
-      features: ["Full analytics", "24/7 support", "Premium listing", "Custom branding"],
-      bundleDiscounts: {
-        "10_min": 10,
-        "15_min": 15,
-        "30_min": 20,
-        "60_min": 25
-      }
-    },
-  ])
+  const [pricingTiers, setPricingTiers] = useState<any[]>([])
+  const [bundlePricing, setBundlePricing] = useState<any[]>([])
+  const [discountDeals, setDiscountDeals] = useState<any[]>([])
 
-  const [bundlePricing, setBundlePricing] = useState([
-    { id: "10_min", name: "10 Minutes", minutes: 10, price: 5, isActive: true },
-    { id: "15_min", name: "15 Minutes", minutes: 15, price: 7, isActive: true },
-    { id: "30_min", name: "30 Minutes", minutes: 30, price: 12, isActive: true },
-    { id: "60_min", name: "60 Minutes", minutes: 60, price: 20, isActive: true },
-  ])
 
-  const [discountDeals, setDiscountDeals] = useState([
-    { id: "1", name: "New User Discount", discountValue: 20, isActive: true, validUntil: "2024-12-31" },
-    { id: "2", name: "Bulk Session Discount", discountValue: 15, isActive: true, validUntil: "2024-06-30" },
-  ])
 
   // Dialog states
   const [showAddProviderDialog, setShowAddProviderDialog] = useState(false)
@@ -179,7 +137,7 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
     try {
       setCategoriesLoading(true)
       console.log("Admin: Loading categories from DB...")
-      const fetchedCategories = await getCategoriesAction()
+      const fetchedCategories = await getCategoriesWithStatsAction()
       console.log("Admin: Categories loaded")
       setCategories(fetchedCategories)
     } catch (error) {
@@ -190,6 +148,9 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
     }
   }
 
+
+
+
   useEffect(() => {
     loadCategories()
   }, [])
@@ -199,10 +160,23 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
     const loadUsers = async () => {
       try {
         setUsersLoading(true)
-        const [individuals, providers] = await Promise.all([
+        const [individuals, providers, fetchedDisputes] = await Promise.all([
           getAllIndividualUsersAction(),
-          getAllServiceProvidersAction()
+          getAllServiceProvidersAction(),
+          getDisputesAction({})
         ])
+
+        setDisputes(fetchedDisputes.map((d: any) => ({
+          id: d.id,
+          clientName: d.creator?.name || "Unknown",
+          providerName: d.provider?.name || "Unknown",
+          issue: d.reason,
+          description: d.description || d.reason,
+          status: d.status.toLowerCase(),
+          createdAt: new Date(d.createdAt),
+          resolution: d.resolution,
+          notes: d.notes
+        })))
 
         setUserRegistrations({
           individuals: individuals.map((user: any) => ({
@@ -221,8 +195,13 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
             status: "active",
             sessionsCompleted: provider.sessionsCompleted || 0,
             specialty: provider.profile?.headline || "General",
-            vettingStatus: provider.profile?.vettingStatus,
+            vettingStatus: provider.profile?.vettingStatus?.toLowerCase(),
+            location: { town: provider.profile?.location || "Unknown", country: "Zambia" },
+            experience: provider.profile?.bio || "No details available",
             monthlyEarnings: provider.monthlyEarnings || 0,
+            idFrontUrl: provider.profile?.idFrontUrl,
+            idBackUrl: provider.profile?.idBackUrl,
+            selfieUrl: provider.profile?.selfieUrl,
           }))
         })
       } catch (error) {
@@ -465,13 +444,14 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
           </div>
 
           <Tabs defaultValue="vetting" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-2">
               <TabsTrigger value="vetting" className="text-xs md:text-sm">Service Providers</TabsTrigger>
               <TabsTrigger value="users" className="text-xs md:text-sm">Users</TabsTrigger>
               <TabsTrigger value="disputes" className="text-xs md:text-sm">Disputes</TabsTrigger>
               <TabsTrigger value="pricing" className="text-xs md:text-sm">Pricing</TabsTrigger>
               <TabsTrigger value="categories" className="text-xs md:text-sm">Categories</TabsTrigger>
               <TabsTrigger value="analytics" className="text-xs md:text-sm">Analytics</TabsTrigger>
+              <TabsTrigger value="packages-rates" className="text-xs md:text-sm">Packages & Rates</TabsTrigger>
               <TabsTrigger value="settings" className="text-xs md:text-sm">Settings</TabsTrigger>
             </TabsList>
 
@@ -524,6 +504,14 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
                               <p>Email: {provider.email}</p>
                               <p>Location: {provider.location?.town}, {provider.location?.country}</p>
                               <p>Experience: {provider.experience}</p>
+                              <div className="mt-2 pt-2 border-t">
+                                <p className="text-xs font-semibold mb-1">KYC Documents:</p>
+                                <div className="flex gap-2 text-xs">
+                                  {provider.idFrontUrl ? <a href={provider.idFrontUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">ID Front</a> : <span className="text-gray-400">No ID Front</span>}
+                                  {provider.idBackUrl ? <a href={provider.idBackUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">ID Back</a> : <span className="text-gray-400">No ID Back</span>}
+                                  {provider.selfieUrl ? <a href={provider.selfieUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Selfie</a> : <span className="text-gray-400">No Selfie</span>}
+                                </div>
+                              </div>
                             </div>
                             <div className="flex space-x-2">
                               <Button
@@ -626,79 +614,211 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
             </TabsContent>
 
             <TabsContent value="users" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Individual Users */}
-                <Card>
-                  <CardHeader>
-                    <h4 className="font-semibold">Individual Users</h4>
-                    <p className="text-sm text-gray-600">Client users registered on the platform</p>
-                  </CardHeader>
-                  <CardContent>
-                    {usersLoading ? (
-                      <div className="space-y-3">
-                        {[1, 2, 3].map((i) => (
-                          <div key={i} className="animate-pulse">
-                            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                          </div>
-                        ))}
+              <h3 className="text-lg font-semibold">Individual Users</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* List Column (1/4) */}
+                <div className="lg:col-span-1 border rounded-lg overflow-hidden h-[600px] overflow-y-auto bg-white">
+                  {usersLoading ? (
+                    <div className="p-4 space-y-3">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="animate-pulse flex flex-col gap-2">
+                          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : userRegistrations.individuals.length === 0 ? (
+                    <div className="p-8 text-center bg-gray-50 flex flex-col items-center">
+                      <div className="text-2xl mb-2">👥</div>
+                      <p className="text-gray-500 text-sm">No users found</p>
+                    </div>
+                  ) : (
+                    userRegistrations.individuals.map((user) => (
+                      <div
+                        key={user.id}
+                        className={`p-3 border-b cursor-pointer hover:bg-gray-50 transition-colors ${selectedUserProfile?.id === user.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`}
+                        onClick={() => setSelectedUserProfile(user)}
+                      >
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-medium text-sm truncate w-3/4">{user.name}</h4>
+                          <Badge variant={user.status === "active" ? "default" : "secondary"} className="text-[10px] px-1 py-0 h-5">
+                            {user.status}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
                       </div>
-                    ) : userRegistrations.individuals.length === 0 ? (
-                      <div className="text-center py-8">
-                        <div className="text-4xl mb-2">👥</div>
-                        <p className="text-gray-600">No individual users found</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {userRegistrations.individuals.map((user) => (
-                          <div key={user.id} className="flex justify-between items-center p-3 border rounded-lg">
+                    ))
+                  )}
+                </div>
+
+                {/* Details Column (3/4) */}
+                <div className="lg:col-span-3">
+                  {selectedUserProfile ? (
+                    <Card className="h-full">
+                      <CardHeader className="border-b bg-gray-50/50">
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                              {selectedUserProfile.name.charAt(0).toUpperCase()}
+                            </div>
                             <div>
-                              <h5 className="font-medium">{user.name}</h5>
-                              <p className="text-sm text-gray-600">{user.email}</p>
-                              <p className="text-xs text-gray-500">
-                                Registered: {user.registeredAt && user.registeredAt.toDate ? user.registeredAt.toDate().toLocaleDateString() : "N/A"}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Sessions: {user.sessionsCompleted}
+                              <CardTitle>{selectedUserProfile.name}</CardTitle>
+                              <p className="text-sm text-gray-500">{selectedUserProfile.email}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">Reset Password</Button>
+                            <Button variant="destructive" size="sm">Suspend User</Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <div className="space-y-6">
+                          {/* Stats Grid */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-gray-50 p-4 rounded-lg border">
+                              <h5 className="text-xs text-gray-500 uppercase tracking-wider mb-1">Sessions</h5>
+                              <p className="text-2xl font-bold">{selectedUserProfile.sessionsCompleted || 0}</p>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded-lg border">
+                              <h5 className="text-xs text-gray-500 uppercase tracking-wider mb-1">Registration Date</h5>
+                              <p className="text-lg font-medium">
+                                {selectedUserProfile.registeredAt && new Date(selectedUserProfile.registeredAt).toLocaleDateString()}
                               </p>
                             </div>
-                            <Badge variant={user.status === "active" ? "default" : "secondary"}>
-                              {user.status}
-                            </Badge>
+                            <div className="bg-gray-50 p-4 rounded-lg border">
+                              <h5 className="text-xs text-gray-500 uppercase tracking-wider mb-1">Status</h5>
+                              <Badge variant={selectedUserProfile.status === "active" ? "default" : "secondary"}>
+                                {selectedUserProfile.status.toUpperCase()}
+                              </Badge>
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
 
+                          {/* Contact / Bio if available */}
+                          <div>
+                            <h5 className="text-sm font-semibold text-gray-900 mb-2">About User</h5>
+                            <div className="border rounded-md p-4 bg-white">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <p className="text-xs text-gray-500">Phone</p>
+                                  <p className="text-sm">{selectedUserProfile.phone || "Not provided"}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500">User ID</p>
+                                  <p className="text-sm font-mono text-gray-600">{selectedUserProfile.id}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
 
+                          {/* Recent Activity (Placeholder) */}
+                          <div>
+                            <h5 className="text-sm font-semibold text-gray-900 mb-2">Recent System Activity</h5>
+                            <div className="bg-gray-50 rounded-md p-4 text-center text-sm text-gray-500 border border-dashed">
+                              No recent activity logs available.
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                      <div className="text-4xl mb-4">👤</div>
+                      <h3 className="text-lg font-medium text-gray-900">No User Selected</h3>
+                      <p className="text-gray-500">Select a user from the list to view their profile</p>
+                    </div>
+                  )}
+                </div>
               </div>
-
-
             </TabsContent>
 
             <TabsContent value="disputes" className="space-y-6">
               <h3 className="text-lg font-semibold">Active Disputes</h3>
-              <div className="space-y-4">
-                {disputes.map((dispute) => (
-                  <Card key={dispute.id}>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-medium">{dispute.clientName} vs {dispute.providerName}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{dispute.issue}</p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            Created: {dispute.createdAt.toLocaleDateString()}
-                          </p>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* List Column (1/4) */}
+                <div className="lg:col-span-1 border rounded-lg overflow-hidden h-[600px] overflow-y-auto bg-white">
+                  {disputes.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500 text-sm">No disputes found</div>
+                  ) : (
+                    disputes.map((dispute) => (
+                      <div
+                        key={dispute.id}
+                        className={`p-3 border-b cursor-pointer hover:bg-gray-50 transition-colors ${selectedDispute?.id === dispute.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`}
+                        onClick={() => setSelectedDispute(dispute)}
+                      >
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-medium text-sm truncate w-3/4">{dispute.clientName}</h4>
+                          <Badge variant={dispute.status === "open" ? "destructive" : "secondary"} className="text-[10px] px-1 py-0 h-5">
+                            {dispute.status}
+                          </Badge>
                         </div>
-                        <Badge variant={dispute.status === "open" ? "destructive" : "secondary"}>
-                          {dispute.status}
-                        </Badge>
+                        <p className="text-xs text-gray-500 mb-1">vs {dispute.providerName}</p>
+                        <p className="text-xs text-gray-400">
+                          {dispute.createdAt.toLocaleDateString()}
+                        </p>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    ))
+                  )}
+                </div>
+
+                {/* Details Column (3/4) */}
+                <div className="lg:col-span-3">
+                  {selectedDispute ? (
+                    <Card className="h-full">
+                      <CardHeader className="border-b bg-gray-50/50">
+                        <div className="flex justify-between items-center">
+                          <CardTitle>Dispute Details</CardTitle>
+                          <Badge variant={selectedDispute.status === "open" ? "destructive" : "outline"}>
+                            {selectedDispute.status.toUpperCase()}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <div className="space-y-6">
+                          {/* Participants */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-lg">
+                            <div>
+                              <h5 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Complainant</h5>
+                              <p className="font-medium">{selectedDispute.clientName}</p>
+                              <p className="text-xs text-gray-500">Client ID: {selectedDispute.id.substring(0, 8)}...</p>
+                            </div>
+                            <div>
+                              <h5 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Service Provider</h5>
+                              <p className="font-medium">{selectedDispute.providerName}</p>
+                            </div>
+                          </div>
+
+                          {/* Issue Details */}
+                          <div>
+                            <h5 className="text-sm font-semibold text-gray-900 mb-2">Issue Type</h5>
+                            <p className="text-gray-700 bg-white border p-3 rounded-md">{selectedDispute.issue}</p>
+                          </div>
+
+                          {selectedDispute.description && (
+                            <div>
+                              <h5 className="text-sm font-semibold text-gray-900 mb-2">Description</h5>
+                              <p className="text-gray-600 leading-relaxed">{selectedDispute.description}</p>
+                            </div>
+                          )}
+
+                          {/* Actions Placeholder */}
+                          {selectedDispute.status === 'open' && (
+                            <div className="pt-4 border-t flex gap-3">
+                              <Button size="sm" onClick={() => updateDisputeStatusAction(selectedDispute.id, 'INVESTIGATING')}>Start Investigation</Button>
+                              <Button size="sm" variant="secondary" onClick={() => updateDisputeStatusAction(selectedDispute.id, 'RESOLVED')}>Mark Resolved</Button>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                      <div className="text-4xl mb-4">⚖️</div>
+                      <h3 className="text-lg font-medium text-gray-900">No Dispute Selected</h3>
+                      <p className="text-gray-500">Select a dispute from the list to view details</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </TabsContent>
 
@@ -760,7 +880,7 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
                           <div>
                             <p className="text-xs font-medium text-gray-700 mb-1">Features:</p>
                             <div className="flex flex-wrap gap-1">
-                              {tier.features.map((feature, index) => (
+                              {tier.features.map((feature: string, index: number) => (
                                 <Badge key={index} variant="outline" className="text-xs">
                                   {feature}
                                 </Badge>
@@ -1360,6 +1480,10 @@ export function AdminDashboard({ currentUser }: { currentUser: any }) {
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            <TabsContent value="packages-rates">
+              <PackagesRatesTab />
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-6">

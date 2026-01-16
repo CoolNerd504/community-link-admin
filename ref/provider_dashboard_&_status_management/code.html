@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provider Dashboard &amp; Status Management</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#0f66bd",
+                "background-light": "#f6f7f8",
+                "background-dark": "#101922",
+              },
+              fontFamily: {
+                "display": ["Manrope", "sans-serif"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-link {
+            background-color: #f0f2f4;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111418]">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 bg-white dark:bg-gray-900 border-r border-[#dbe0e6] dark:border-gray-800 flex flex-col justify-between p-4">
+<div class="flex flex-col gap-8">
+<!-- Branding/User -->
+<div class="flex items-center gap-3 px-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-gray-200" data-alt="Professional profile headshot of a mentor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDjugHRhFctgBVpctpb02VDgzs2Tf7VaNUsUndPdk3v6E0-Kpay8yP2gfHX1bf9MQnkOr8POnzkh0NL7uw46yuF7UcB9fJqqJBHs1nnHyI0-Fpwrj1HsR_mVnPVSt-d4qizSlCeEqyDkypsU3zNfwrgZ-lbEuZ0gPVd1aON-nsvJf1SHKWBVAkBQZfk5L12Lo1rbgqEm8BVaRrGd-txSwJ3AAhyq0obmb0WkT3uootcYnrNyxpKPjFXYyz3_IEGHnA2GybXENByyJg");'></div>
+<div class="flex flex-col overflow-hidden">
+<h1 class="text-[#111418] dark:text-white text-base font-bold leading-none truncate">Alex Rivers</h1>
+<p class="text-[#617589] text-xs font-normal leading-normal mt-1">ID: #98721</p>
+</div>
+</div>
+<!-- Nav Links -->
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-gray-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-600">dashboard</span>
+<p class="text-[#111418] dark:text-gray-200 text-sm font-medium">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg active-link" href="#">
+<span class="material-symbols-outlined text-primary">inbox</span>
+<p class="text-[#111418] dark:text-gray-200 text-sm font-medium">Requests</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-gray-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-600">work</span>
+<p class="text-[#111418] dark:text-gray-200 text-sm font-medium">Services</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-gray-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-600">account_balance_wallet</span>
+<p class="text-[#111418] dark:text-gray-200 text-sm font-medium">Wallet</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-gray-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-600">person</span>
+<p class="text-[#111418] dark:text-gray-200 text-sm font-medium">Profile</p>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-3">
+<button class="flex w-full items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold transition-opacity hover:opacity-90">
+                    View Public Profile
+                </button>
+<div class="flex items-center justify-center py-2">
+<span class="text-xs text-gray-400">Version 2.4.0</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-y-auto bg-background-light dark:bg-background-dark">
+<!-- Top Nav Bar -->
+<header class="sticky top-0 z-10 flex items-center justify-between bg-white dark:bg-gray-900 border-b border-[#f0f2f4] dark:border-gray-800 px-8 py-3">
+<div class="flex items-center gap-4">
+<h2 class="text-[#111418] dark:text-white text-lg font-bold tracking-tight">Provider Dashboard</h2>
+</div>
+<div class="flex items-center gap-6">
+<label class="flex items-center gap-2 bg-[#f0f2f4] dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-transparent focus-within:border-primary">
+<span class="material-symbols-outlined text-[#617589] text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 text-[#111418] dark:text-white placeholder:text-[#617589]" placeholder="Search sessions..." type="text"/>
+</label>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg bg-[#f0f2f4] dark:bg-gray-800 text-[#111418] dark:text-gray-200 hover:bg-gray-200 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-lg bg-[#f0f2f4] dark:bg-gray-800 text-[#111418] dark:text-gray-200 hover:bg-gray-200 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Dashboard Body -->
+<div class="p-8 space-y-8">
+<!-- Status & Global Toggles Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Global Online Status -->
+<div class="flex flex-1 flex-col items-start justify-between gap-4 rounded-xl border border-[#dbe0e6] bg-white dark:bg-gray-900 dark:border-gray-800 p-6">
+<div class="flex flex-col gap-1">
+<p class="text-[#111418] dark:text-white text-base font-bold leading-tight">Online Status</p>
+<p class="text-[#617589] text-sm font-normal">Global visibility in the marketplace.</p>
+</div>
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f0f2f4] dark:bg-gray-700 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+<!-- Instant Sessions Status -->
+<div class="flex flex-1 flex-col items-start justify-between gap-4 rounded-xl border border-[#dbe0e6] bg-white dark:bg-gray-900 dark:border-gray-800 p-6">
+<div class="flex flex-col gap-1">
+<p class="text-[#111418] dark:text-white text-base font-bold leading-tight">Instant Sessions</p>
+<p class="text-[#617589] text-sm font-normal">Allow mentees to book immediately.</p>
+</div>
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f0f2f4] dark:bg-gray-700 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+<!-- KYC Verification Banner -->
+<div class="flex flex-1 flex-col items-start justify-between gap-4 rounded-xl border border-green-100 bg-green-50 dark:bg-green-900/10 dark:border-green-900/20 p-6">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-600 font-bold">check_circle</span>
+<p class="text-green-800 dark:text-green-400 text-base font-bold leading-tight">Verified Account</p>
+</div>
+<p class="text-green-700 dark:text-green-500/80 text-sm font-normal">You have full access to all features.</p>
+</div>
+<span class="px-3 py-1 rounded-full bg-green-600 text-white text-xs font-bold uppercase tracking-wider">KYC Complete</span>
+</div>
+</div>
+<!-- Active Requests Section -->
+<div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-[#111418] dark:text-white text-lg font-bold tracking-tight px-1">Active Requests</h3>
+<button class="text-primary text-sm font-semibold hover:underline">View All</button>
+</div>
+<div class="bg-white dark:bg-gray-900 border border-[#dbe0e6] dark:border-gray-800 rounded-xl overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+<th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Mentee</th>
+<th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Service Requested</th>
+<th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Date/Time</th>
+<th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Price</th>
+<th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold text-xs" data-alt="User avatar placeholder">JD</div>
+<div class="text-sm font-medium text-[#111418] dark:text-white">Jordan Smith</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#617589] dark:text-gray-400">Career Mentorship (60m)</td>
+<td class="px-6 py-4 text-sm text-[#617589] dark:text-gray-400">Oct 12, 2:00 PM</td>
+<td class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">$85.00</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:opacity-90">Accept</button>
+<button class="px-3 py-1.5 border border-red-200 text-red-600 text-xs font-bold rounded-lg hover:bg-red-50">Decline</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs" data-alt="User avatar placeholder">EM</div>
+<div class="text-sm font-medium text-[#111418] dark:text-white">Elena Miller</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#617589] dark:text-gray-400">Code Review Session</td>
+<td class="px-6 py-4 text-sm text-[#617589] dark:text-gray-400">Oct 14, 10:30 AM</td>
+<td class="px-6 py-4 text-sm font-bold text-[#111418] dark:text-white">$120.00</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:opacity-90">Accept</button>
+<button class="px-3 py-1.5 border border-red-200 text-red-600 text-xs font-bold rounded-lg hover:bg-red-50">Decline</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Active Services Grid -->
+<div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-[#111418] dark:text-white text-lg font-bold tracking-tight px-1">Active Services</h3>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm font-bold hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-sm">add</span> Add New
+                        </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Service Card 1 -->
+<div class="bg-white dark:bg-gray-900 border border-[#dbe0e6] dark:border-gray-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">groups</span>
+</div>
+<label class="relative flex h-[24px] w-[44px] cursor-pointer items-center rounded-full border-none bg-[#f0f2f4] dark:bg-gray-700 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[20px] rounded-full bg-white shadow-sm"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+<h4 class="text-[#111418] dark:text-white font-bold text-base mb-1">1-on-1 Strategy Session</h4>
+<p class="text-[#617589] text-xs leading-relaxed mb-4">Deep dive into business architecture and strategic growth for startups.</p>
+<div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+<span class="text-sm font-bold text-[#111418] dark:text-white">$150 / hr</span>
+<span class="text-[10px] font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded">PUBLIC</span>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="bg-white dark:bg-gray-900 border border-[#dbe0e6] dark:border-gray-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-orange-600">terminal</span>
+</div>
+<label class="relative flex h-[24px] w-[44px] cursor-pointer items-center rounded-full border-none bg-[#f0f2f4] dark:bg-gray-700 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[20px] rounded-full bg-white shadow-sm"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+<h4 class="text-[#111418] dark:text-white font-bold text-base mb-1">Backend Performance Review</h4>
+<p class="text-[#617589] text-xs leading-relaxed mb-4">Code auditing for Node.js, Python, and Go microservices architectures.</p>
+<div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+<span class="text-sm font-bold text-[#111418] dark:text-white">$200 / hr</span>
+<span class="text-[10px] font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded">PUBLIC</span>
+</div>
+</div>
+<!-- Service Card 3 -->
+<div class="bg-white dark:bg-gray-900 border border-[#dbe0e6] dark:border-gray-800 rounded-xl p-5 shadow-sm grayscale opacity-60">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-400">
+<span class="material-symbols-outlined">menu_book</span>
+</div>
+<label class="relative flex h-[24px] w-[44px] cursor-pointer items-center rounded-full border-none bg-[#f0f2f4] dark:bg-gray-700 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[20px] rounded-full bg-white shadow-sm"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+<h4 class="text-[#111418] dark:text-white font-bold text-base mb-1">Resume &amp; LinkedIn Review</h4>
+<p class="text-[#617589] text-xs leading-relaxed mb-4">Professional profile optimization for senior engineering roles.</p>
+<div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+<span class="text-sm font-bold text-[#111418] dark:text-white">$75 / session</span>
+<span class="text-[10px] font-bold text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded uppercase">Disabled</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-auto p-8 border-t border-[#f0f2f4] dark:border-gray-800 flex justify-between text-[#617589] text-xs">
+<p>© 2023 Provider Marketplace Platform</p>
+<div class="flex gap-4">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</footer>
+</main>
+</div>
+</body></html>

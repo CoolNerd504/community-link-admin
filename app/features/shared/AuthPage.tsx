@@ -6,7 +6,7 @@ import { Label } from "../../../components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
 import { Badge } from "../../../components/ui/badge"
-import { Star, Users, Shield, Zap } from "lucide-react"
+import { Star, Users } from "lucide-react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
@@ -22,6 +22,9 @@ export function AuthPage() {
     email: "",
     password: "",
     name: "",
+    username: "",
+    phoneNumber: "",
+    pin: "",
     userType: "individual" as "individual" | "provider"
   })
 
@@ -32,8 +35,6 @@ export function AuthPage() {
     setEmailForm(prev => ({ ...prev, userType: newUserType }))
   }
 
-
-  // ... inside AuthPage component ...
   const router = useRouter()
 
   const handleEmailAuth = async () => {
@@ -51,21 +52,25 @@ export function AuthPage() {
         if (result?.error) {
           setError("Invalid email or password")
         } else {
-          // Redirect or update state
-          router.push("/") // or dashboard
+          router.push("/dashboard")
           router.refresh()
         }
       } else {
         // Handle signup via API
+        const payload = {
+          name: emailForm.name,
+          email: emailForm.email,
+          password: emailForm.password,
+          username: emailForm.username,
+          phoneNumber: emailForm.phoneNumber,
+          pin: emailForm.pin,
+          role: emailForm.userType === "provider" ? "PROVIDER" : "USER"
+        }
+
         const res = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: emailForm.name,
-            email: emailForm.email,
-            password: emailForm.password,
-            role: emailForm.userType === "provider" ? "PROVIDER" : "USER"
-          })
+          body: JSON.stringify(payload)
         })
 
         const data = await res.json()
@@ -82,7 +87,7 @@ export function AuthPage() {
         })
 
         if (result?.ok) {
-          router.push("/")
+          router.push("/dashboard")
           router.refresh()
         }
       }
@@ -168,23 +173,60 @@ export function AuthPage() {
 
                   <TabsContent value="email" className="space-y-4">
                     {authMode === "signup" && (
-                      <div>
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input
-                          id="name"
-                          type="text"
-                          placeholder="Enter your full name"
-                          value={emailForm.name}
-                          onChange={(e) => setEmailForm(prev => ({ ...prev, name: e.target.value }))}
-                        />
-                      </div>
+                      <>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="name">Full Name</Label>
+                            <Input
+                              id="name"
+                              type="text"
+                              placeholder="John Doe"
+                              value={emailForm.name}
+                              onChange={(e) => setEmailForm(prev => ({ ...prev, name: e.target.value }))}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="username">Username</Label>
+                            <Input
+                              id="username"
+                              type="text"
+                              placeholder="jdoe"
+                              value={emailForm.username}
+                              onChange={(e) => setEmailForm(prev => ({ ...prev, username: e.target.value }))}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="phone">Phone Number</Label>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="+26097..."
+                            value={emailForm.phoneNumber}
+                            onChange={(e) => setEmailForm(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="pin">Secure PIN (6 Digits)</Label>
+                          <Input
+                            id="pin"
+                            type="password"
+                            placeholder="123456"
+                            maxLength={6}
+                            value={emailForm.pin}
+                            onChange={(e) => setEmailForm(prev => ({ ...prev, pin: e.target.value.replace(/\D/g, '') }))}
+                          />
+                        </div>
+                      </>
                     )}
                     <div>
                       <Label htmlFor="email">Email</Label>
                       <Input
                         id="email"
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder="john@example.com"
                         value={emailForm.email}
                         onChange={(e) => setEmailForm(prev => ({ ...prev, email: e.target.value }))}
                       />
@@ -194,7 +236,7 @@ export function AuthPage() {
                       <Input
                         id="password"
                         type="password"
-                        placeholder="Enter your password"
+                        placeholder="Strong password"
                         value={emailForm.password}
                         onChange={(e) => setEmailForm(prev => ({ ...prev, password: e.target.value }))}
                       />
@@ -270,33 +312,70 @@ export function AuthPage() {
 
                   <TabsContent value="email" className="space-y-4">
                     {authMode === "signup" && (
-                      <div>
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input
-                          id="name"
-                          type="text"
-                          placeholder="Enter your full name"
-                          value={emailForm.name}
-                          onChange={(e) => setEmailForm(prev => ({ ...prev, name: e.target.value }))}
-                        />
-                      </div>
+                      <>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="provider-name">Full Name</Label>
+                            <Input
+                              id="provider-name"
+                              type="text"
+                              placeholder="Jane Doe"
+                              value={emailForm.name}
+                              onChange={(e) => setEmailForm(prev => ({ ...prev, name: e.target.value }))}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="provider-username">Username</Label>
+                            <Input
+                              id="provider-username"
+                              type="text"
+                              placeholder="janedoe_pro"
+                              value={emailForm.username}
+                              onChange={(e) => setEmailForm(prev => ({ ...prev, username: e.target.value }))}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="provider-phone">Phone Number</Label>
+                          <Input
+                            id="provider-phone"
+                            type="tel"
+                            placeholder="+26097..."
+                            value={emailForm.phoneNumber}
+                            onChange={(e) => setEmailForm(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="provider-pin">Secure PIN (6 Digits)</Label>
+                          <Input
+                            id="provider-pin"
+                            type="password"
+                            placeholder="123456"
+                            maxLength={6}
+                            value={emailForm.pin}
+                            onChange={(e) => setEmailForm(prev => ({ ...prev, pin: e.target.value.replace(/\D/g, '') }))}
+                          />
+                        </div>
+                      </>
                     )}
                     <div>
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="provider-email">Email</Label>
                       <Input
-                        id="email"
+                        id="provider-email"
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder="pro@example.com"
                         value={emailForm.email}
                         onChange={(e) => setEmailForm(prev => ({ ...prev, email: e.target.value }))}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="provider-password">Password</Label>
                       <Input
-                        id="password"
+                        id="provider-password"
                         type="password"
-                        placeholder="Enter your password"
+                        placeholder="Strong password"
                         value={emailForm.password}
                         onChange={(e) => setEmailForm(prev => ({ ...prev, password: e.target.value }))}
                       />
@@ -376,4 +455,4 @@ export function AuthPage() {
       </div>
     </div>
   )
-} 
+}

@@ -38,6 +38,8 @@ export const config = {
                         image: true,
                         password: true,
                         role: true,
+                        username: true,
+                        kycStatus: true,
                     }
                 })
 
@@ -61,6 +63,8 @@ export const config = {
             if (session.user && token.sub) {
                 session.user.id = token.sub
                 session.user.role = token.role
+                session.user.username = token.username as string
+                session.user.kycStatus = token.kycStatus as string
             }
             return session
         },
@@ -68,6 +72,8 @@ export const config = {
             if (user) {
                 token.sub = user.id
                 token.role = user.role
+                token.username = user.username
+                token.kycStatus = user.kycStatus
             }
             return token
         }

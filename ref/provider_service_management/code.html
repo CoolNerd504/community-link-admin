@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provider Service Management</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#0f66bd",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+            },
+            fontFamily: {
+              "display": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white min-h-screen">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-[#dbe0e6] dark:border-gray-800 bg-white dark:bg-[#111418] flex flex-col justify-between p-4 shrink-0">
+<div class="flex flex-col gap-8">
+<div class="flex flex-col px-3">
+<h1 class="text-[#111418] dark:text-white text-lg font-black leading-tight tracking-tight">ProMentor</h1>
+<p class="text-[#617589] text-sm font-normal leading-normal">Provider Portal</p>
+</div>
+<nav class="flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<p class="text-sm font-medium">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary cursor-pointer">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1">work</span>
+<p class="text-sm font-bold">Services</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-xl">calendar_today</span>
+<p class="text-sm font-medium">Schedule</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-xl">group</span>
+<p class="text-sm font-medium">Bookings</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-xl">payments</span>
+<p class="text-sm font-medium">Payments</p>
+</div>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<div class="p-4 bg-primary/5 rounded-xl border border-primary/20">
+<p class="text-xs font-bold text-primary uppercase tracking-wider mb-1">Current Plan</p>
+<p class="text-sm font-bold mb-3">Professional Tier</p>
+<button class="w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                        Upgrade Plan
+                    </button>
+</div>
+<div class="flex items-center gap-3 px-3 py-2">
+<div class="size-10 rounded-full bg-cover bg-center border border-[#dbe0e6]" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDlX2prtZyqEpqrx_hoqjHPWG5QCyj-trDJGP6tFiTr97cej40m44mbNgi6Ho3m7Ib19fksf9aqt9347-FbzHEJ5hjWqWHMqBE7n4ZJF8aW7b1HRwQR8CRKzHsdWznLvIy5hyNkRkRlvTmWY5QXZrsF0WsXu3rUiGxEPw0x2z3o7q3-iYn1olZZ6Pgo8R6Iw4nMKCG6ZJFSmPaVW6df-WCLgmeuIVhS8L8z8r2_UlMTooCXq0LEIzX_gKd_ksVbquPbfvP--X4gyMo");'></div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">Alex Rivera</p>
+<p class="text-xs text-[#617589] truncate">Expert Mentor</p>
+</div>
+<span class="material-symbols-outlined text-[#617589] cursor-pointer">settings</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="h-16 border-b border-[#dbe0e6] dark:border-gray-800 bg-white dark:bg-[#111418] flex items-center justify-between px-8 shrink-0">
+<div class="flex items-center gap-4 w-96">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#617589] text-xl">search</span>
+<input class="w-full bg-[#f0f2f4] dark:bg-gray-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/50" placeholder="Search services, bookings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 bg-[#f0f2f4] dark:bg-gray-800 rounded-lg text-[#111418] dark:text-white hover:bg-[#e2e5e9] transition-colors relative">
+<span class="material-symbols-outlined text-xl">notifications</span>
+<span class="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></span>
+</button>
+<button class="p-2 bg-[#f0f2f4] dark:bg-gray-800 rounded-lg text-[#111418] dark:text-white hover:bg-[#e2e5e9] transition-colors">
+<span class="material-symbols-outlined text-xl">help</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-8">
+<!-- Page Heading -->
+<div class="max-w-6xl mx-auto">
+<div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+<div class="flex flex-col gap-2">
+<p class="text-4xl font-black leading-tight tracking-tight">Service Management</p>
+<p class="text-[#617589] dark:text-gray-400 text-base">You have 3 active services being offered to mentees.</p>
+</div>
+<button class="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">add</span>
+<span>Add New Service</span>
+</button>
+</div>
+<!-- Services Table -->
+<div class="bg-white dark:bg-[#111418] rounded-xl border border-[#dbe0e6] dark:border-gray-800 overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-gray-50 dark:bg-gray-900/50">
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider border-b border-[#dbe0e6] dark:border-gray-800">Service Name</th>
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider border-b border-[#dbe0e6] dark:border-gray-800">Category</th>
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider border-b border-[#dbe0e6] dark:border-gray-800">Duration</th>
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider border-b border-[#dbe0e6] dark:border-gray-800">Price</th>
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider border-b border-[#dbe0e6] dark:border-gray-800 text-center">Visibility</th>
+<th class="px-6 py-4 text-xs font-bold text-[#617589] dark:text-gray-400 uppercase tracking-wider border-b border-[#dbe0e6] dark:border-gray-800 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#dbe0e6] dark:divide-gray-800">
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-sm">Career Consultation</span>
+<span class="text-xs text-[#617589]">Standard 1-on-1 session</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full uppercase tracking-tighter">Career</span>
+</td>
+<td class="px-6 py-5 text-sm">60 mins</td>
+<td class="px-6 py-5 text-sm font-bold">$150.00</td>
+<td class="px-6 py-5">
+<div class="flex justify-center">
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 text-[#617589] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-sm">Leadership Coaching</span>
+<span class="text-xs text-[#617589]">Executive level mentoring</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-full uppercase tracking-tighter">Coaching</span>
+</td>
+<td class="px-6 py-5 text-sm">90 mins</td>
+<td class="px-6 py-5 text-sm font-bold">$250.00</td>
+<td class="px-6 py-5">
+<div class="flex justify-center">
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 text-[#617589] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-bold text-sm">Resume Review</span>
+<span class="text-xs text-[#617589]">Deep dive into experience</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full uppercase tracking-tighter">Career</span>
+</td>
+<td class="px-6 py-5 text-sm">30 mins</td>
+<td class="px-6 py-5 text-sm font-bold">$75.00</td>
+<td class="px-6 py-5">
+<div class="flex justify-center">
+<div class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 text-[#617589] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Additional Section: Service Tips -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-6 bg-white dark:bg-[#111418] rounded-xl border border-[#dbe0e6] dark:border-gray-800 flex flex-col gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">lightbulb</span>
+<h3 class="font-bold text-lg">Pro Tip: Pricing</h3>
+<p class="text-sm text-[#617589] dark:text-gray-400">Services priced between $100-$200 tend to have 40% higher booking rates in your category.</p>
+</div>
+<div class="p-6 bg-white dark:bg-[#111418] rounded-xl border border-[#dbe0e6] dark:border-gray-800 flex flex-col gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">visibility</span>
+<h3 class="font-bold text-lg">Marketplace Reach</h3>
+<p class="text-sm text-[#617589] dark:text-gray-400">Your "Career Consultation" service appeared in 452 searches this past week.</p>
+</div>
+<div class="p-6 bg-white dark:bg-[#111418] rounded-xl border border-[#dbe0e6] dark:border-gray-800 flex flex-col gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">reviews</span>
+<h3 class="font-bold text-lg">Reviews Matter</h3>
+<p class="text-sm text-[#617589] dark:text-gray-400">Complete 2 more sessions to unlock your provider rating badge on the search page.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Modal Overlay (Mockup State: Hidden by Default, but styled for reference) -->
+<!-- Add 'flex' to class to show it -->
+<div class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 items-center justify-center p-4">
+<div class="bg-white dark:bg-[#111418] w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+<div class="px-6 py-5 border-b border-[#dbe0e6] dark:border-gray-800 flex items-center justify-between">
+<h2 class="text-xl font-bold">Add New Service</h2>
+<button class="p-2 hover:bg-background-light dark:hover:bg-gray-800 rounded-lg">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<form class="p-6 flex flex-col gap-5">
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-bold">Service Name</label>
+<input class="w-full bg-[#f0f2f4] dark:bg-gray-800 border-none rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary" placeholder="e.g. 1-on-1 Interview Prep" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-bold">Category</label>
+<select class="w-full bg-[#f0f2f4] dark:bg-gray-800 border-none rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary">
+<option>Career</option>
+<option>Coaching</option>
+<option>Technical</option>
+<option>Design</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-bold">Duration</label>
+<select class="w-full bg-[#f0f2f4] dark:bg-gray-800 border-none rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary">
+<option>30 mins</option>
+<option>45 mins</option>
+<option>60 mins</option>
+<option>90 mins</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-bold">Price ($)</label>
+<input class="w-full bg-[#f0f2f4] dark:bg-gray-800 border-none rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary" placeholder="100.00" type="number"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-bold">Description</label>
+<textarea class="w-full bg-[#f0f2f4] dark:bg-gray-800 border-none rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary" placeholder="Describe what mentees will get from this session..." rows="4"></textarea>
+</div>
+<div class="flex items-center gap-3 pt-4">
+<button class="flex-1 px-4 py-2.5 border border-[#dbe0e6] rounded-lg font-bold hover:bg-gray-50 transition-colors" type="button">Cancel</button>
+<button class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 transition-colors" type="submit">Create Service</button>
+</div>
+</form>
+</div>
+</div>
+</body></html>
