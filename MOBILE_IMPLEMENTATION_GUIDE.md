@@ -50,7 +50,18 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 
 ---
 
-## 👤 2. Client (USER) Features
+**3. Get KYC Status (GET `/api/kyc/status`)** `[USER, PROVIDER]`
+- **Response**:
+```json
+{
+  "status": "APPROVED",
+  "kycSubmittedAt": "2026-01-01T10:00:00Z",
+  "kycVerifiedAt": "2026-01-02T10:00:00Z",
+  "kycRejectionReason": null
+}
+```
+
+### B. Client (USER) Features
 
 ### A. Discovery & Search
 
@@ -59,10 +70,22 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 
 **2. Search Providers (GET `/api/providers/search`)** `[USER]`
 - **Query Params**: `q`, `category`, `minPrice`, `maxPrice`
-- **Response**: Array of provider objects with services
+- **Response**: Array of provider objects with services, `isFollowing` (bool), `isFavorite` (bool)
 
 **3. Get Provider Details (GET `/api/providers/[id]`)** `[USER]`
-- **Response**: Provider with services and reviews
+- **Response**: Provider with services, reviews, `isFollowing`, `isFavorite`
+
+**4. Follow Provider (POST/DELETE `/api/providers/[id]/follow`)** `[USER]`
+- **Response**: `{ "message": "Followed successfully" }`
+
+**5. Favorite Provider (POST/DELETE `/api/providers/[id]/favorite`)** `[USER]`
+- **Response**: `{ "message": "Favorited successfully" }`
+
+**6. Get Following List (GET `/api/mobile/following`)** `[USER]`
+- **Response**: Array of provider profiles
+
+**7. Get Favorites List (GET `/api/mobile/favorites`)** `[USER]`
+- **Response**: Array of provider profiles
 
 ### B. Booking Services
 

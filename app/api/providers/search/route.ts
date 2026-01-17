@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getUserFromRequest } from '@/lib/auth-helpers'
 
 export async function GET(req: NextRequest) {
     try {
+        const currentUser = await getUserFromRequest(req)
         const { searchParams } = new URL(req.url)
         const query = searchParams.get('q') || ''
         const category = searchParams.get('category')
@@ -45,7 +47,15 @@ export async function GET(req: NextRequest) {
                         isActive: true
                     }
                 },
-                providerReviews: true
+                providerReviews: true,
+                ...(currentUser ? {
+                    favoritedBy: {
+                        where: { userId: currentUser.id }
+                    },
+                    followers: {
+                        where: { followerId: currentUser.id }
+                    }
+                } : {})
             }
         })
 
@@ -67,7 +77,9 @@ export async function GET(req: NextRequest) {
                 rating: parseFloat(rating.toFixed(1)),
                 reviewCount: reviews.length,
                 profile: p.profile,
-                providerServices: p.providerServices
+                providerServices: p.providerServices,
+                isFavorite: currentUser ? (p.favoritedBy?.length ?? 0) > 0 : false,
+                isFollowing: currentUser ? (p.followers?.length ?? 0) > 0 : false
             }
         })
 

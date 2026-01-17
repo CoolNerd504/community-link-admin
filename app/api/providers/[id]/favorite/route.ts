@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getUserFromRequest } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 
-// POST /api/providers/[id]/follow - Follow a provider
+// POST /api/providers/[id]/favorite - Favorite a provider
 export async function POST(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -15,24 +15,24 @@ export async function POST(
     const { id: providerId } = await params
 
     if (user.id === providerId) {
-        return NextResponse.json({ message: "Cannot follow yourself" }, { status: 400 })
+        return NextResponse.json({ message: "Cannot favorite yourself" }, { status: 400 })
     }
 
     try {
-        await prisma.follow.create({
+        await prisma.favorite.create({
             data: {
-                followerId: user.id,
-                followingId: providerId
+                userId: user.id,
+                providerId: providerId
             }
         })
-        return NextResponse.json({ message: "Followed successfully" })
+        return NextResponse.json({ message: "Favorited successfully" })
     } catch (error) {
-        // Unique constraint failed means already following
-        return NextResponse.json({ message: "Already following" }, { status: 200 })
+        // Unique constraint failed means already favorited
+        return NextResponse.json({ message: "Already favorited" }, { status: 200 })
     }
 }
 
-// DELETE /api/providers/[id]/follow - Unfollow a provider
+// DELETE /api/providers/[id]/favorite - Unfavorite a provider
 export async function DELETE(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -45,13 +45,13 @@ export async function DELETE(
     const { id: providerId } = await params
 
     try {
-        await prisma.follow.deleteMany({
+        await prisma.favorite.deleteMany({
             where: {
-                followerId: user.id,
-                followingId: providerId
+                userId: user.id,
+                providerId: providerId
             }
         })
-        return NextResponse.json({ message: "Unfollowed successfully" })
+        return NextResponse.json({ message: "Unfavorited successfully" })
     } catch (error) {
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 })
     }
