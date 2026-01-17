@@ -243,10 +243,10 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 ```json
 {
   "title": "One-on-One Consultation",
-  "description": "45-minute personalized consultation to discuss your needs and provide expert guidance.",
-  "price": 150.00,
-  "duration": 45,
-  "category": "Consulting"
+  "description": "45-minute personalized consultation...",
+  "price": 150.00, // Optional (null/undefined allowed)
+  "duration": 45, // Optional (null/undefined allowed)
+  "category": "Consulting" // Defaults to "General" if omitted
 }
 ```
 - **Response (201)**:

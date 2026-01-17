@@ -122,13 +122,13 @@ export const addProviderService = async (userId: string, serviceData: any) => {
   return await prisma.service.create({
     data: {
       providerId: userId,
+      createdById: serviceData.createdById,
       title: serviceData.title,
       description: serviceData.description,
-      price: parseFloat(serviceData.price),
-      duration: parseInt(serviceData.duration),
       category: serviceData.category || "General",
+      price: serviceData.price ? parseFloat(serviceData.price) : null,
+      duration: serviceData.duration ? parseInt(serviceData.duration) : null,
       isActive: true,
-      createdById: serviceData.createdById,
     }
   })
 }

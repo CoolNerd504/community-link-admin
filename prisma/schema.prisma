@@ -170,8 +170,8 @@ model Service {
 
   title       String
   description String @db.Text
-  price       Float
-  duration    Int // in minutes
+  price       Float?
+  duration    Int? // in minutes
   category    String
 
   isActive Boolean @default(true)
