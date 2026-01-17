@@ -30,6 +30,28 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 - **Response (200)**: `{ user: {...}, token: "...", expires: "..." }`
 - **Errors**: `401` (invalid credentials)
 
+**3. Forgot Password (POST `/api/mobile/auth/forgot-password`)** `[PUBLIC]`
+- **Payload**: `{ "email": "user@example.com" }`
+- **Response**: `{ "message": "If an account with that email exists, a recovery code has been sent." }`
+- **Note**: In development, `devOtp` is returned for testing.
+
+**4. Verify Code (POST `/api/mobile/auth/verify-code`)** `[PUBLIC]`
+- **Payload**: `{ "email": "user@example.com", "code": "123456" }`
+- **Response**: `{ "verified": true, "resetToken": "..." }`
+- **Errors**: `400` (invalid/expired code)
+
+**5. Reset Password (POST `/api/mobile/auth/reset-password`)** `[PUBLIC]`
+- **Payload**:
+```json
+{
+  "email": "user@example.com",
+  "resetToken": "...",
+  "newPassword": "NewSecurePass1!"
+}
+```
+- **Response**: `{ "message": "Password reset successfully." }`
+- **Validation**: Min 8 chars, 1 uppercase, 1 special character.
+
 ### B. Common Profile Management
 
 **1. Get My Profile (GET `/api/mobile/profile`)** `[USER, PROVIDER]`
