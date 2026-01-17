@@ -534,7 +534,7 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
 
         <Tabs defaultValue="services" className="space-y-6">
           <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="services">Services</TabsTrigger>
+            <TabsTrigger value="services" onClick={() => router.push("/provider/services")}>Services</TabsTrigger>
             <TabsTrigger value="availability">Availability</TabsTrigger>
             <TabsTrigger value="groups">Groups</TabsTrigger>
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
