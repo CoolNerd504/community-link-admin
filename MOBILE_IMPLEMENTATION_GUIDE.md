@@ -122,11 +122,44 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
   "isInstant": false
 }
 ```
-- **Response (201)**: Booking object with `status: "PENDING"`
-- **Note**: Booking requires provider approval.
+- **Response (201)**:
+```json
+{
+  "id": "booking-abc",
+  "status": "PENDING",
+  "requestedTime": "2026-02-20T10:00:00Z",
+  "duration": 60,
+  "price": 150.00,
+  "notes": "Gate code: 1234",
+  "isInstant": false,
+  "client": {
+    "id": "user-123",
+    "name": "John Doe",
+    "image": "https://...",
+    "email": "john@example.com"
+  },
+  "service": {
+    "id": "svc-123",
+    "title": "Consultation",
+    "price": 150.00,
+    "duration": 60,
+    "category": "Consulting",
+    "provider": {
+      "id": "provider-456",
+      "name": "Jane Provider",
+      "image": "https://...",
+      "email": "jane@provider.com",
+      "profile": {
+        "headline": "Expert Consultant",
+        "isVerified": true
+      }
+    }
+  }
+}
+```
 
 **2. Get My Bookings (GET `/api/bookings`)** `[USER, PROVIDER]`
-- **Response**: Array of booking objects with status
+- **Response**: Array of booking objects (same structure as create response)
 
 **3. Reschedule Booking (PATCH `/api/bookings/[id]/reschedule`)** `[USER, PROVIDER]`
 - **Payload**:

@@ -116,10 +116,35 @@ export async function POST(req: NextRequest) {
             data: bookingData,
             include: {
                 service: {
-                    select: { title: true }
+                    select: {
+                        id: true,
+                        title: true,
+                        price: true,
+                        duration: true,
+                        category: true,
+                        provider: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true,
+                                email: true,
+                                profile: {
+                                    select: {
+                                        headline: true,
+                                        isVerified: true
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
                 client: {
-                    select: { name: true }
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        email: true
+                    }
                 }
             }
         })
