@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getUserFromRequest } from '@/lib/auth-helpers'
+import { sendNotification } from '@/lib/notifications'
+import { NotificationType } from '@prisma/client'
 
 export async function GET(req: NextRequest) {
     const user = await getUserFromRequest(req)
@@ -131,7 +133,8 @@ export async function POST(req: NextRequest) {
                                 profile: {
                                     select: {
                                         headline: true,
-                                        isVerified: true
+                                        isVerified: true,
+                                        bio: true
                                     }
                                 }
                             }
@@ -143,13 +146,29 @@ export async function POST(req: NextRequest) {
                         id: true,
                         name: true,
                         image: true,
-                        email: true
+                        email: true,
                     }
                 }
             }
         })
 
-        return NextResponse.json(booking, { status: 201 })
+        // Send Notification to Provider
+        await sendNotification({
+            userId: service.providerId,
+            type: NotificationType.BOOKING_REQUEST,
+            title: "New Booking Request",
+            body: `${user.name || 'A client'} sent a request for ${service.title}.`,
+            data: { bookingId: booking.id, serviceId: service.id }
+        })
+
+        return NextResponse.json({
+            message: 'Booking created successfully',
+            booking: {
+                ...booking,
+                service: booking.service,
+                client: booking.client
+            }
+        }, { status: 201 })
     } catch (error) {
         console.error('[Bookings API] Create Error:', error)
         return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 })

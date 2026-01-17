@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getUserFromRequest } from '@/lib/auth-helpers'
-import { BookingStatus, AppSessionStatus } from '@prisma/client'
+import { AppSessionStatus, BookingStatus, NotificationType } from '@prisma/client'
+import { sendNotification } from '@/lib/notifications'
 
 export async function POST(
     req: NextRequest,
@@ -54,6 +55,15 @@ export async function POST(
                     client: { select: { id: true, name: true } }
                 }
             })
+            // Notify Client
+            await sendNotification({
+                userId: updatedBooking.clientId,
+                type: NotificationType.BOOKING_REQUEST, // Or SESSION_UPDATE
+                title: "New Time Suggested",
+                body: `${user.name || 'Provider'} suggested a new time: ${suggestedTime}.`,
+                data: { bookingId: bookingId }
+            })
+
             return NextResponse.json({
                 message: 'Alternative time suggested. Awaiting client confirmation.',
                 booking: updatedBooking
@@ -82,6 +92,7 @@ export async function POST(
                         startTime: startTime,
                         endTime: endTime,
                         price: booking.price || booking.service.price,
+                        serviceId: booking.serviceId,
                     }
                 })
             }
@@ -89,7 +100,28 @@ export async function POST(
             return updated
         })
 
-        return NextResponse.json(updatedBooking)
+        if (status === 'accepted') {
+            await sendNotification({
+                userId: booking.clientId,
+                type: NotificationType.BOOKING_CONFIRMED,
+                title: "Booking Confirmed",
+                body: `${user.name || 'Provider'} accepted your booking request.`,
+                data: { bookingId }
+            })
+        } else if (status === 'declined') {
+            await sendNotification({
+                userId: booking.clientId,
+                type: NotificationType.SYSTEM, // Or specific declination type if added
+                title: "Booking Declined",
+                body: `${user.name || 'Provider'} declined your booking request.`,
+                data: { bookingId }
+            })
+        }
+
+        return NextResponse.json({
+            message: `Booking ${status === 'accepted' ? 'accepted' : 'declined'} successfully`,
+            booking: updatedBooking
+        })
     } catch (error) {
         console.error('[Booking Response API] Error:', error)
         return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 })

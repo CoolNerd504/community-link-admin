@@ -17,7 +17,17 @@ export async function GET(req: NextRequest) {
 
         const services = await prisma.service.findMany({
             where: { providerId: user.id },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            include: {
+                _count: {
+                    select: {
+                        sessions: {
+                            where: { status: 'COMPLETED' }
+                        },
+                        bookings: true // Total bookings received
+                    }
+                }
+            }
         })
 
         return NextResponse.json(services)

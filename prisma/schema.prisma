@@ -54,13 +54,16 @@ model User {
   role    UserRole @default(USER)
   profile Profile?
 
+  // Notifications
+  notifications Notification[]
+  devices       Device[]
+
   // Relations as Client
   clientSessions  AppSession[]     @relation("ClientSessions")
   clientReviews   Review[]         @relation("ClientReviews")
   sentMessages    Message[]        @relation("SentMessages")
   createdDisputes Dispute[]        @relation("CreatedDisputes")
   clientBookings  BookingRequest[] @relation("ClientBookings")
-  notifications   Notification[]
   wallet          Wallet?
 
   // Relations as Provider
@@ -184,6 +187,7 @@ model Service {
   createdBy   User?   @relation("ServiceCreator", fields: [createdById], references: [id])
 
   bookings BookingRequest[]
+  sessions AppSession[]
 }
 
 model AppSession {
@@ -192,6 +196,8 @@ model AppSession {
   client     User   @relation("ClientSessions", fields: [clientId], references: [id])
   providerId String
   provider   User   @relation("ProviderSessions", fields: [providerId], references: [id])
+  serviceId  String?
+  service    Service? @relation(fields: [serviceId], references: [id])
 
   status    AppSessionStatus @default(SCHEDULED)
   startTime DateTime
@@ -405,11 +411,11 @@ model Notification {
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  type    String
+  type    NotificationType
   title   String
-  message String
+  body    String
   isRead  Boolean @default(false)
-  data    Json? // Flexible data payload
+  data    Json?
 
   createdAt DateTime @default(now())
 }
@@ -549,3 +555,28 @@ model Favorite {
 
   @@unique([userId, providerId])
 }
+
+model Device {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  token     String
+  platform  String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, token])
+}
+
+enum NotificationType {
+  BOOKING_REQUEST
+  BOOKING_CONFIRMED
+  SESSION_REMINDER
+  MISSED_CALL
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  SYSTEM
+}
+
