@@ -62,7 +62,8 @@ export async function POST(req: NextRequest) {
             description,
             price: Number(price),
             duration: Number(duration),
-            category: category || "General"
+            category: category || "General",
+            createdById: user.id
         }
 
         const service = await db.addProviderService(user.id, serviceData)

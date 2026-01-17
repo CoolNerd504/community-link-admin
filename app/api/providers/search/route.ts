@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
                 {
                     providerServices: {
                         some: {
+                            isApproved: true,
                             title: { contains: query, mode: 'insensitive' }
                         }
                     }
@@ -30,6 +31,8 @@ export async function GET(req: NextRequest) {
         if (category || minPrice !== undefined || maxPrice !== undefined) {
             whereClause.providerServices = {
                 some: {
+                    isApproved: true,
+                    isActive: true,
                     ...(category ? { category: { equals: category, mode: 'insensitive' } } : {}),
                     ...(minPrice !== undefined ? { price: { gte: minPrice } } : {}),
                     ...(maxPrice !== undefined ? { price: { lte: maxPrice } } : {})
@@ -44,7 +47,8 @@ export async function GET(req: NextRequest) {
                 profile: true,
                 providerServices: {
                     where: {
-                        isActive: true
+                        isActive: true,
+                        isApproved: true
                     }
                 },
                 providerReviews: true,

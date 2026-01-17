@@ -128,6 +128,7 @@ export const addProviderService = async (userId: string, serviceData: any) => {
       duration: parseInt(serviceData.duration),
       category: serviceData.category || "General",
       isActive: true,
+      createdById: serviceData.createdById,
     }
   })
 }
