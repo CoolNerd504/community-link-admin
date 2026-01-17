@@ -19,8 +19,9 @@ import { Button } from "../../../components/ui/button"
 import { Card, CardContent } from "../../../components/ui/card"
 import { Badge } from "../../../components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
-import { getProviderByIdAction } from "../../../app/actions"
-import { BookingModal } from "../../features/booking/BookingModal"
+import { getProviderByIdAction, toggleFollowAction, checkIsFollowingAction, startInquiryAction } from "../../../app/actions"
+import { BookingWizard } from "../../features/booking/BookingWizard"
+import { Users } from "lucide-react"
 
 interface ProviderService {
   id: string
@@ -69,6 +70,49 @@ export default function ProviderDetailsPage() {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
   const [bookingService, setBookingService] = useState<{ id: string, name: string, price: number } | undefined>(undefined)
 
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [isFollowLoading, setIsFollowLoading] = useState(false)
+
+  // Load initial follow status
+  useEffect(() => {
+    async function checkFollowStatus() {
+      if (!providerId) return
+      try {
+        const result = await checkIsFollowingAction(providerId)
+        setIsFollowing(result.isFollowing)
+      } catch (error) {
+        console.error("Error checking follow status:", error)
+      }
+    }
+    checkFollowStatus()
+  }, [providerId])
+
+  const handleToggleFollow = async () => {
+    try {
+      setIsFollowLoading(true)
+      const result = await toggleFollowAction(providerId)
+      setIsFollowing(result.isFollowing)
+    } catch (error) {
+      // Ideally show toast here
+      console.error("Error toggling follow:", error)
+      alert("Failed to update follow status. Please try again.")
+    } finally {
+      setIsFollowLoading(false)
+    }
+  }
+
+  const handleStartMessage = async () => {
+    try {
+      const result = await startInquiryAction(providerId)
+      if (result.sessionId) {
+        router.push(`/messages/${result.sessionId}`)
+      }
+    } catch (error) {
+      console.error("Error starting message:", error)
+      alert("Failed to start conversation. Please try again.")
+    }
+  }
+
   useEffect(() => {
     const loadProvider = async () => {
       try {
@@ -85,16 +129,16 @@ export default function ProviderDetailsPage() {
             id: data.id,
             name: data.name || "Provider",
             email: data.email || "",
-            image: data.image,
-            bio: data.profile?.bio,
-            headline: data.profile?.headline,
-            location: data.profile?.location,
+            image: data.image || undefined,
+            bio: data.profile?.bio || undefined,
+            headline: data.profile?.headline || undefined,
+            location: data.profile?.location || undefined,
             languages: data.profile?.languages || [],
             rating: Math.round(rating * 10) / 10,
             reviewCount: reviews.length,
             isOnline: data.profile?.isOnline || false,
             isVerified: data.kycStatus === 'VERIFIED' || data.profile?.isVerified || false,
-            hourlyRate: data.profile?.hourlyRate,
+            hourlyRate: data.profile?.hourlyRate || undefined,
             services: data.providerServices?.map((s: any) => ({
               id: s.id,
               title: s.title,
@@ -247,10 +291,31 @@ export default function ProviderDetailsPage() {
                     )}
                   </div>
 
-                  <Button className="w-full" size="lg">
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Contact Instantly
-                  </Button>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      variant={isFollowing ? "outline" : "default"}
+                      onClick={handleToggleFollow}
+                      disabled={isFollowLoading}
+                    >
+                      {isFollowLoading ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                      ) : (
+                        <Users className="w-4 h-4 mr-2" />
+                      )}
+                      {isFollowing ? "Unfollow" : "Follow"}
+                    </Button>
+
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      onClick={handleStartMessage}
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Message
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -338,8 +403,8 @@ export default function ProviderDetailsPage() {
                             <Star
                               key={star}
                               className={`w-5 h-5 ${star <= Math.round(provider.rating)
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300"
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-gray-300"
                                 }`}
                             />
                           ))}
@@ -376,8 +441,8 @@ export default function ProviderDetailsPage() {
                                   <Star
                                     key={star}
                                     className={`w-4 h-4 ${star <= review.rating
-                                        ? "fill-yellow-400 text-yellow-400"
-                                        : "text-gray-300"
+                                      ? "fill-yellow-400 text-yellow-400"
+                                      : "text-gray-300"
                                       }`}
                                   />
                                 ))}
@@ -406,21 +471,13 @@ export default function ProviderDetailsPage() {
         </div>
       </div>
 
-      {/* Booking Modal */}
-      {bookingService && (
-        <BookingModal
-          isOpen={isBookingModalOpen}
-          onClose={() => {
-            setIsBookingModalOpen(false)
-            setBookingService(undefined)
-          }}
-          providerId={provider.id}
-          providerName={provider.name}
-          serviceId={bookingService.id}
-          serviceName={bookingService.name}
-          servicePrice={bookingService.price}
-        />
-      )}
+      {/* Booking Wizard */}
+      <BookingWizard
+        isOpen={isBookingModalOpen}
+        onOpenChange={setIsBookingModalOpen}
+        providerId={providerId}
+        services={provider?.services || []}
+      />
     </div>
   )
 }

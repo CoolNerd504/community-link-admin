@@ -24,20 +24,22 @@ export async function GET() {
             },
         })
 
-        return NextResponse.json({
-            categories: categories.map(cat => ({
-                id: cat.id,
-                name: cat.name,
-                description: cat.description,
-                icon: cat.icon,
-                subcategories: cat.children.map(sub => ({
-                    id: sub.id,
-                    name: sub.name,
-                    description: sub.description,
-                    icon: sub.icon,
-                })),
+        const response = categories.map(cat => ({
+            id: cat.id,
+            name: cat.name,
+            description: cat.description,
+            icon: cat.icon,
+            subcategories: cat.children.map(sub => ({
+                id: sub.id,
+                name: sub.name,
+                description: sub.description,
+                icon: sub.icon,
             })),
-            count: categories.length,
+        }))
+
+        return NextResponse.json({
+            categories: response,
+            count: response.length
         })
     } catch (error) {
         console.error('[Categories API] Error:', error)

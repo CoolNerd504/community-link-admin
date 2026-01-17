@@ -5,6 +5,7 @@ import * as db from "@/lib/db-operations"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { calculateDynamicPrice } from "@/lib/booking-utils"
 
 // User Actions
 export async function updateUserProfileAction(userId: string, data: any) {
@@ -84,21 +85,48 @@ export async function createInstantBookingAction(providerId: string, serviceId: 
         clientId: session.user.id,
         serviceId,
         notes: requestData.message,
-        // We might need to store other fields like urgency, etc. in notes or JSON field
+        isInstant: true,
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000) // 30 minutes expiry default
     })
 }
 
-export async function createScheduledBookingAction(providerId: string, serviceId: string, requestData: { date: Date, notes?: string }) {
+export async function createScheduledBookingAction(
+    providerId: string,
+    serviceId: string,
+    requestData: { date: Date, notes?: string, duration: number }
+) {
     const session = await auth()
     if (!session?.user) throw new Error("Unauthorized")
+
+    // Get Service details for pricing
+    const service = await prisma.service.findUnique({
+        where: { id: serviceId }
+    })
+
+    if (!service) throw new Error("Service not found")
+
+    // Calculate Price
+    const finalPrice = calculateDynamicPrice(service.price, service.duration, requestData.duration)
 
     return await db.createBookingRequest({
         clientId: session.user.id,
         serviceId,
         notes: requestData.notes,
         requestedTime: requestData.date,
+        duration: requestData.duration,
+        price: finalPrice,
         status: "PENDING"
     })
+}
+
+export async function getBookingQuoteAction(providerId: string, serviceId: string, duration: number) {
+    const service = await prisma.service.findUnique({
+        where: { id: serviceId }
+    })
+
+    if (!service) throw new Error("Service not found")
+
+    return calculateDynamicPrice(service.price, service.duration, duration)
 }
 
 export async function getUserBookingRequestsAction(userId: string) {
@@ -564,4 +592,146 @@ export async function processProviderPayoutAction(providerId: string, amount: nu
         throw new Error("Unauthorized")
     }
     return await db.processProviderPayout(providerId, amount)
+}
+
+export async function getProviderEarningsAction(providerId: string) {
+    const session = await auth()
+    if (!session?.user || session.user.id !== providerId) throw new Error("Unauthorized")
+
+    return await db.getProviderEarnings(providerId)
+}
+
+// ============================================
+// FOLLOW & MESSAGE ACTIONS
+// ============================================
+
+export async function toggleFollowAction(providerId: string) {
+    const session = await auth()
+    if (!session?.user) throw new Error("Unauthorized")
+
+    const isFollowing = await db.isFollowing(session.user.id, providerId)
+
+    if (isFollowing) {
+        await db.unfollowUser(session.user.id, providerId)
+        return { isFollowing: false }
+    } else {
+        await db.followUser(session.user.id, providerId)
+        return { isFollowing: true }
+    }
+}
+
+export async function checkIsFollowingAction(providerId: string) {
+    const session = await auth()
+    if (!session?.user) return { isFollowing: false }
+
+    const isFollowing = await db.isFollowing(session.user.id, providerId)
+    return { isFollowing }
+}
+
+export async function startInquiryAction(providerId: string) {
+    const session = await auth()
+    if (!session?.user) throw new Error("Unauthorized")
+
+    const sessionResult = await db.createInquirySession(session.user.id, providerId)
+    return { sessionId: sessionResult.id }
+}
+
+export async function getSessionDetailsAction(sessionId: string) {
+    const session = await auth()
+    if (!session?.user) throw new Error("Unauthorized")
+
+    const appSession = await prisma.appSession.findUnique({
+        where: { id: sessionId },
+        include: {
+            chatRoom: true,
+            provider: {
+                select: { id: true, name: true, image: true }
+            },
+            client: {
+                select: { id: true, name: true, image: true }
+            }
+        }
+    })
+
+    if (!appSession) return null
+    if (appSession.clientId !== session.user.id && appSession.providerId !== session.user.id) {
+        throw new Error("Unauthorized")
+    }
+
+    return appSession
+}
+
+export async function getSessionByIdAction(sessionId: string) {
+    const session = await auth()
+    if (!session?.user) throw new Error("Unauthorized")
+
+    const appSession = await prisma.appSession.findUnique({
+        where: { id: sessionId },
+        include: {
+            provider: {
+                select: { id: true, name: true, image: true, role: true }
+            },
+            client: {
+                select: { id: true, name: true, image: true }
+            },
+            chatRoom: true
+        }
+    })
+
+    if (!appSession) {
+        throw new Error("Session not found")
+    }
+
+    // Security check: Must be participant
+    if (appSession.clientId !== session.user.id && appSession.providerId !== session.user.id) {
+        throw new Error("Unauthorized")
+    }
+
+    return appSession
+}
+
+export async function rescheduleSessionAction(sessionId: string, newStartTime: Date) {
+    const session = await auth()
+    if (!session?.user) throw new Error("Unauthorized")
+
+    const appSession = await prisma.appSession.findUnique({
+        where: { id: sessionId }
+    })
+
+    if (!appSession) throw new Error("Session not found")
+
+    // Security check
+    if (appSession.clientId !== session.user.id && appSession.providerId !== session.user.id) {
+        throw new Error("Unauthorized")
+    }
+
+    // Check 15 min rule
+    const now = new Date()
+    const currentStartTime = new Date(appSession.startTime)
+    const diffMins = (currentStartTime.getTime() - now.getTime()) / 60000
+
+    if (diffMins <= 15) {
+        throw new Error("Cannot reschedule within 15 minutes of start time")
+    }
+
+    // Calculate new End Time (preserve duration)
+    let newEndTime = null
+    if (appSession.endTime) {
+        const durationMs = currentStartTime.getTime() - appSession.endTime.getTime()
+        // Wait, duration is end - start. endTime should be > startTime
+        const duration = appSession.endTime.getTime() - currentStartTime.getTime()
+        newEndTime = new Date(newStartTime.getTime() + duration)
+
+        // Sanity check if duration was negative (data error)
+        if (duration < 0) newEndTime = null // fallback?
+    }
+
+    return await prisma.appSession.update({
+        where: { id: sessionId },
+        data: {
+            startTime: newStartTime,
+            endTime: newEndTime,
+            status: "SCHEDULED" // Reset status if needed?
+        }
+    })
 }

@@ -61,10 +61,15 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json()
-        const { serviceId, date, notes } = body
+        const { serviceId, date, notes, duration, isInstant } = body
 
-        if (!serviceId || !date) {
-            return NextResponse.json({ message: 'Missing serviceId or date' }, { status: 400 })
+        if (!serviceId) {
+            return NextResponse.json({ message: 'Missing serviceId' }, { status: 400 })
+        }
+
+        // For scheduled bookings, date is required
+        if (!isInstant && !date) {
+            return NextResponse.json({ message: 'Date is required for scheduled bookings' }, { status: 400 })
         }
 
         const service = await prisma.service.findUnique({
@@ -75,19 +80,40 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: 'Service not found' }, { status: 404 })
         }
 
-        // Prevent booking your own service?
+        // Prevent booking your own service
         if (service.providerId === user.id) {
             return NextResponse.json({ message: 'Cannot book your own service' }, { status: 400 })
         }
 
+        // Calculate Price if duration is provided, else use service defaults
+        let finalPrice = service.price
+        const finalDuration = duration || service.duration
+
+        if (duration) {
+            const { calculateDynamicPrice } = await import('@/lib/booking-utils')
+            finalPrice = calculateDynamicPrice(service.price, service.duration, duration)
+        }
+
+        const bookingData: any = {
+            clientId: user.id,
+            serviceId,
+            notes,
+            status: 'PENDING',
+            duration: finalDuration,
+            price: finalPrice
+        }
+
+        if (isInstant) {
+            bookingData.isInstant = true
+            bookingData.expiresAt = new Date(Date.now() + 30 * 60 * 1000) // 30 mins expiry
+            // Instant bookings might not have a requestedTime initially or set to now
+            bookingData.requestedTime = new Date()
+        } else {
+            bookingData.requestedTime = new Date(date)
+        }
+
         const booking = await prisma.bookingRequest.create({
-            data: {
-                clientId: user.id,
-                serviceId,
-                requestedTime: new Date(date),
-                notes,
-                status: 'PENDING'
-            },
+            data: bookingData,
             include: {
                 service: {
                     select: { title: true }

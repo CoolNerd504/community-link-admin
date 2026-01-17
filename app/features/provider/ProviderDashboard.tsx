@@ -21,7 +21,8 @@ import {
   updateProviderServiceAction,
   deleteProviderServiceAction,
   getProviderBookingRequestsAction,
-  respondToBookingRequestAction
+  respondToBookingRequestAction,
+  getProviderEarningsAction
 } from "../../../app/actions"
 // Data/Schema imports if needed
 // Data/Schema imports if needed
@@ -116,6 +117,9 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
   const [isLoadingRequests, setIsLoadingRequests] = useState(false)
   const [requestTimers, setRequestTimers] = useState<{ [key: string]: number }>({})
 
+  // Earnings state
+  const [earnings, setEarnings] = useState<{ totalEarningsPaid: number, totalMinutesServiced: number, pendingPayouts: number } | null>(null)
+
   // Load instant booking requests from DB
   useEffect(() => {
     const fetchBookingRequests = async () => {
@@ -138,9 +142,11 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
           time: req.requestedTime ? new Date(req.requestedTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'
         }))
 
+
         // Separate Instant vs Scheduled
-        const instant = formattedRequests.filter(req => !req.requestedTime)
-        const scheduled = formattedRequests.filter(req => req.requestedTime)
+        // Use explicit isInstant flag or fallback to !requestedTime for legacy/compat
+        const instant = formattedRequests.filter(req => req.isInstant || !req.requestedTime)
+        const scheduled = formattedRequests.filter(req => !req.isInstant && req.requestedTime)
 
         setInstantBookingRequests(instant)
         setBookingRequests(scheduled)
@@ -152,6 +158,26 @@ export function ProviderDashboard({ currentUser }: { currentUser: any }) {
     }
 
     fetchBookingRequests()
+  }, [authUser])
+
+  // Fetch Earnings
+  useEffect(() => {
+    const fetchEarnings = async () => {
+      if (!authUser?.id) return
+      try {
+        const data = await getProviderEarningsAction(authUser.id)
+        if (data) {
+          setEarnings({
+            totalEarningsPaid: data.totalEarningsZMW,
+            totalMinutesServiced: data.totalMinutesServiced,
+            pendingPayouts: data.pendingPayoutZMW
+          })
+        }
+      } catch (e) {
+        console.error("Failed to fetch earnings", e)
+      }
+    }
+    fetchEarnings()
   }, [authUser])
 
   // Manage countdown timers for accepted requests

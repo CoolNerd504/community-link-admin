@@ -67,6 +67,13 @@ export const updateUserProfile = async (userId: string, updates: any) => {
   if (updates.location) profileUpdates.location = updates.location
   if (updates.hourlyRate) profileUpdates.hourlyRate = updates.hourlyRate
 
+  // Content Personalization
+  if (updates.interests) profileUpdates.interests = updates.interests
+
+  // Provider Status Toggles
+  if (typeof updates.isOnline === 'boolean') profileUpdates.isOnline = updates.isOnline
+  if (typeof updates.isAvailableForInstant === 'boolean') profileUpdates.isAvailableForInstant = updates.isAvailableForInstant
+
   return await prisma.user.update({
     where: { id: userId },
     data: {
@@ -76,6 +83,38 @@ export const updateUserProfile = async (userId: string, updates: any) => {
       }
     }
   })
+}
+
+export const followUser = async (followerId: string, followingId: string) => {
+  return await prisma.follow.create({
+    data: {
+      followerId,
+      followingId
+    }
+  })
+}
+
+export const unfollowUser = async (followerId: string, followingId: string) => {
+  return await prisma.follow.delete({
+    where: {
+      followerId_followingId: {
+        followerId,
+        followingId
+      }
+    }
+  })
+}
+
+export const isFollowing = async (followerId: string, followingId: string) => {
+  const follow = await prisma.follow.findUnique({
+    where: {
+      followerId_followingId: {
+        followerId,
+        followingId
+      }
+    }
+  })
+  return !!follow
 }
 
 // Service Operations
@@ -158,7 +197,11 @@ export const createBookingRequest = async (bookingData: any) => {
       clientId: bookingData.clientId,
       status: BookingStatus.PENDING,
       notes: bookingData.notes,
-      requestedTime: bookingData.requestedTime
+      requestedTime: bookingData.requestedTime,
+      duration: bookingData.duration,
+      price: bookingData.price,
+      isInstant: bookingData.isInstant || false,
+      expiresAt: bookingData.expiresAt,
     }
   })
 }
@@ -172,18 +215,22 @@ export const respondToBookingRequest = async (bookingId: string, status: "accept
     include: { service: true }
   })
 
-  if (status === "accepted") {
-    // Create actual session
-    await prisma.appSession.create({
-      data: {
-        clientId: booking.clientId,
-        providerId: booking.service.providerId,
-        status: AppSessionStatus.SCHEDULED,
-        startTime: new Date(), // Should come from booking data technically
-        price: booking.service.price,
-      }
-    })
-  }
+  // Calculate endTime
+  const startTime = booking.requestedTime || new Date()
+  const durationMins = booking.duration || booking.service.duration
+  const endTime = new Date(startTime.getTime() + durationMins * 60000)
+
+  // Create actual session
+  await prisma.appSession.create({
+    data: {
+      clientId: booking.clientId,
+      providerId: booking.service.providerId,
+      status: AppSessionStatus.SCHEDULED,
+      startTime: startTime,
+      endTime: endTime,
+      price: booking.price || booking.service.price,
+    }
+  })
   return booking
 }
 
@@ -199,6 +246,36 @@ export const getProviderSessions = async (userId: string) => {
     where: { providerId: userId },
     include: { client: true, chatRoom: true }
   })
+}
+
+export const createInquirySession = async (clientId: string, providerId: string) => {
+  // Check if active inquiry already exists? For now, we allow multiple or reuse active one.
+  // Ideally, find open INQUIRY session
+  const existing = await prisma.appSession.findFirst({
+    where: {
+      clientId,
+      providerId,
+      status: AppSessionStatus.INQUIRY
+    },
+    include: { chatRoom: true }
+  })
+
+  if (existing) return existing
+
+  const session = await prisma.appSession.create({
+    data: {
+      clientId,
+      providerId,
+      status: AppSessionStatus.INQUIRY,
+      startTime: new Date(),
+      price: 0, // Inquiries are free
+    }
+  })
+
+  // Auto-create chat room for inquiry
+  await createChatRoom([], session.id)
+
+  return session
 }
 
 // Chat Operations
@@ -446,6 +523,30 @@ export const updatePayoutStatus = async (payoutId: string, status: "APPROVED" | 
 
     return payout
   })
+}
+
+// ============================================
+// PROVIDER EARNINGS OPERATIONS
+// ============================================
+
+export const getProviderEarnings = async (providerId: string) => {
+  let earnings = await prisma.providerEarnings.findUnique({
+    where: { providerId }
+  })
+
+  // Start migration: if no earnings record exists, create one
+  if (!earnings) {
+    try {
+      earnings = await prisma.providerEarnings.create({
+        data: { providerId }
+      })
+    } catch (e) {
+      // If race condition where it was just created
+      earnings = await prisma.providerEarnings.findUnique({ where: { providerId } });
+    }
+  }
+
+  return earnings
 }
 
 // ============================================
@@ -806,14 +907,7 @@ export async function getAllProviderEarnings() {
   })
 }
 
-export async function getProviderEarnings(providerId: string) {
-  return await prisma.providerEarnings.findUnique({
-    where: { providerId },
-    include: {
-      provider: true
-    }
-  })
-}
+
 
 export async function getProviderEarningsStats() {
   const stats = await prisma.providerEarnings.aggregate({
@@ -853,7 +947,7 @@ export async function processProviderPayout(providerId: string, amount: number) 
         data: {
           walletId: wallet.id,
           amount,
-          status: 'COMPLETED'
+          status: PayoutStatus.PROCESSED
         }
       })
     }

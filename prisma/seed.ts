@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { PrismaClient, UserRole, VettingStatus, DisputeStatus, AppSessionStatus } from '@prisma/client'
+import { PrismaClient, UserRole, VettingStatus, DisputeStatus, AppSessionStatus, TransactionType, TransactionStatus, PayoutStatus } from '@prisma/client'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 import bcrypt from 'bcryptjs'
@@ -14,13 +14,14 @@ async function main() {
     console.log('🌱 Starting database seed...')
     console.log('Testing DB connection string:', process.env.DATABASE_URL ? 'Loaded' : 'MISSING')
 
-    // Clear existing data (optional - comment out if you want to keep existing data)
+    // Clear existing data
     console.log('🗑️  Clearing existing data...')
     await prisma.minuteUsage.deleteMany()
     await prisma.minutePurchase.deleteMany()
     await prisma.providerEarnings.deleteMany()
     await prisma.review.deleteMany()
     await prisma.dispute.deleteMany()
+    await prisma.payoutRequest.deleteMany()
     await prisma.transaction.deleteMany()
     await prisma.wallet.deleteMany()
     await prisma.appSession.deleteMany()
@@ -31,6 +32,7 @@ async function main() {
     await prisma.category.deleteMany()
     await prisma.pricingTier.deleteMany()
     await prisma.bundlePricing.deleteMany()
+    await prisma.minutePackage.deleteMany()
 
     // 1. SEED CATEGORIES
     console.log('📂 Seeding categories...')
@@ -198,11 +200,24 @@ async function main() {
                     location: 'Lusaka, Zambia',
                     isVerified: true,
                     vettingStatus: VettingStatus.APPROVED,
+                    isAvailableForInstant: true,
+                    isOnline: true,
+                    interests: [categories[0].name, categories[1].name, categories[2].name]
                 }
             },
             wallet: {
-                create: { balance: 2250 }
-            }
+                create: {
+                    balance: 2250,
+                    availableMinutes: 0,
+                    totalMinutesPurchased: 0,
+                    totalMinutesUsed: 0
+                }
+            },
+            kycStatus: "APPROVED",
+            kycVerifiedAt: new Date(),
+            idFrontUrl: "https://storage.googleapis.com/commlink-kyc/id_front_emily.jpg",
+            idBackUrl: "https://storage.googleapis.com/commlink-kyc/id_back_emily.jpg",
+            selfieUrl: "https://storage.googleapis.com/commlink-kyc/selfie_emily.jpg"
         }
     })
 
@@ -222,8 +237,18 @@ async function main() {
                 }
             },
             wallet: {
-                create: { balance: 1280 }
-            }
+                create: {
+                    balance: 1280,
+                    availableMinutes: 0,
+                    totalMinutesPurchased: 0,
+                    totalMinutesUsed: 0
+                }
+            },
+            kycStatus: "APPROVED",
+            kycVerifiedAt: new Date(),
+            idFrontUrl: "https://storage.googleapis.com/commlink-kyc/id_front_john.jpg",
+            idBackUrl: "https://storage.googleapis.com/commlink-kyc/id_back_john.jpg",
+            selfieUrl: "https://storage.googleapis.com/commlink-kyc/selfie_john.jpg"
         }
     })
 
@@ -243,8 +268,18 @@ async function main() {
                 }
             },
             wallet: {
-                create: { balance: 0 }
-            }
+                create: {
+                    balance: 0,
+                    availableMinutes: 0,
+                    totalMinutesPurchased: 0,
+                    totalMinutesUsed: 0
+                }
+            },
+            kycStatus: "SUBMITTED",
+            kycSubmittedAt: new Date(),
+            idFrontUrl: "https://storage.googleapis.com/commlink-kyc/id_front_maria.jpg",
+            idBackUrl: "https://storage.googleapis.com/commlink-kyc/id_back_maria.jpg",
+            selfieUrl: "https://storage.googleapis.com/commlink-kyc/selfie_maria.jpg"
         }
     })
 
@@ -264,8 +299,17 @@ async function main() {
                 }
             },
             wallet: {
-                create: { balance: 0 }
-            }
+                create: {
+                    balance: 0,
+                    availableMinutes: 0,
+                    totalMinutesPurchased: 0,
+                    totalMinutesUsed: 0
+                }
+            },
+            kycStatus: "REJECTED",
+            idFrontUrl: "https://storage.googleapis.com/commlink-kyc/id_front_david.jpg",
+            idBackUrl: "https://storage.googleapis.com/commlink-kyc/id_back_david.jpg",
+            selfieUrl: "https://storage.googleapis.com/commlink-kyc/selfie_david.jpg"
         }
     })
 
@@ -285,8 +329,17 @@ async function main() {
                 }
             },
             wallet: {
-                create: { balance: 0 }
-            }
+                create: {
+                    balance: 0,
+                    availableMinutes: 0,
+                    totalMinutesPurchased: 0,
+                    totalMinutesUsed: 0
+                }
+            },
+            kycStatus: "REJECTED",
+            idFrontUrl: "https://storage.googleapis.com/commlink-kyc/id_front_lisa.jpg",
+            idBackUrl: "https://storage.googleapis.com/commlink-kyc/id_back_lisa.jpg",
+            selfieUrl: "https://storage.googleapis.com/commlink-kyc/selfie_lisa.jpg"
         }
     })
 
@@ -306,8 +359,17 @@ async function main() {
                 }
             },
             wallet: {
-                create: { balance: 0 }
-            }
+                create: {
+                    balance: 0,
+                    availableMinutes: 0,
+                    totalMinutesPurchased: 0,
+                    totalMinutesUsed: 0
+                }
+            },
+            kycStatus: "PENDING",
+            idFrontUrl: "https://storage.googleapis.com/commlink-kyc/id_front_ahmed.jpg",
+            idBackUrl: "https://storage.googleapis.com/commlink-kyc/id_back_ahmed.jpg",
+            selfieUrl: "https://storage.googleapis.com/commlink-kyc/selfie_ahmed.jpg"
         }
     })
 
@@ -327,8 +389,18 @@ async function main() {
                 }
             },
             wallet: {
-                create: { balance: 480 }
-            }
+                create: {
+                    balance: 480,
+                    availableMinutes: 0,
+                    totalMinutesPurchased: 0,
+                    totalMinutesUsed: 0
+                }
+            },
+            kycStatus: "APPROVED",
+            kycVerifiedAt: new Date(),
+            idFrontUrl: "https://storage.googleapis.com/commlink-kyc/id_front_sophie.jpg",
+            idBackUrl: "https://storage.googleapis.com/commlink-kyc/id_back_sophie.jpg",
+            selfieUrl: "https://storage.googleapis.com/commlink-kyc/selfie_sophie.jpg"
         }
     })
 
@@ -348,22 +420,29 @@ async function main() {
                 }
             },
             wallet: {
-                create: { balance: 3685 }
-            }
+                create: {
+                    balance: 3685,
+                    availableMinutes: 0,
+                    totalMinutesPurchased: 0,
+                    totalMinutesUsed: 0
+                }
+            },
+            kycStatus: "APPROVED",
+            kycVerifiedAt: new Date(),
+            idFrontUrl: "https://storage.googleapis.com/commlink-kyc/id_front_robert.jpg",
+            idBackUrl: "https://storage.googleapis.com/commlink-kyc/id_back_robert.jpg",
+            selfieUrl: "https://storage.googleapis.com/commlink-kyc/selfie_robert.jpg"
         }
     })
 
     // SEED PROVIDER SERVICES
     console.log('🛠️ Seeding provider services...')
     const providersList = [provider1, provider2, provider3, provider4, provider5, provider6, provider7, provider8];
-    const serviceTitles = ["Initial Consultation", "Standard Session", "Deep Dive Strategy", "Quick Review"];
 
     for (let i = 0; i < providersList.length; i++) {
         const provider = providersList[i];
-        // Assign a category cyclically
         const category = categories[i % categories.length];
 
-        // Add 2 services per provider
         await prisma.service.create({
             data: {
                 providerId: provider.id,
@@ -398,7 +477,7 @@ async function main() {
                 role: UserRole.USER,
                 password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 150 } }
+                wallet: { create: { balance: 150, availableMinutes: 150 } }
             }
         }),
         prisma.user.create({
@@ -408,7 +487,7 @@ async function main() {
                 role: UserRole.USER,
                 password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 200 } }
+                wallet: { create: { balance: 200, availableMinutes: 200 } }
             }
         }),
         prisma.user.create({
@@ -416,8 +495,9 @@ async function main() {
                 email: 'carol.davis@example.com',
                 name: 'Carol Davis',
                 role: UserRole.USER,
+                password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 0 } }
+                wallet: { create: { balance: 0, availableMinutes: 0 } }
             }
         }),
         prisma.user.create({
@@ -425,8 +505,9 @@ async function main() {
                 email: 'daniel.miller@example.com',
                 name: 'Daniel Miller',
                 role: UserRole.USER,
+                password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 100 } }
+                wallet: { create: { balance: 100, availableMinutes: 100 } }
             }
         }),
         prisma.user.create({
@@ -434,8 +515,9 @@ async function main() {
                 email: 'emma.wilson@example.com',
                 name: 'Emma Wilson',
                 role: UserRole.USER,
+                password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 50 } }
+                wallet: { create: { balance: 50, availableMinutes: 50 } }
             }
         }),
         prisma.user.create({
@@ -443,8 +525,9 @@ async function main() {
                 email: 'frank.moore@example.com',
                 name: 'Frank Moore',
                 role: UserRole.USER,
+                password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 75 } }
+                wallet: { create: { balance: 75, availableMinutes: 75 } }
             }
         }),
         prisma.user.create({
@@ -452,8 +535,9 @@ async function main() {
                 email: 'grace.taylor@example.com',
                 name: 'Grace Taylor',
                 role: UserRole.USER,
+                password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 500 } }
+                wallet: { create: { balance: 500, availableMinutes: 500 } }
             }
         }),
         prisma.user.create({
@@ -461,8 +545,9 @@ async function main() {
                 email: 'henry.anderson@example.com',
                 name: 'Henry Anderson',
                 role: UserRole.USER,
+                password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 300 } }
+                wallet: { create: { balance: 300, availableMinutes: 300 } }
             }
         }),
         prisma.user.create({
@@ -470,8 +555,9 @@ async function main() {
                 email: 'iris.thomas@example.com',
                 name: 'Iris Thomas',
                 role: UserRole.USER,
+                password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 125 } }
+                wallet: { create: { balance: 125, availableMinutes: 125 } }
             }
         }),
         prisma.user.create({
@@ -479,8 +565,9 @@ async function main() {
                 email: 'jack.jackson@example.com',
                 name: 'Jack Jackson',
                 role: UserRole.USER,
+                password: hashedPassword,
                 profile: { create: {} },
-                wallet: { create: { balance: 0 } }
+                wallet: { create: { balance: 0, availableMinutes: 0 } }
             }
         })
     ])
@@ -537,8 +624,34 @@ async function main() {
     ])
     console.log(`✅ Created ${packages.length} minute packages`)
 
-    // 6. SEED PROVIDER EARNINGS
-    console.log('💰 Seeding provider earnings...')
+    // 6. SEED PROVIDER EARNINGS & PAYOUTS
+    console.log('💰 Seeding provider earnings and payouts...')
+    const p1Wallet = await prisma.wallet.findUnique({ where: { userId: provider1.id } })
+    const p8Wallet = await prisma.wallet.findUnique({ where: { userId: provider8.id } })
+
+    if (p1Wallet) {
+        await prisma.payoutRequest.create({
+            data: {
+                walletId: p1Wallet.id,
+                amount: 500,
+                status: PayoutStatus.PENDING,
+                bankDetails: 'Bank: ABC Bank, Account: 123456789'
+            }
+        })
+    }
+
+    if (p8Wallet) {
+        await prisma.payoutRequest.create({
+            data: {
+                walletId: p8Wallet.id,
+                amount: 1000,
+                status: PayoutStatus.APPROVED,
+                bankDetails: 'Bank: XYZ Bank, Account: 987654321',
+                processedAt: new Date()
+            }
+        })
+    }
+
     await Promise.all([
         prisma.providerEarnings.create({
             data: {
@@ -554,26 +667,6 @@ async function main() {
         }),
         prisma.providerEarnings.create({
             data: {
-                providerId: provider2.id,
-                totalMinutesServiced: 320,
-                currentMonthMinutes: 90,
-                totalEarningsZMW: 1280,
-                currentMonthEarnings: 360,
-                pendingPayoutZMW: 360
-            }
-        }),
-        prisma.providerEarnings.create({
-            data: {
-                providerId: provider7.id,
-                totalMinutesServiced: 80,
-                currentMonthMinutes: 80,
-                totalEarningsZMW: 480,
-                currentMonthEarnings: 480,
-                pendingPayoutZMW: 480
-            }
-        }),
-        prisma.providerEarnings.create({
-            data: {
                 providerId: provider8.id,
                 totalMinutesServiced: 670,
                 currentMonthMinutes: 150,
@@ -585,20 +678,15 @@ async function main() {
             }
         })
     ])
-    console.log('✅ Created provider earnings records')
+    console.log('✅ Created provider earnings and payout samples')
 
-    // 7. SEED SAMPLE MINUTE PURCHASES
-    console.log('💳 Seeding minute purchases...')
+    // 7. SEED SAMPLE SESSIONS, MINUTE PURCHASES & USAGE
+    console.log('💳 Seeding usage history...')
     const alice = users[0]
-    const bob = users[1]
-    const grace = users[6]
-
     const aliceWallet = await prisma.wallet.findUnique({ where: { userId: alice.id } })
-    const bobWallet = await prisma.wallet.findUnique({ where: { userId: bob.id } })
-    const graceWallet = await prisma.wallet.findUnique({ where: { userId: grace.id } })
 
     if (aliceWallet) {
-        await prisma.minutePurchase.create({
+        const purchase = await prisma.minutePurchase.create({
             data: {
                 walletId: aliceWallet.id,
                 packageName: 'Value Pack',
@@ -609,274 +697,129 @@ async function main() {
                 transactionRef: 'MM-' + Date.now()
             }
         })
-        await prisma.minutePurchase.create({
+
+        const session = await prisma.appSession.create({
             data: {
-                walletId: aliceWallet.id,
-                packageName: 'Starter Pack',
-                minutesPurchased: 50,
-                priceZMW: 100,
-                paymentMethod: 'CARD',
-                paymentStatus: 'COMPLETED',
-                transactionRef: 'CARD-' + (Date.now() + 1000)
+                clientId: alice.id,
+                providerId: provider1.id,
+                status: AppSessionStatus.COMPLETED,
+                startTime: new Date(Date.now() - 3600000),
+                endTime: new Date(),
+                price: 50
             }
         })
+
+        await prisma.minuteUsage.create({
+            data: {
+                walletId: aliceWallet.id,
+                minutesUsed: 30,
+                ratePerMinute: 2,
+                totalCost: 60,
+                sessionId: session.id
+            }
+        })
+
         await prisma.wallet.update({
             where: { id: aliceWallet.id },
             data: {
-                totalMinutesPurchased: 150,
-                availableMinutes: 150
+                totalMinutesPurchased: 100,
+                totalMinutesUsed: 30,
+                availableMinutes: 70
             }
         })
     }
 
-    if (bobWallet) {
-        await prisma.minutePurchase.create({
-            data: {
-                walletId: bobWallet.id,
-                packageName: 'Popular Pack',
-                minutesPurchased: 200,
-                priceZMW: 320,
-                paymentMethod: 'MOBILE_MONEY',
-                paymentStatus: 'COMPLETED',
-                transactionRef: 'MM-' + (Date.now() + 2000)
-            }
-        })
-        await prisma.wallet.update({
-            where: { id: bobWallet.id },
-            data: {
-                totalMinutesPurchased: 200,
-                availableMinutes: 200
-            }
-        })
-    }
-
-    if (graceWallet) {
-        await prisma.minutePurchase.create({
-            data: {
-                walletId: graceWallet.id,
-                packageName: 'Premium Pack',
-                minutesPurchased: 500,
-                priceZMW: 750,
-                paymentMethod: 'CARD',
-                paymentStatus: 'COMPLETED',
-                transactionRef: 'CARD-' + (Date.now() + 3000)
-            }
-        })
-        await prisma.wallet.update({
-            where: { id: graceWallet.id },
-            data: {
-                totalMinutesPurchased: 500,
-                availableMinutes: 500
-            }
-        })
-    }
-    console.log('✅ Created sample minute purchases')
-
-    // 8. SEED SESSIONS & DISPUTES
-    console.log('🗣️ Seeding sessions and disputes...')
-
-    // Dispute 1 (OPEN): Alice vs Provider 1
-    const d1Session = await prisma.appSession.create({
-        data: {
-            clientId: users[0].id,
-            providerId: provider1.id,
-            status: AppSessionStatus.COMPLETED,
-            startTime: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-            endTime: new Date(Date.now() - 1000 * 60 * 60 * 24 + 1000 * 60 * 30),
-            price: 50
-        }
-    })
-    await prisma.dispute.create({
-        data: {
-            sessionId: d1Session.id,
-            reason: "Session ended early: Provider left after 10 minutes but charged for full session",
-            status: DisputeStatus.OPEN,
-            creatorId: users[0].id,
-            providerId: provider1.id,
-            reportedById: users[0].id,
-            reportedAgainstId: provider1.id
-        }
-    })
-
-    // Dispute 2 (PENDING): Bob vs Provider 3
-    const d2Session = await prisma.appSession.create({
-        data: {
-            clientId: users[1].id,
-            providerId: provider3.id,
-            status: AppSessionStatus.CANCELLED, // No show
-            startTime: new Date(Date.now() - 1000 * 60 * 60 * 48),
-            endTime: new Date(Date.now() - 1000 * 60 * 60 * 48 + 1000 * 60 * 60),
-            price: 35
-        }
-    })
-    await prisma.dispute.create({
-        data: {
-            sessionId: d2Session.id,
-            reason: "Provider didn't show up: I waited for 15 mins and provider never joined",
-            status: DisputeStatus.PENDING, // Waiting for provider
-            creatorId: users[1].id,
-            providerId: provider3.id,
-            reportedById: users[1].id,
-            reportedAgainstId: provider3.id
-        }
-    })
-
-    // Dispute 3 (INVESTIGATING): Carol vs Provider 4
-    const d3Session = await prisma.appSession.create({
-        data: {
-            clientId: users[2].id,
-            providerId: provider4.id,
-            status: AppSessionStatus.COMPLETED,
-            startTime: new Date(Date.now() - 1000 * 60 * 60 * 72),
-            endTime: new Date(Date.now() - 1000 * 60 * 60 * 72 + 1000 * 60 * 45),
-            price: 45
-        }
-    })
-    await prisma.dispute.create({
-        data: {
-            sessionId: d3Session.id,
-            reason: "Inappropriate behavior: Provider made uncomfortable comments",
-            status: DisputeStatus.INVESTIGATING,
-            creatorId: users[2].id,
-            providerId: provider4.id,
-            reportedById: users[2].id,
-            reportedAgainstId: provider4.id,
-            notes: ["Admin assigned case", "Reviewing session logs"]
-        }
-    })
-
-    // Dispute 4 (RESOLVED): Daniel vs Provider 2
-    const d4Session = await prisma.appSession.create({
-        data: {
-            clientId: users[3].id,
-            providerId: provider2.id,
-            status: AppSessionStatus.COMPLETED,
-            startTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-            endTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5 + 1000 * 60 * 60),
-            price: 40
-        }
-    })
-    await prisma.dispute.create({
-        data: {
-            sessionId: d4Session.id,
-            reason: "Technical issues: Connection kept dropping",
-            status: DisputeStatus.RESOLVED,
-            resolution: "Refunded 50%",
-            resolvedAt: new Date(),
-            creatorId: users[3].id,
-            providerId: provider2.id,
-            reportedById: users[3].id,
-            reportedAgainstId: provider2.id
-        }
-    })
-
-    // Dispute 5 (CLOSED): Emma vs Provider 7
-    const d5Session = await prisma.appSession.create({
-        data: {
-            clientId: users[4].id,
-            providerId: provider7.id,
-            status: AppSessionStatus.COMPLETED,
-            startTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-            endTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7 + 1000 * 60 * 30),
-            price: 60
-        }
-    })
-    await prisma.dispute.create({
-        data: {
-            sessionId: d5Session.id,
-            reason: "Accidental report: Clicked by mistake",
-            status: DisputeStatus.CLOSED,
-            resolution: "User closed report",
-            resolvedAt: new Date(),
-            creatorId: users[4].id,
-            providerId: provider7.id,
-            reportedById: users[4].id,
-            reportedAgainstId: provider7.id
-        }
-    })
-
-    // Dispute 6 (DISMISSED): Frank vs Provider 8
-    const d6Session = await prisma.appSession.create({
-        data: {
-            clientId: users[5].id,
-            providerId: provider8.id,
-            status: AppSessionStatus.COMPLETED,
-            startTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10),
-            endTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10 + 1000 * 60 * 60),
-            price: 55
-        }
-    })
-    await prisma.dispute.create({
-        data: {
-            sessionId: d6Session.id,
-            reason: "Didn't like advice: Provider gave advice I disagreed with",
-            status: DisputeStatus.DISMISSED,
-            resolution: "Subjective disagreement is not grounds for refund",
-            resolvedAt: new Date(),
-            creatorId: users[5].id,
-            providerId: provider8.id,
-            reportedById: users[5].id,
-            reportedAgainstId: provider8.id
-        }
-    })
-    console.log('✅ Created 6 test disputes with various statuses')
-
-    // 9. SEED BOOKING REQUESTS
+    // 8. SEED BOOKING REQUESTS
     console.log('📅 Seeding booking requests...')
-    // Find service for Provider 1 (Dr. Emily)
     const bookingService = await prisma.service.findFirst({
         where: { providerId: provider1.id }
     })
 
     if (bookingService) {
-        // Pending booking for Alice (users[0])
         await prisma.bookingRequest.create({
             data: {
-                clientId: users[0].id,
+                clientId: alice.id,
                 serviceId: bookingService.id,
                 status: 'PENDING',
-                notes: 'Looking forward to this session! I have some questions about anxiety management.',
-                requestedTime: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2) // 2 days from now
+                notes: 'Looking forward to this session!',
+                requestedTime: new Date(Date.now() + 172800000) // 2 days from now
             }
         })
 
-        // Accepted booking for Bob (users[1])
+        // Instant Booking Request (Pending)
         await prisma.bookingRequest.create({
             data: {
-                clientId: users[1].id,
+                clientId: alice.id,
                 serviceId: bookingService.id,
-                status: 'ACCEPTED',
-                notes: 'Please bring your previous medical history.',
-                requestedTime: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3) // 3 days from now
+                status: 'PENDING',
+                notes: 'I need this immediately!',
+                isInstant: true,
+                expiresAt: new Date(Date.now() + 30 * 60000) // Expires in 30 mins
             }
         })
-        console.log('✅ Created 2 sample booking requests')
-    } else {
-        console.log('⚠️ Could not find service for provider 1, skipping bookings')
+
+        // Expired Instant Booking Request
+        await prisma.bookingRequest.create({
+            data: {
+                clientId: alice.id,
+                serviceId: bookingService.id,
+                status: 'EXPIRED',
+                notes: 'This request was missed.',
+                isInstant: true,
+                expiresAt: new Date(Date.now() - 60 * 60000) // Expired 1 hour ago
+            }
+        })
     }
 
-    // --- Verification ---
-    const adminEmail = 'sarah.admin@commlink.com'
-    const verificationUser = await prisma.user.findUnique({ where: { email: adminEmail } })
-    if (verificationUser) {
-        console.log("🔍 VERIFICATION: User found", adminEmail)
-        console.log("🔍 VERIFICATION: Role", verificationUser.role)
-        const valid = await bcrypt.compare('Password123!', verificationUser.password || '')
-        console.log("🔍 VERIFICATION: Password Valid?", valid ? "YES ✅" : "NO ❌")
-    } else {
-        console.log("❌ VERIFICATION: User NOT found", adminEmail)
-    }
+    // 9. SEED SESSIONS FOR ANALYTICS
+    console.log('📊 Seeding sessions for analytics...')
+    const daysOfWeek = [0, 1, 2, 3, 4, 5, 6] // SUN-SAT
+    const sessionsForAnalytics = []
 
-    const providerEmail = 'emily.watson@example.com'
-    const verificationProvider = await prisma.user.findUnique({ where: { email: providerEmail } })
-    if (verificationProvider) {
-        console.log("🔍 VERIFICATION: Provider found", providerEmail)
-        console.log("🔍 VERIFICATION: Role", verificationProvider.role)
-        const valid = await bcrypt.compare('Password123!', verificationProvider.password || '')
-        console.log("🔍 VERIFICATION: Provider Password Valid?", valid ? "YES ✅" : "NO ❌")
-    } else {
-        console.log("❌ VERIFICATION: User NOT found", adminEmail)
+    for (let i = 0; i < 20; i++) {
+        const dayOffset = Math.floor(Math.random() * 7) // Within last 7 days
+        const startTime = new Date(Date.now() - dayOffset * 24 * 60 * 60 * 1000)
+        const durationMins = [30, 45, 60][Math.floor(Math.random() * 3)]
+        const endTime = new Date(startTime.getTime() + durationMins * 60000)
+        const status = i < 18 ? AppSessionStatus.COMPLETED : AppSessionStatus.CANCELLED // 90% completion rate
+
+        const session = await prisma.appSession.create({
+            data: {
+                clientId: users[i % users.length].id,
+                providerId: provider1.id,
+                status,
+                startTime,
+                endTime,
+                price: durationMins * 2
+            }
+        })
+        sessionsForAnalytics.push(session)
     }
+    console.log(`✅ Created ${sessionsForAnalytics.length} sessions for analytics`)
+
+    // 10. SEED REVIEWS FOR RATING BREAKDOWN
+    console.log('⭐ Seeding reviews...')
+    const ratings = [5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 3] // Mostly 5-star
+
+    for (let i = 0; i < Math.min(ratings.length, sessionsForAnalytics.length); i++) {
+        const session = sessionsForAnalytics[i]
+        if (session.status === 'COMPLETED') {
+            await prisma.review.create({
+                data: {
+                    sessionId: session.id,
+                    clientId: session.clientId,
+                    providerId: provider1.id,
+                    rating: ratings[i],
+                    comment: ratings[i] === 5
+                        ? 'Excellent session! Highly recommended.'
+                        : ratings[i] === 4
+                            ? 'Great experience overall.'
+                            : 'Good session, met my expectations.'
+                }
+            })
+        }
+    }
+    console.log(`✅ Created ${ratings.length} reviews for rating breakdown`)
 
     console.log('✨ Database seeding completed successfully!')
 }
