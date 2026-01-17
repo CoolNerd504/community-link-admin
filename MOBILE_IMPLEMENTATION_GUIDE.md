@@ -116,16 +116,47 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 ```json
 {
   "serviceId": "svc-123",
-  "date": "2026-02-20T10:00:00Z",
+  "requestedTime": "2026-02-20T10:00:00Z",
   "duration": 60,
-  "notes": "Gate code...",
+  "notes": "Gate code: 1234",
   "isInstant": false
 }
 ```
-- **Response (201)**: Booking object
+- **Response (201)**: Booking object with `status: "PENDING"`
+- **Note**: Booking requires provider approval.
 
 **2. Get My Bookings (GET `/api/bookings`)** `[USER, PROVIDER]`
-- **Response**: Array of booking objects
+- **Response**: Array of booking objects with status
+
+**3. Reschedule Booking (PATCH `/api/bookings/[id]/reschedule`)** `[USER, PROVIDER]`
+- **Payload**:
+```json
+{
+  "requestedTime": "2026-02-21T14:00:00Z",
+  "reason": "Conflict with another appointment"
+}
+```
+- **Response**: `{ "message": "Reschedule request submitted. Awaiting provider approval.", "booking": {...} }`
+- **Note**: Resets booking status to `PENDING` for re-approval.
+
+**4. Respond to Booking (POST `/api/bookings/[id]/respond`)** `[PROVIDER]`
+- **Accept Booking**:
+```json
+{ "status": "accepted" }
+```
+- **Decline Booking**:
+```json
+{ "status": "declined" }
+```
+- **Suggest Alternative Time**:
+```json
+{
+  "status": "suggest_alternative",
+  "suggestedTime": "2026-02-22T09:00:00Z"
+}
+```
+- **Note**: `suggest_alternative` keeps status as `PENDING` with updated time for client review.
+
 
 ### C. Wallet & Payments
 
@@ -175,8 +206,32 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 - **Response**: Array of service objects
 
 **2. Create Service (POST `/api/services`)** `[PROVIDER]`
-- **Payload**: `{ "title", "description", "price", "duration", "category" }`
-- **Response (201)**: Service object
+- **Payload**:
+```json
+{
+  "title": "One-on-One Consultation",
+  "description": "45-minute personalized consultation to discuss your needs and provide expert guidance.",
+  "price": 150.00,
+  "duration": 45,
+  "category": "Consulting"
+}
+```
+- **Response (201)**:
+```json
+{
+  "id": "svc-abc123",
+  "providerId": "user-xyz",
+  "title": "One-on-One Consultation",
+  "description": "45-minute personalized consultation...",
+  "price": 150.00,
+  "duration": 45,
+  "category": "Consulting",
+  "isActive": true,
+  "createdAt": "2026-01-17T20:00:00Z",
+  "updatedAt": "2026-01-17T20:00:00Z"
+}
+```
+- **Errors**: `401` (unauthorized), `400` (validation)
 
 **3. Get Service Details (GET `/api/services/[id]`)** `[USER, PROVIDER]`
 - **Response**: Service object with provider
