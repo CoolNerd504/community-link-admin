@@ -43,8 +43,18 @@ export async function POST(req: NextRequest) {
         const { title, description, price, duration, category } = body
 
         // Basic validation
-        if (!title || !description || !price || !duration) {
-            return NextResponse.json({ message: "Missing required fields" }, { status: 400 })
+        // Basic validation
+        const missingFields = []
+        if (!title) missingFields.push('title')
+        if (!description) missingFields.push('description')
+        if (price === undefined || price === null) missingFields.push('price')
+        if (duration === undefined || duration === null) missingFields.push('duration')
+        if (!category) missingFields.push('category') // Enforce category if desired, or keep optional
+
+        if (missingFields.length > 0) {
+            return NextResponse.json({
+                message: `Missing required fields: ${missingFields.join(', ')}`
+            }, { status: 400 })
         }
 
         const serviceData = {
