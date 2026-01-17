@@ -253,17 +253,20 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 ```json
 {
   "id": "svc-abc123",
-  "providerId": "user-xyz",
+  "providerId": "user-provider-id",
+  "createdById": "user-creator-id",
   "title": "One-on-One Consultation",
   "description": "45-minute personalized consultation...",
   "price": 150.00,
   "duration": 45,
   "category": "Consulting",
   "isActive": true,
-  "createdAt": "2026-01-17T20:00:00Z",
-  "updatedAt": "2026-01-17T20:00:00Z"
+  "isApproved": false,
+  "createdAt": "2026-01-18T10:00:00Z",
+  "updatedAt": "2026-01-18T10:00:00Z"
 }
 ```
+- **Note**: New services are created with `isApproved: false` and require Admin approval before appearing in search results.
 - **Errors**: `401` (unauthorized), `400` (validation)
 
 **3. Get Service Details (GET `/api/services/[id]`)** `[USER, PROVIDER]`
