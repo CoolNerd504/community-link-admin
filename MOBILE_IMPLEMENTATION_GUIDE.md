@@ -111,12 +111,28 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 
 ### B. Booking Services
 
-**1. Create Booking (POST `/api/bookings`)** `[USER]`
+**1. Get Provider Availability (GET `/api/providers/[id]/availability`)** `[USER]`
+- **Query Params**: `date` (ISO/YYYY-MM-DD), `days` (default 7)
+- **Response**:
+```json
+{
+  "providerId": "prov-123",
+  "availability": [
+    {
+      "date": "2026-10-21",
+      "isAvailable": true,
+      "slots": ["09:00", "09:30", "13:00", ...]
+    }
+  ]
+}
+```
+
+**2. Create Booking (POST `/api/bookings`)** `[USER]`
 - **Payload**:
 ```json
 {
   "serviceId": "svc-123",
-  "requestedTime": "2026-02-20T10:00:00Z",
+  "startAt": "2026-02-20T10:00:00Z", // or 'date'
   "duration": 60,
   "notes": "Gate code: 1234",
   "isInstant": false
@@ -158,10 +174,10 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 }
 ```
 
-**2. Get My Bookings (GET `/api/bookings`)** `[USER, PROVIDER]`
-- **Response**: Array of booking objects (same structure as create response)
+**3. Get My Bookings (GET `/api/bookings`)** `[USER, PROVIDER]`
+- **Response**: Array of bookings (same structure)
 
-**3. Reschedule Booking (PATCH `/api/bookings/[id]/reschedule`)** `[USER, PROVIDER]`
+**4. Reschedule Booking (PATCH `/api/bookings/[id]/reschedule`)** `[USER, PROVIDER]`
 - **Payload**:
 ```json
 {
@@ -172,7 +188,7 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 - **Response**: `{ "message": "Reschedule request submitted. Awaiting provider approval.", "booking": {...} }`
 - **Note**: Resets booking status to `PENDING` for re-approval.
 
-**4. Respond to Booking (POST `/api/bookings/[id]/respond`)** `[PROVIDER]`
+**5. Respond to Booking (POST `/api/bookings/[id]/respond`)** `[PROVIDER]`
 - **Accept Booking**:
 ```json
 { "status": "accepted" }

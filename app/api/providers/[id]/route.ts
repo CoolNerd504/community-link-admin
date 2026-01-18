@@ -16,7 +16,8 @@ export async function GET(
                 profile: true,
                 providerServices: {
                     where: {
-                        isActive: true
+                        isActive: true,
+                        isApproved: true
                     },
                     orderBy: {
                         price: 'asc'

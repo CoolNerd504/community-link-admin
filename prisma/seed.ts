@@ -451,7 +451,8 @@ async function main() {
                 price: 50 + (i * 5),
                 duration: 30,
                 category: category.name,
-                isActive: true
+                isActive: true,
+                isApproved: true
             }
         });
 
@@ -463,7 +464,8 @@ async function main() {
                 price: 100 + (i * 10),
                 duration: 60,
                 category: category.name,
-                isActive: true
+                isActive: true,
+                isApproved: true
             }
         });
     }

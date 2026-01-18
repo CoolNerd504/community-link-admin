@@ -63,15 +63,16 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json()
-        const { serviceId, date, notes, duration, isInstant } = body
+        const { serviceId, date, startAt, notes, duration, isInstant } = body
+        const requestedDate = date || startAt
 
         if (!serviceId) {
             return NextResponse.json({ message: 'Missing serviceId' }, { status: 400 })
         }
 
         // For scheduled bookings, date is required
-        if (!isInstant && !date) {
-            return NextResponse.json({ message: 'Date is required for scheduled bookings' }, { status: 400 })
+        if (!isInstant && !requestedDate) {
+            return NextResponse.json({ message: 'Date (or startAt) is required for scheduled bookings' }, { status: 400 })
         }
 
         const service = await prisma.service.findUnique({
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
             // Instant bookings might not have a requestedTime initially or set to now
             bookingData.requestedTime = new Date()
         } else {
-            bookingData.requestedTime = new Date(date)
+            bookingData.requestedTime = new Date(requestedDate)
         }
 
         const booking = await prisma.bookingRequest.create({
