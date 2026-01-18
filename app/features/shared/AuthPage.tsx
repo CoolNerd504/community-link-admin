@@ -9,6 +9,7 @@ import { Badge } from "../../../components/ui/badge"
 import { Star, Users } from "lucide-react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { getDashboardPath } from "@/lib/navigation"
 
 export function AuthPage() {
   const [authMode, setAuthMode] = useState<"login" | "signup">("login")

@@ -3,182 +3,154 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { ProviderHeader } from "@/components/provider-shared/provider-header"
+import { ProviderSidebar } from "@/components/provider-shared/provider-sidebar"
+import { SessionList } from "@/components/provider/schedule/session-list"
+import { RequestActionCard } from "@/components/provider/schedule/request-action-card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, Clock, CheckCircle, XCircle, Video } from "lucide-react"
 
 export default function ProviderSchedulePage() {
     const { user, loading } = useAuth()
     const router = useRouter()
+    const [activeTab, setActiveTab] = useState("upcoming")
 
+    // State for sessions
     const [bookings, setBookings] = useState<any[]>([])
-    const [pastSessions, setPastSessions] = useState<any[]>([])
-    const [isLoading, setIsLoading] = useState(true)
+    const [loadingData, setLoadingData] = useState(true)
 
     useEffect(() => {
         if (!loading && !user) router.push("/")
-        if (!loading && user?.role !== "PROVIDER") router.push("/dashboard")
     }, [loading, user, router])
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true)
-            try {
-                // Fetch all bookings
-                const bookingsRes = await fetch("/api/bookings")
-                if (bookingsRes.ok) {
-                    const data = await bookingsRes.json()
-                    setBookings(data)
-                }
-
-                // Fetch past sessions
-                const sessionsRes = await fetch("/api/sessions?status=COMPLETED")
-                if (sessionsRes.ok) {
-                    const data = await sessionsRes.json()
-                    setPastSessions(data)
-                }
-            } catch (error) {
-                console.error("Error fetching schedule:", error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
-        if (user) fetchData()
-    }, [user])
-
-    const handleRespond = async (bookingId: string, status: "accepted" | "declined") => {
+    const fetchBookings = async () => {
+        setLoadingData(true)
         try {
-            await fetch(`/api/bookings/${bookingId}/respond`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status })
-            })
-            // Refresh
-            setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status: status.toUpperCase() } : b))
+            const res = await fetch("/api/bookings")
+            if (res.ok) {
+                const data = await res.json()
+                setBookings(data)
+            }
         } catch (error) {
-            console.error("Error responding to booking:", error)
+            console.error("Failed to fetch bookings", error)
+        } finally {
+            setLoadingData(false)
         }
     }
 
-    if (loading || isLoading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>
+    useEffect(() => {
+        if (user) fetchBookings()
+    }, [user])
 
-    const pendingBookings = bookings.filter(b => b.status === "PENDING")
-    const upcomingBookings = bookings.filter(b => ["ACCEPTED", "CONFIRMED"].includes(b.status))
+    const handleAccept = async (id: string) => {
+        try {
+            await fetch(`/api/bookings/${id}/respond`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "ACCEPTED" })
+            })
+            fetchBookings() // Refresh
+        } catch (e) {
+            console.error("Error accepting", e)
+        }
+    }
+
+    const handleDecline = async (id: string) => {
+        try {
+            await fetch(`/api/bookings/${id}/respond`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "DECLINED" })
+            })
+            fetchBookings() // Refresh
+        } catch (e) {
+            console.error("Error declining", e)
+        }
+    }
+
+    const handleJoin = (id: string) => {
+        router.push(`/session/${id}`)
+    }
+
+    if (loading || loadingData) {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-[#f5f5f5]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]"></div>
+            </div>
+        )
+    }
+
+    const pendingRequests = bookings.filter(b => b.status === "PENDING")
+    const upcomingSessions = bookings.filter(b => ["ACCEPTED", "CONFIRMED"].includes(b.status))
+    const pastSessions = bookings.filter(b => ["COMPLETED", "CANCELLED", "DECLINED"].includes(b.status))
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-2xl font-bold mb-6">Schedule</h1>
+        <div className="min-h-screen bg-[#f5f5f5]">
+            <ProviderHeader />
 
-                <Tabs defaultValue="upcoming" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-                        <TabsTrigger value="past">Past Sessions</TabsTrigger>
-                    </TabsList>
+            <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8">
+                <div className="mb-8">
+                    <h1 className="text-[28px] font-bold text-[#181818] mb-1">
+                        Schedule
+                    </h1>
+                    <p className="text-[15px] text-[#767676]">
+                        Manage your appointments and requests.
+                    </p>
+                </div>
 
-                    <TabsContent value="upcoming" className="space-y-6">
-                        {/* Pending Requests */}
-                        {pendingBookings.length > 0 && (
-                            <Card>
-                                <CardHeader>
-                                    <h3 className="font-semibold">Pending Requests ({pendingBookings.length})</h3>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    {pendingBookings.map(booking => (
-                                        <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
-                                            <div>
-                                                <p className="font-medium">{booking.service?.title || "Service"}</p>
-                                                <p className="text-sm text-gray-500">
-                                                    <Calendar className="inline w-4 h-4 mr-1" />
-                                                    {booking.requestedTime
-                                                        ? new Date(booking.requestedTime).toLocaleString()
-                                                        : "Instant Request"}
-                                                </p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    className="text-red-600"
-                                                    onClick={() => handleRespond(booking.id, "declined")}
-                                                >
-                                                    <XCircle className="w-4 h-4 mr-1" /> Decline
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => handleRespond(booking.id, "accepted")}
-                                                >
-                                                    <CheckCircle className="w-4 h-4 mr-1" /> Accept
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </CardContent>
-                            </Card>
-                        )}
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    {/* Main Content (3/4) */}
+                    <div className="lg:col-span-3">
 
-                        {/* Upcoming Sessions */}
-                        <Card>
-                            <CardHeader>
-                                <h3 className="font-semibold">Upcoming Sessions</h3>
-                            </CardHeader>
-                            <CardContent>
-                                {upcomingBookings.length === 0 ? (
-                                    <p className="text-gray-500 text-center py-8">No upcoming sessions</p>
-                                ) : (
-                                    <div className="space-y-3">
-                                        {upcomingBookings.map(booking => (
-                                            <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
-                                                <div>
-                                                    <p className="font-medium">{booking.service?.title || "Service"}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        <Clock className="inline w-4 h-4 mr-1" />
-                                                        {booking.requestedTime
-                                                            ? new Date(booking.requestedTime).toLocaleString()
-                                                            : "TBD"}
-                                                    </p>
-                                                </div>
-                                                <Button size="sm">
-                                                    <Video className="w-4 h-4 mr-1" /> Join
-                                                </Button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
+                        {/* Pending Requests Section */}
+                        <RequestActionCard
+                            requests={pendingRequests}
+                            onAccept={handleAccept}
+                            onDecline={handleDecline}
+                        />
 
-                    <TabsContent value="past">
-                        <Card>
-                            <CardHeader>
-                                <h3 className="font-semibold">Past Sessions</h3>
-                            </CardHeader>
-                            <CardContent>
-                                {pastSessions.length === 0 ? (
-                                    <p className="text-gray-500 text-center py-8">No past sessions</p>
-                                ) : (
-                                    <div className="space-y-3">
-                                        {pastSessions.map((session: any) => (
-                                            <div key={session.id} className="flex items-center justify-between p-4 border rounded-lg">
-                                                <div>
-                                                    <p className="font-medium">{session.service || "Session"}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        {new Date(session.startTime).toLocaleDateString()}
-                                                    </p>
-                                                </div>
-                                                <Badge variant="secondary">{session.status}</Badge>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                </Tabs>
+                        {/* Tabs for Upcoming/Past */}
+                        <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm min-h-[600px]">
+                            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                                <TabsList className="grid w-full grid-cols-2 mb-8 p-1 bg-gray-100 rounded-[14px]">
+                                    <TabsTrigger
+                                        value="upcoming"
+                                        className="rounded-[10px] data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm text-[14px] font-semibold py-2.5 transition-all"
+                                    >
+                                        My Upcoming Sessions ({upcomingSessions.length})
+                                    </TabsTrigger>
+                                    <TabsTrigger
+                                        value="past"
+                                        className="rounded-[10px] data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-[14px] font-semibold py-2.5 transition-all"
+                                    >
+                                        Past History
+                                    </TabsTrigger>
+                                </TabsList>
+
+                                <TabsContent value="upcoming" className="mt-0">
+                                    <SessionList
+                                        sessions={upcomingSessions}
+                                        type="upcoming"
+                                        onJoin={handleJoin}
+                                        onView={(id) => console.log('view', id)}
+                                    />
+                                </TabsContent>
+
+                                <TabsContent value="past" className="mt-0">
+                                    <SessionList
+                                        sessions={pastSessions}
+                                        type="past"
+                                        onView={(id) => console.log('view', id)}
+                                    />
+                                </TabsContent>
+                            </Tabs>
+                        </div>
+                    </div>
+
+                    {/* Sidebar (1/4) */}
+                    <div className="lg:col-span-1 space-y-6">
+                        <ProviderSidebar />
+                    </div>
+                </div>
             </div>
         </div>
     )

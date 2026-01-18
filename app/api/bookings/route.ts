@@ -30,7 +30,13 @@ export async function GET(req: NextRequest) {
                                 id: true,
                                 name: true,
                                 image: true,
-                                role: true
+                                role: true,
+                                kycStatus: true,
+                                profile: {
+                                    select: {
+                                        headline: true
+                                    }
+                                }
                             }
                         }
                     }

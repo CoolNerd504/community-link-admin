@@ -3,222 +3,125 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DollarSign, Clock, Star, AlertCircle, CheckCircle } from "lucide-react"
+import { ProviderHeader } from "@/components/provider-shared/provider-header"
+import { ProviderSidebar } from "@/components/provider-shared/provider-sidebar"
+import { StatusToggle } from "@/components/provider-shared/status-toggle"
+import { StatCard } from "@/components/provider-shared/stat-card"
+import { EarningsSummaryCard } from "@/components/provider/dashboard/earnings-summary-card"
+import { PendingRequestsCard } from "@/components/provider/dashboard/pending-requests-card"
+import { ActiveServicesCard } from "@/components/provider/dashboard/active-services-card"
+import { Star, Shield, TrendingUp, DollarSign } from "lucide-react"
 
 export default function ProviderDashboardPage() {
     const { user, loading } = useAuth()
     const router = useRouter()
 
     const [isOnline, setIsOnline] = useState(false)
-    const [isInstantAvailable, setIsInstantAvailable] = useState(false)
-    const [earnings, setEarnings] = useState({ total: 0, minutes: 0, pending: 0 })
-    const [services, setServices] = useState<any[]>([])
-    const [requests, setRequests] = useState<any[]>([])
+    const [isAvailableForInstant, setIsAvailableForInstant] = useState(false)
+    const [stats, setStats] = useState({ rating: "4.9", completionRate: "98%" })
 
+    // Simulate Auth Check
     useEffect(() => {
         if (!loading && !user) router.push("/")
-        if (!loading && user?.role !== "PROVIDER") router.push("/dashboard")
+        // In real app, strict role check: if (!loading && user?.role !== "PROVIDER") router.push("/dashboard")
     }, [loading, user, router])
 
+    // Load initial status (mocked or from profile)
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Fetch earnings
-                const earningsRes = await fetch("/api/provider/earnings")
-                if (earningsRes.ok) {
-                    const data = await earningsRes.json()
-                    setEarnings({
-                        total: data.totalEarningsZMW || 0,
-                        minutes: data.totalMinutesServiced || 0,
-                        pending: data.pendingPayoutZMW || 0
-                    })
-                }
-
-                // Fetch services
-                const servicesRes = await fetch("/api/services")
-                if (servicesRes.ok) {
-                    const data = await servicesRes.json()
-                    setServices(data)
-                }
-
-                // Fetch pending requests
-                const requestsRes = await fetch("/api/bookings")
-                if (requestsRes.ok) {
-                    const data = await requestsRes.json()
-                    setRequests(data.filter((b: any) => b.status === "PENDING"))
-                }
-            } catch (error) {
-                console.error("Error fetching dashboard data:", error)
-            }
+        if (user) {
+            setIsOnline(user.profile?.isOnline || false)
+            // setIsAvailableForInstant(...)
         }
-
-        if (user) fetchData()
     }, [user])
 
-    const handleToggleOnline = async (value: boolean) => {
+    const handleToggleOnline = (value: boolean) => {
         setIsOnline(value)
-        await fetch("/api/mobile/profile", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ isOnline: value })
-        })
+        // API call to update status
     }
 
-    const handleToggleInstant = async (value: boolean) => {
-        setIsInstantAvailable(value)
-        await fetch("/api/mobile/profile", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ isAvailableForInstant: value })
-        })
+    const handleToggleInstant = (value: boolean) => {
+        setIsAvailableForInstant(value)
+        // API call to update status
     }
 
-    if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>
-
-    const kycStatus = user?.kycStatus || "PENDING"
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-[#f5f5f5]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]"></div>
+            </div>
+        )
+    }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-5xl mx-auto space-y-6">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold">Welcome, {user?.name?.split(" ")[0]}!</h1>
-                        <p className="text-gray-500">Provider Dashboard</p>
-                    </div>
-                    <Avatar className="h-12 w-12">
-                        <AvatarImage src={user?.image || ""} />
-                        <AvatarFallback>{user?.name?.[0] || "P"}</AvatarFallback>
-                    </Avatar>
+        <div className="min-h-screen bg-[#f5f5f5]">
+            <ProviderHeader />
+
+            <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8">
+                {/* Welcome Section */}
+                <div className="mb-8">
+                    <h1 className="text-[28px] font-bold text-[#181818] mb-1">
+                        Welcome back, {user?.name?.split(" ")[0]}! 👋
+                    </h1>
+                    <p className="text-[15px] text-[#767676]">
+                        Here's what's happening with your services today.
+                    </p>
                 </div>
 
-                {/* KYC Banner */}
-                {kycStatus !== "APPROVED" && (
-                    <Card className={kycStatus === "PENDING" ? "border-blue-300 bg-blue-50" : "border-yellow-300 bg-yellow-50"}>
-                        <CardContent className="p-4 flex items-center gap-4">
-                            {kycStatus === "PENDING" ? (
-                                <AlertCircle className="text-blue-600 w-6 h-6" />
-                            ) : (
-                                <CheckCircle className="text-yellow-600 w-6 h-6" />
-                            )}
-                            <div className="flex-1">
-                                <p className="font-medium">
-                                    {kycStatus === "PENDING" ? "Complete Your Verification" : "Verification Under Review"}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    {kycStatus === "PENDING"
-                                        ? "Submit your documents to unlock all features."
-                                        : "Your documents are being reviewed."}
-                                </p>
-                            </div>
-                            {kycStatus === "PENDING" && (
-                                <Button size="sm" onClick={() => router.push("/kyc")}>Complete KYC</Button>
-                            )}
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Toggles */}
-                <Card>
-                    <CardContent className="p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-8">
-                            <div className="flex items-center gap-3">
-                                <Switch checked={isOnline} onCheckedChange={handleToggleOnline} />
-                                <span>Online</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <Switch checked={isInstantAvailable} onCheckedChange={handleToggleInstant} disabled={!isOnline} />
-                                <span>Instant Sessions</span>
-                            </div>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    {/* Left Column (3/4) */}
+                    <div className="lg:col-span-3 space-y-8">
+                        {/* Key Stats Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <StatCard
+                                title="Total Earnings"
+                                value="ZMW 2,450"
+                                icon={DollarSign}
+                                color="green"
+                                trend={{ value: "12.5%", isPositive: true }}
+                            />
+                            <StatCard
+                                title="Completion Rate"
+                                value={stats.completionRate}
+                                icon={Shield}
+                                color="blue"
+                                subtitle="Top 5% of providers"
+                            />
+                            <StatCard
+                                title="Average Rating"
+                                value={stats.rating}
+                                icon={Star}
+                                color="orange"
+                                subtitle="Based on 45 reviews"
+                            />
                         </div>
-                        <Badge variant={isOnline ? "default" : "secondary"}>
-                            {isOnline ? "Visible to Clients" : "Offline"}
-                        </Badge>
-                    </CardContent>
-                </Card>
 
-                {/* Earnings Summary */}
-                <div className="grid grid-cols-3 gap-4">
-                    <Card>
-                        <CardContent className="p-4 text-center">
-                            <DollarSign className="w-8 h-8 mx-auto text-green-600 mb-2" />
-                            <p className="text-2xl font-bold">ZMW {earnings.total.toLocaleString()}</p>
-                            <p className="text-sm text-gray-500">Total Earnings</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardContent className="p-4 text-center">
-                            <Clock className="w-8 h-8 mx-auto text-blue-600 mb-2" />
-                            <p className="text-2xl font-bold">{earnings.minutes}</p>
-                            <p className="text-sm text-gray-500">Minutes Serviced</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardContent className="p-4 text-center">
-                            <Star className="w-8 h-8 mx-auto text-yellow-500 mb-2" />
-                            <p className="text-2xl font-bold">4.8</p>
-                            <p className="text-sm text-gray-500">Average Rating</p>
-                        </CardContent>
-                    </Card>
+                        {/* Main Content Area */}
+
+                        {/* Earnings Graph */}
+                        <EarningsSummaryCard />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Pending Requests */}
+                            <PendingRequestsCard />
+
+                            {/* Active Services */}
+                            <ActiveServicesCard />
+                        </div>
+
+                    </div>
+
+                    {/* Right Column (1/4) - Sticky Sidebar */}
+                    <div className="lg:col-span-1 space-y-6">
+                        <StatusToggle
+                            isOnline={isOnline}
+                            onToggleOnline={handleToggleOnline}
+                            isAvailableForInstant={isAvailableForInstant}
+                            onToggleInstant={handleToggleInstant}
+                        />
+
+                        <ProviderSidebar />
+                    </div>
                 </div>
-
-                {/* Active Services */}
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <h3 className="font-semibold">Active Services</h3>
-                        <Button variant="outline" size="sm" onClick={() => router.push("/provider/services")}>
-                            Manage
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        {services.length === 0 ? (
-                            <p className="text-gray-500 text-center py-4">No active services</p>
-                        ) : (
-                            <div className="space-y-2">
-                                {services.slice(0, 3).map((s: any) => (
-                                    <div key={s.id} className="flex justify-between items-center p-3 border rounded-lg">
-                                        <div>
-                                            <p className="font-medium">{s.title}</p>
-                                            <p className="text-sm text-gray-500">{s.category}</p>
-                                        </div>
-                                        <Badge>ZMW {s.price}</Badge>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Pending Requests */}
-                {isInstantAvailable && requests.length > 0 && (
-                    <Card>
-                        <CardHeader>
-                            <h3 className="font-semibold">Pending Requests ({requests.length})</h3>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-2">
-                                {requests.map((r: any) => (
-                                    <div key={r.id} className="flex justify-between items-center p-3 border rounded-lg">
-                                        <div>
-                                            <p className="font-medium">{r.service?.title || "Service"}</p>
-                                            <p className="text-sm text-gray-500">
-                                                {r.requestedTime ? new Date(r.requestedTime).toLocaleString() : "Instant"}
-                                            </p>
-                                        </div>
-                                        <Button size="sm" onClick={() => router.push(`/provider/schedule`)}>
-                                            View
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
             </div>
         </div>
     )

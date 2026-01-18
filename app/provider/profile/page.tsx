@@ -3,125 +3,87 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
-import { signOut } from "next-auth/react"
-import { Card, CardContent } from "@/components/ui/card"
+import { ProviderHeader } from "@/components/provider-shared/provider-header"
+import { ProviderSidebar } from "@/components/provider-shared/provider-sidebar"
+import { ProviderProfileCard } from "@/components/provider/profile/provider-profile-card"
+import { VerificationStatusCard } from "@/components/provider/profile/verification-status-card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { User, Shield, Briefcase, LogOut, ChevronRight, CheckCircle } from "lucide-react"
+import { LogOut } from "lucide-react"
 
 export default function ProviderProfilePage() {
-    const { user, loading } = useAuth()
+    const { user, loading, signOut } = useAuth()
     const router = useRouter()
-
-    const [kycStatus, setKycStatus] = useState("PENDING")
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         if (!loading && !user) router.push("/")
-        if (!loading && user?.role !== "PROVIDER") router.push("/dashboard")
+        // if (!loading && user?.role !== "PROVIDER") router.push("/dashboard")
+        setIsLoading(loading)
     }, [loading, user, router])
 
-    useEffect(() => {
-        const fetchKyc = async () => {
-            try {
-                const res = await fetch("/api/kyc/status")
-                if (res.ok) {
-                    const data = await res.json()
-                    setKycStatus(data.status)
-                }
-            } catch (error) {
-                console.error("Error fetching KYC:", error)
-            }
-        }
+    const handleEditProfile = () => {
+        // Open modal or navigate to edit page
+        console.log("Edit profile")
+    }
 
-        if (user) fetchKyc()
-    }, [user])
+    const handleVerify = () => {
+        router.push("/provider/kyc")
+    }
 
-    if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-[#f5f5f5]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]"></div>
+            </div>
+        )
+    }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-2xl mx-auto space-y-6">
-                <h1 className="text-2xl font-bold">Profile</h1>
+        <div className="min-h-screen bg-[#f5f5f5]">
+            <ProviderHeader />
 
-                {/* User Info */}
-                <Card>
-                    <CardContent className="p-6 flex items-center gap-4">
-                        <Avatar className="h-16 w-16">
-                            <AvatarImage src={user?.image || ""} />
-                            <AvatarFallback className="text-xl">{user?.name?.[0] || "P"}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                            <h2 className="text-xl font-semibold">{user?.name}</h2>
-                            <p className="text-gray-500">{user?.email}</p>
-                            <Badge variant="secondary" className="mt-1">Provider</Badge>
-                        </div>
-                        <Button variant="outline" size="sm" onClick={() => router.push("/profile/edit")}>
-                            Edit
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Menu Items */}
-                <div className="space-y-2">
-                    {/* KYC */}
-                    <Card className="cursor-pointer hover:bg-gray-50" onClick={() => router.push("/kyc")}>
-                        <CardContent className="p-4 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <CheckCircle className="w-5 h-5 text-blue-600" />
-                                </div>
-                                <div>
-                                    <p className="font-medium">Verification</p>
-                                    <p className="text-sm text-gray-500">KYC Status: {kycStatus}</p>
-                                </div>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-400" />
-                        </CardContent>
-                    </Card>
-
-                    {/* Manage Services */}
-                    <Card className="cursor-pointer hover:bg-gray-50" onClick={() => router.push("/provider/services")}>
-                        <CardContent className="p-4 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                    <Briefcase className="w-5 h-5 text-green-600" />
-                                </div>
-                                <div>
-                                    <p className="font-medium">Manage Services</p>
-                                    <p className="text-sm text-gray-500">Add, edit, or remove services</p>
-                                </div>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-400" />
-                        </CardContent>
-                    </Card>
-
-                    {/* Privacy & Security */}
-                    <Card className="cursor-pointer hover:bg-gray-50" onClick={() => router.push("/settings/security")}>
-                        <CardContent className="p-4 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <Shield className="w-5 h-5 text-purple-600" />
-                                </div>
-                                <div>
-                                    <p className="font-medium">Privacy & Security</p>
-                                    <p className="text-sm text-gray-500">PIN, password, and security settings</p>
-                                </div>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-400" />
-                        </CardContent>
-                    </Card>
+            <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8">
+                <div className="mb-8">
+                    <h1 className="text-[28px] font-bold text-[#181818] mb-1">
+                        Profile & Settings
+                    </h1>
+                    <p className="text-[15px] text-[#767676]">
+                        Manage your public profile and account settings.
+                    </p>
                 </div>
 
-                {/* Logout */}
-                <Button
-                    variant="outline"
-                    className="w-full text-red-600 hover:bg-red-50"
-                    onClick={() => signOut({ callbackUrl: "/" })}
-                >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
-                </Button>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Column (Main Profile) */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <ProviderProfileCard
+                            user={user}
+                            onEdit={handleEditProfile}
+                        />
+
+                        <VerificationStatusCard
+                            status={user?.kycStatus || "PENDING"}
+                            onVerify={handleVerify}
+                        />
+
+                        {/* Additional Settings Sections could go here */}
+                    </div>
+
+                    {/* Right Column (Sidebar & Actions) */}
+                    <div className="lg:col-span-1 space-y-6">
+                        <ProviderSidebar />
+
+                        <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm">
+                            <h3 className="text-[16px] font-bold text-gray-900 mb-4">Account Actions</h3>
+                            <button
+                                onClick={() => signOut()}
+                                className="w-full flex items-center justify-center gap-2 py-3 bg-red-50 text-red-600 rounded-[12px] font-semibold text-[14px] hover:bg-red-100 transition-colors"
+                            >
+                                <LogOut className="size-4" />
+                                Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )

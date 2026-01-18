@@ -3,220 +3,225 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ArrowLeft, CreditCard, Phone, Plus, Trash2, Building } from "lucide-react"
+import { LinkedAccountsHeader } from "@/components/linked-accounts/linked-accounts-header"
+import { ProviderCard } from "@/components/linked-accounts/provider-card"
+import { LinkedAccountsSidebar } from "@/components/linked-accounts/linked-accounts-sidebar"
+import { UnlinkModal } from "@/components/linked-accounts/unlink-modal"
+import { ProviderConfig, LinkedAccount } from "@/components/linked-accounts/types"
+import { Github, Facebook, Linkedin, Twitter } from "lucide-react"
 
-interface PaymentMethod {
-    id: string
-    type: "MOBILE_MONEY" | "BANK" | "CARD"
-    name: string
-    lastFour?: string
-    isDefault: boolean
-}
+// Mock Icons using Lucide (Standard SVGs would be better for brands)
+const GoogleIcon = () => (
+    <svg className="size-6" viewBox="0 0 24 24" fill="none">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.21.81-.63z" fill="#FBBC05" />
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+    </svg>
+)
+
+const providers: ProviderConfig[] = [
+    {
+        id: "google",
+        name: "Google",
+        icon: <GoogleIcon />,
+        description: "Sign in with your Google account",
+        color: "#4285F4",
+        bgColor: "#E8F0FE"
+    },
+    {
+        id: "github",
+        name: "GitHub",
+        icon: <Github className="size-6" />,
+        description: "Connect your GitHub account",
+        color: "#181717",
+        bgColor: "#333333"
+    },
+    {
+        id: "facebook",
+        name: "Facebook",
+        icon: <Facebook className="size-6" />,
+        description: "Link your Facebook profile",
+        color: "#1877F2",
+        bgColor: "#E7F3FF"
+    },
+    {
+        id: "twitter",
+        name: "Twitter",
+        icon: <Twitter className="size-6" />,
+        description: "Connect with Twitter",
+        color: "#1DA1F2",
+        bgColor: "#E8F5FD"
+    },
+    {
+        id: "linkedin",
+        name: "LinkedIn",
+        icon: <Linkedin className="size-6" />,
+        description: "Link your LinkedIn profile",
+        color: "#0A66C2",
+        bgColor: "#E7F3FF"
+    }
+]
 
 export default function UserLinkedAccountsPage() {
     const { user, loading } = useAuth()
     const router = useRouter()
 
-    const [methods, setMethods] = useState<PaymentMethod[]>([])
+    const [accounts, setAccounts] = useState<LinkedAccount[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [newMethod, setNewMethod] = useState({ type: "MOBILE_MONEY", phone: "", bankName: "", accountNumber: "" })
+
+    // Modal State
+    const [isUnlinkModalOpen, setIsUnlinkModalOpen] = useState(false)
+    const [providerToUnlink, setProviderToUnlink] = useState<ProviderConfig | null>(null)
 
     useEffect(() => {
         if (!loading && !user) router.push("/")
     }, [loading, user, router])
 
     useEffect(() => {
-        const fetchMethods = async () => {
+        const fetchAccounts = async () => {
             setIsLoading(true)
             try {
-                const res = await fetch("/api/payment-methods")
-                if (res.ok) {
-                    const data = await res.json()
-                    setMethods(data)
-                }
+                // In a real app, this would be GET /api/user/accounts
+                // Mocking response for UI demo
+                setTimeout(() => {
+                    setAccounts([
+                        { id: "1", provider: "google", type: "oauth", createdAt: new Date().toISOString() }
+                    ])
+                }, 500)
             } catch (error) {
-                console.error("Error fetching payment methods:", error)
+                console.error("Error fetching linked accounts:", error)
             } finally {
                 setIsLoading(false)
             }
         }
 
-        if (user) fetchMethods()
+        if (user) fetchAccounts()
     }, [user])
 
-    const handleAdd = async () => {
-        try {
-            const res = await fetch("/api/payment-methods", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newMethod)
-            })
-            if (res.ok) {
-                const created = await res.json()
-                setMethods(prev => [...prev, created])
-                setIsModalOpen(false)
-                setNewMethod({ type: "MOBILE_MONEY", phone: "", bankName: "", accountNumber: "" })
-            }
-        } catch (error) {
-            console.error("Error adding method:", error)
+    const handleLink = (providerId: string) => {
+        // In real app: signIn(providerId) from next-auth/react
+        console.log("Linking:", providerId)
+
+        // Mock successful link
+        const newAccount: LinkedAccount = {
+            id: Math.random().toString(),
+            provider: providerId,
+            type: "oauth",
+            createdAt: new Date().toISOString()
+        }
+        setAccounts(prev => [...prev, newAccount])
+    }
+
+    const handleUnlinkClick = (providerId: string) => {
+        const config = providers.find(p => p.id === providerId)
+        if (config) {
+            setProviderToUnlink(config)
+            setIsUnlinkModalOpen(true)
         }
     }
 
-    const handleRemove = async (id: string) => {
-        if (!confirm("Remove this payment method?")) return
-        try {
-            await fetch(`/api/payment-methods/${id}`, { method: "DELETE" })
-            setMethods(prev => prev.filter(m => m.id !== id))
-        } catch (error) {
-            console.error("Error removing method:", error)
-        }
-    }
+    const handleUnlinkConfirm = async () => {
+        if (!providerToUnlink) return
 
-    const handleSetDefault = async (id: string) => {
         try {
-            await fetch(`/api/payment-methods/${id}/default`, { method: "POST" })
-            setMethods(prev => prev.map(m => ({ ...m, isDefault: m.id === id })))
+            // In real app: DELETE /api/user/accounts/${providerToUnlink.id}
+            console.log("Unlinking:", providerToUnlink.id)
+
+            setAccounts(prev => prev.filter(a => a.provider !== providerToUnlink.id))
+            setIsUnlinkModalOpen(false)
+            setProviderToUnlink(null)
         } catch (error) {
-            console.error("Error setting default:", error)
+            console.error("Error unlinking account:", error)
         }
     }
 
     if (loading || isLoading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>
 
-    const getIcon = (type: string) => {
-        switch (type) {
-            case "MOBILE_MONEY": return Phone
-            case "BANK": return Building
-            default: return CreditCard
-        }
-    }
+    const connectedCount = accounts.length
+    const isLinked = (providerId: string) => accounts.some(a => a.provider === providerId)
+    const getLinkedAccount = (providerId: string) => accounts.find(a => a.provider === providerId)
+
+    const connectedProviders = providers.filter(p => isLinked(p.id))
+    const availableProviders = providers.filter(p => !isLinked(p.id))
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-2xl mx-auto space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()}>
-                            <ArrowLeft className="w-5 h-5" />
-                        </Button>
-                        <h1 className="text-2xl font-bold">Linked Accounts</h1>
-                    </div>
-                    <Button onClick={() => setIsModalOpen(true)}>
-                        <Plus className="w-4 h-4 mr-2" /> Add
-                    </Button>
-                </div>
+        <div className="min-h-screen bg-[#f5f5f5] pb-12">
+            <LinkedAccountsHeader connectedCount={connectedCount} />
 
-                {methods.length === 0 ? (
-                    <Card>
-                        <CardContent className="p-12 text-center">
-                            <CreditCard className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                            <p className="text-gray-500">No payment methods linked</p>
-                            <Button className="mt-4" onClick={() => setIsModalOpen(true)}>
-                                Add Payment Method
-                            </Button>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    <div className="space-y-3">
-                        {methods.map(method => {
-                            const Icon = getIcon(method.type)
-                            return (
-                                <Card key={method.id}>
-                                    <CardContent className="p-4 flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                                                <Icon className="w-5 h-5 text-gray-600" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">{method.name}</p>
-                                                <p className="text-sm text-gray-500">
-                                                    {method.lastFour ? `****${method.lastFour}` : method.type}
-                                                </p>
-                                            </div>
-                                            {method.isDefault && <Badge>Default</Badge>}
-                                        </div>
-                                        <div className="flex gap-2">
-                                            {!method.isDefault && (
-                                                <Button variant="ghost" size="sm" onClick={() => handleSetDefault(method.id)}>
-                                                    Set Default
-                                                </Button>
-                                            )}
-                                            <Button variant="ghost" size="icon" className="text-red-600" onClick={() => handleRemove(method.id)}>
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            )
-                        })}
-                    </div>
-                )}
+            <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    {/* Left Column (3/4) */}
+                    <div className="lg:col-span-3 space-y-8">
 
-                {/* Add Method Modal */}
-                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Add Payment Method</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
+                        {/* Connected Accounts */}
+                        {connectedCount > 0 && (
                             <div>
-                                <Label>Type</Label>
-                                <select
-                                    className="w-full h-10 px-3 border rounded-md"
-                                    value={newMethod.type}
-                                    onChange={(e) => setNewMethod(prev => ({ ...prev, type: e.target.value as any }))}
-                                >
-                                    <option value="MOBILE_MONEY">Mobile Money</option>
-                                    <option value="BANK">Bank Account</option>
-                                </select>
-                            </div>
-
-                            {newMethod.type === "MOBILE_MONEY" && (
-                                <div>
-                                    <Label>Phone Number</Label>
-                                    <Input
-                                        placeholder="0971234567"
-                                        value={newMethod.phone}
-                                        onChange={(e) => setNewMethod(prev => ({ ...prev, phone: e.target.value }))}
-                                    />
+                                <div className="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h2 className="text-[20px] font-bold text-[#181818] mb-1">
+                                            Connected Accounts
+                                        </h2>
+                                        <p className="text-[14px] text-[#767676]">
+                                            Accounts you've linked to your profile
+                                        </p>
+                                    </div>
                                 </div>
-                            )}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {connectedProviders.map(provider => (
+                                        <ProviderCard
+                                            key={provider.id}
+                                            provider={provider}
+                                            isLinked={true}
+                                            account={getLinkedAccount(provider.id)}
+                                            onUnlink={handleUnlinkClick}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                            {newMethod.type === "BANK" && (
-                                <>
+                        {/* Available Accounts */}
+                        {availableProviders.length > 0 && (
+                            <div>
+                                <div className="flex items-center justify-between mb-4">
                                     <div>
-                                        <Label>Bank Name</Label>
-                                        <Input
-                                            placeholder="Bank name"
-                                            value={newMethod.bankName}
-                                            onChange={(e) => setNewMethod(prev => ({ ...prev, bankName: e.target.value }))}
-                                        />
+                                        <h2 className="text-[20px] font-bold text-[#181818] mb-1">
+                                            Available to Connect
+                                        </h2>
+                                        <p className="text-[14px] text-[#767676]">
+                                            Link more accounts to enhance your experience
+                                        </p>
                                     </div>
-                                    <div>
-                                        <Label>Account Number</Label>
-                                        <Input
-                                            placeholder="Account number"
-                                            value={newMethod.accountNumber}
-                                            onChange={(e) => setNewMethod(prev => ({ ...prev, accountNumber: e.target.value }))}
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {availableProviders.map(provider => (
+                                        <ProviderCard
+                                            key={provider.id}
+                                            provider={provider}
+                                            isLinked={false}
+                                            onLink={handleLink}
                                         />
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
-                            <Button onClick={handleAdd}>Add</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right Column (1/4) - Sticky */}
+                    <div className="lg:col-span-1 hidden lg:block">
+                        <LinkedAccountsSidebar />
+                    </div>
+                </div>
             </div>
+
+            <UnlinkModal
+                isOpen={isUnlinkModalOpen}
+                provider={providerToUnlink}
+                onClose={() => setIsUnlinkModalOpen(false)}
+                onConfirm={handleUnlinkConfirm}
+            />
         </div>
     )
 }
+

@@ -2,37 +2,37 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import ClientDashboard from "../features/client/ClientDashboard"
-import { ProviderDashboard } from "../features/provider/ProviderDashboard"
-import { AdminDashboard } from "../features/admin/AdminDashboard"
 import { useAuth } from "@/hooks/use-auth"
 
 export default function DashboardPage() {
-    const { user: currentUser, loading: isAuthLoading } = useAuth()
+    const { user, loading } = useAuth()
     const router = useRouter()
 
     useEffect(() => {
-        if (!isAuthLoading && !currentUser) {
-            router.push("/")
+        if (!loading) {
+            if (!user) {
+                router.push("/auth/signin") // Or wherever login is
+                return
+            }
+
+            switch (user.role) {
+                case "SUPER_ADMIN":
+                case "ADMIN":
+                    router.push("/admin/dashboard")
+                    break
+                case "PROVIDER":
+                    router.push("/provider/dashboard")
+                    break
+                default:
+                    router.push("/user/dashboard")
+                    break
+            }
         }
-    }, [isAuthLoading, currentUser, router])
+    }, [user, loading, router])
 
-    if (isAuthLoading) {
-        return <div className="flex items-center justify-center min-h-screen">Loading...</div>
-    }
-
-    if (!currentUser) {
-        return null // Will redirect
-    }
-
-    if (currentUser.role === "SUPER_ADMIN" || currentUser.role === "ADMIN") {
-        return <AdminDashboard currentUser={currentUser} />
-    }
-
-    if (currentUser.role === "PROVIDER") {
-        return <ProviderDashboard currentUser={currentUser} />
-    }
-
-    // Default to client dashboard
-    return <ClientDashboard />
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+    )
 }

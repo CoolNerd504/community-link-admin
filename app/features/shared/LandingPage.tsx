@@ -20,6 +20,7 @@ import {
 import { AuthPage } from "./AuthPage"
 import { useAuth } from "../../../hooks/use-auth"
 import { useRouter } from "next/navigation"
+import { getDashboardPath } from "@/lib/navigation"
 
 export function LandingPage() {
   const [showAuth, setShowAuth] = useState(false)
@@ -27,7 +28,7 @@ export function LandingPage() {
   const router = useRouter()
 
   const getDashboardRoute = () => {
-    return "/dashboard"
+    return getDashboardPath(user?.role)
   }
 
   const getDashboardLabel = () => {
