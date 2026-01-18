@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -24,8 +23,9 @@ model User {
   phoneVerified Boolean @default(false)
 
   // Biometric Flags
-  biometricEnabled Boolean @default(false)
-  lastLoginMethod  String? // 'pin', 'password', 'fingerprint', 'face_id'
+  biometricEnabled   Boolean @default(false)
+  twoFactorEnabled   Boolean @default(false)
+  lastLoginMethod    String? // 'pin', 'password', 'fingerprint', 'face_id'
 
   // KYC Information
   kycStatus          String    @default("PENDING") // PENDING, SUBMITTED, VERIFIED, REJECTED
@@ -87,8 +87,9 @@ model User {
   following Follow[] @relation("Following")
   followers Follow[] @relation("Followers")
   
-  favorites    Favorite[] @relation("UserFavorites")
-  favoritedBy  Favorite[] @relation("ProviderFavoritedBy")
+  favorites      Favorite[]      @relation("UserFavorites")
+  favoritedBy    Favorite[]      @relation("ProviderFavoritedBy")
+  paymentMethods PaymentMethod[]
 }
 
 model Account {
@@ -578,5 +579,21 @@ enum NotificationType {
   PAYMENT_SUCCESS
   PAYMENT_FAILED
   SYSTEM
+}
+
+// Payment Methods for linked accounts
+model PaymentMethod {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      String   // MOBILE_MONEY, BANK, CARD
+  name      String   // Display name
+  lastFour  String?  // Last 4 digits/chars
+  isDefault Boolean  @default(false)
+  details   String?  @db.Text // JSON with sensitive data
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 

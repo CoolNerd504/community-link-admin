@@ -322,7 +322,44 @@ All protected endpoints require a Bearer Token in the `Authorization` header.
 
 ---
 
+
+### E. Communication & Notifications
+
+**1. Register Device (POST `/api/notifications/register`)** `[USER, PROVIDER]`
+- **Payload**: `{ "token": "device-push-token", "platform": "ios" }`
+- **Response**: `{ "message": "Device registered" }`
+
+**2. Get Notifications (GET `/api/notifications`)** `[USER, PROVIDER]`
+- **Query Params**: `page`, `limit`, `unreadOnly=true`
+- **Response**: `{ "notifications": [...], "meta": {...} }`
+
+**3. Mark Read (PATCH `/api/notifications/[id]/read`)** `[USER, PROVIDER]`
+- **Response**: `{ "success": true }`
+
+**4. Get Chat Messages (GET `/api/chat/[sessionId]`)** `[USER, PROVIDER]`
+- **Response**: Array of message objects.
+- **Note**: Chat is linked to an `AppSession`.
+
+**5. Send Message (POST `/api/chat/[sessionId]`)** `[USER, PROVIDER]`
+- **Payload**: `{ "content": "Hello world" }`
+- **Response**: Message object.
+
+---
+
+### F. Post-Session & Safety
+
+**1. Create Review (POST `/api/sessions/[sessionId]/review`)** `[USER]`
+- **Payload**: `{ "rating": 5, "comment": "Great session!" }`
+- **Response**: Review object.
+
+**2. Report Dispute (POST `/api/sessions/[sessionId]/dispute`)** `[USER, PROVIDER]`
+- **Payload**: `{ "reason": "Provider did not show up", "description": "..." }`
+- **Response**: Dispute object.
+
+---
+
 ## 🛡 4. Admin (ADMIN) Features
+
 
 *Admin features are primarily web-based.*
 

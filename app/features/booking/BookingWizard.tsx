@@ -42,6 +42,38 @@ export function BookingWizard({ isOpen, onOpenChange, providerId, services }: Bo
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [success, setSuccess] = useState(false)
 
+    // Availability State
+    const [availableSlots, setAvailableSlots] = useState<string[]>([])
+    const [isLoadingAvailability, setIsLoadingAvailability] = useState(false)
+
+    // Fetch Availability when Date changes
+    useEffect(() => {
+        if (!providerId || !date) return
+
+        const fetchAvailability = async () => {
+            setIsLoadingAvailability(true)
+            try {
+                // Fetch just for the selected date
+                const dateStr = format(date, 'yyyy-MM-dd')
+                const res = await fetch(`/api/providers/${providerId}/availability?date=${dateStr}&days=1`)
+                if (res.ok) {
+                    const data = await res.json()
+                    // data.availability is array. We want the first item's slots.
+                    const dayData = data.availability?.find((d: any) => d.date === dateStr)
+                    setAvailableSlots(dayData?.slots || [])
+                }
+            } catch (error) {
+                console.error("Error fetching availability:", error)
+            } finally {
+                setIsLoadingAvailability(false)
+            }
+        }
+
+        if (step === STEPS.DATETIME) {
+            fetchAvailability()
+        }
+    }, [date, providerId, step])
+
     // Reset when closed
     useEffect(() => {
         if (!isOpen) {
@@ -85,7 +117,14 @@ export function BookingWizard({ isOpen, onOpenChange, providerId, services }: Bo
         try {
             const [hours, minutes] = time.split(':').map(Number)
             const scheduledDate = new Date(date)
-            scheduledDate.setHours(hours, minutes)
+            scheduledDate.setHours(hours, minutes, 0, 0)
+
+            // Convert to ISO string for API consistency with 'startAt'
+            // The action likely expects a Date object, which is fine.
+            // But we should be careful with timezones. 
+            // The availability API returns slots in implicit local time or UTC?
+            // Usually we assume the time slot is relative to the provider's / app's main timezone or just local.
+            // For now, simple construction is fine.
 
             await createScheduledBookingAction(providerId, selectedServiceId, {
                 date: scheduledDate,
@@ -214,7 +253,10 @@ export function BookingWizard({ isOpen, onOpenChange, providerId, services }: Bo
                                 <Calendar
                                     mode="single"
                                     selected={date}
-                                    onSelect={setDate}
+                                    onSelect={(selected) => {
+                                        setDate(selected)
+                                        setTime("") // Reset time when date changes
+                                    }}
                                     disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
                                     className="rounded-md"
                                 />
@@ -222,15 +264,30 @@ export function BookingWizard({ isOpen, onOpenChange, providerId, services }: Bo
 
                             <div className="space-y-2">
                                 <Label>Select Start Time</Label>
-                                <div className="relative">
-                                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                    <input
-                                        type="time"
-                                        className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 pl-10 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                        value={time}
-                                        onChange={(e) => setTime(e.target.value)}
-                                    />
-                                </div>
+                                {isLoadingAvailability ? (
+                                    <div className="flex justify-center p-4">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+                                        {availableSlots.length > 0 ? (
+                                            availableSlots.map(slot => (
+                                                <Button
+                                                    key={slot}
+                                                    variant={time === slot ? "default" : "outline"}
+                                                    className={`text-sm ${time === slot ? 'bg-blue-600' : ''}`}
+                                                    onClick={() => setTime(slot)}
+                                                >
+                                                    {slot}
+                                                </Button>
+                                            ))
+                                        ) : (
+                                            <div className="col-span-3 text-center text-gray-500 py-4 border rounded-md bg-gray-50">
+                                                No slots available for this date
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
